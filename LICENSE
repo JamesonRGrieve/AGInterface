@@ -2,6 +2,16 @@ Attribution-NonCommercial-NoDerivatives 4.0 International
 Copyright (c) Jameson Grieve
 
 =======================================================================
+GITHUB FORK EXEMPTION:
+
+Notwithstanding the NoDerivatives condition of this license, users are permitted to create and distribute derivatives of this work exclusively through the GitHub fork functionality, provided that:
+
+1. The derivatives are created using GitHub's native fork functionality (not by downloading and re-uploading the content)
+2. The derivatives are distributed exclusively through GitHub as proper forks
+3. All other terms and conditions of this license remain in full effect for these forks, including Attribution and NonCommercial requirements
+4. This exemption applies only to derivatives created and distributed through GitHub's platform
+5. The commit history found in this repository is not altered, removed, rebased or otherwise tampered with
+=======================================================================
 
 Creative Commons Corporation ("Creative Commons") is not a law firm and
 does not provide legal services or legal advice. Distribution of

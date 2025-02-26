@@ -37,7 +37,6 @@ export default function Home() {
       </header>
       <main>
         <Hero />
-        <img src='/PoweredBy_AGiXT.svg' alt='Powered by AGiXT' className='w-32 mx-auto' />
         <Features />
         <HowItWorks />
 

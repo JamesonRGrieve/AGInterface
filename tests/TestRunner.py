@@ -1,10 +1,11 @@
-from FrontEnd import FrontEndTest
 import asyncio
 import logging
-import sys
 import os
 import platform
+import sys
+
 import nest_asyncio
+from FrontEnd import FrontEndTest
 
 
 class TestRunner:
@@ -12,7 +13,7 @@ class TestRunner:
         pass
 
     def run(self):
-        test = FrontEndTest(base_uri="http://localhost:3437")
+        test = FrontEndTest(base_uri="http://localhost:1109")
         try:
             if platform.system() == "Linux":
                 print("Linux Detected, using asyncio.run")

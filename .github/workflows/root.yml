@@ -2,23 +2,25 @@ name: Build and Test
 
 on: ['push']
 jobs:
-  build-npm:
-    runs-on: ubuntu-latest
-    name: Build / NPM
-    steps:
-      - uses: actions/checkout@v4.2.2
-      - name: Install Packages and Build
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 20
-      - run: npm install && npm run build
+  build-baremetal:
+    uses: ./.github/workflows/build-baremetal.yml
+    name: Build / Baremetal
   build-docker:
     uses: ./.github/workflows/build-docker.yml
     name: Build / Docker
     with:
-      registry-dockerhub-enable: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      registry-repo-name: AGiXT-Interactive
+      registry-dockerhub-enable: false # ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      registry-repo-name: AGInteractive
       registry-readme: ./docs/README.md
+      build-args: |
+        AGINTERACTIVE_SERVER=http://aginfrastructure:7437
+        APP_NAME=AGInteractive CICD
+        APP_URI=http://aginteractive:1109
+      tags: |
+        type=raw,value={{branch}}-cicd
+        type=semver,pattern={{raw}}-cicd,enable=${{ github.ref_type == 'tag' }}
+        type=raw,value=latest-cicd,enable=${{ github.ref_type == 'tag' }}
+        type=sha
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   # test-ui:
@@ -31,7 +33,7 @@ jobs:
   #   with:
   #     notebook: tests/FrontEnd.ipynb
   #     front-end-image: ${{ needs.build.outputs.primary-image }}
-  #     report-name: 'interactive-tests'
+  #     report-name: 'aginteractive-ui'
   #   secrets:
   #     GHCR_PAT: ${{ secrets.GHCR_PAT }}
   #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

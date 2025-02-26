@@ -15,7 +15,7 @@ export default function ChainSteps() {
 
   const handleAdd = async () => {
     const lastStep = chainData.steps.length === 0 ? undefined : chainData.steps[chainData.steps.length - 1];
-    await context.agixt.addStep(
+    await context.sdk.addStep(
       chainData.chainName,
       chainData.steps.length + 1,
       lastStep ? lastStep.agentName : context.agent,

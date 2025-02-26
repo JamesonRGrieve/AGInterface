@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback } from 'react';
-import { Bot, Check } from 'lucide-react';
-import { setCookie } from 'cookies-next';
-import { useCommandMenu } from '../command-menu-context';
-import { CommandGroup, CommandItem } from '@/components/ui/command';
 import { useAgent, useAgents } from '@/components/interactive/hooks/useAgent';
 import { useCompany } from '@/components/jrg/auth/hooks/useUser';
+import { CommandGroup, CommandItem } from '@/components/ui/command';
+import { setCookie } from 'cookies-next';
+import { Bot, Check } from 'lucide-react';
+import { useCallback } from 'react';
+import { useCommandMenu } from '../command-menu-context';
 
 export function AgentSelectorGroup() {
   const { currentSubPage, setOpen } = useCommandMenu();
@@ -16,7 +16,7 @@ export function AgentSelectorGroup() {
 
   const onSelect = useCallback(
     (agentName: string) => {
-      setCookie('agixt-agent', agentName, {
+      setCookie('aginteractive-agent', agentName, {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
       });
       mutateActiveCompany();

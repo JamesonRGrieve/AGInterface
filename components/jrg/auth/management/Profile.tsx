@@ -1,15 +1,15 @@
 'use client';
 
+import DynamicForm from '@/components/jrg/dynamic-form/DynamicForm';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import axios from 'axios';
 import { deleteCookie, getCookie } from 'cookies-next';
-import { mutate } from 'swr';
-import VerifySMS from '../mfa/SMS';
-import DynamicForm from '@/components/jrg/dynamic-form/DynamicForm';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import log from '../../next-log/log';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
+import { mutate } from 'swr';
+import log from '../../next-log/log';
+import VerifySMS from '../mfa/SMS';
 
 export const Profile = ({
   isLoading,
@@ -42,7 +42,7 @@ export const Profile = ({
             you do, please make note of your most recent actions and{' '}
             <Link
               className='text-info hover:underline'
-              href='https://github.com/JamesonRGrieve/AGiXT-Interactive/issues/new?template=bug_report_prod.yml'
+              href='https://github.com/JamesonRGrieve/AGInteractive/issues/new?template=bug_report_prod.yml'
             >
               let us know by making a report here
             </Link>

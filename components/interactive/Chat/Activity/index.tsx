@@ -1,21 +1,16 @@
 'use client';
 
-import { LuRefreshCw as AutorenewOutlined, LuInfo as Info, LuPencil as Pencil } from 'react-icons/lu';
-import { FaRunning } from 'react-icons/fa';
-import { Ban as Error, CircleCheck, TriangleAlert } from 'lucide-react';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
-import { TfiThought } from 'react-icons/tfi';
-import { GiMirrorMirror } from 'react-icons/gi';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { LuRefreshCw as AutorenewOutlined } from 'react-icons/lu';
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 import MarkdownBlock from '../Message/MarkdownBlock';
 import formatDate from '../Message/formatDate';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
-import { z } from 'zod';
 import { severities } from './Severtities.tsx';
 
 export function getTimeDifference(timestamp1, timestamp2) {
@@ -83,7 +78,7 @@ export function Activity({
           <Accordion type='single'>
             <AccordionItem value='an-item'>
               <AccordionTrigger
-                className={`${rootStyles} agixt-activity agixt-activity-${activityType.toLocaleLowerCase()} text-foreground flex items-center cursor-pointer justify-start gap-2`}
+                className={`${rootStyles} aginteractive-activity aginteractive-activity-${activityType.toLocaleLowerCase()} text-foreground flex items-center cursor-pointer justify-start gap-2`}
               >
                 <div className='flex items-center justify-between gap-2 m-w-40'>
                   {activityType !== 'info' && !nextTimestamp ? (
@@ -106,7 +101,7 @@ export function Activity({
           </Accordion>
         ) : (
           <div
-            className={`${rootStyles} agixt-activity text-foreground flex items-center justify-start cursor-pointer gap-2`}
+            className={`${rootStyles} aginteractive-activity text-foreground flex items-center justify-start cursor-pointer gap-2`}
           >
             <div className='flex items-center justify-between gap-2 m-w-40'>
               {activityType !== 'info' && !nextTimestamp ? (

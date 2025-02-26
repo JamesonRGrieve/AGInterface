@@ -1,13 +1,12 @@
 import IconButton from '@/components/jrg/theme/IconButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from '@/hooks/useToast';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
-import { randomUUID } from 'crypto';
 import { Loader2, Repeat, Send } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import MarkdownBlock from '../../Chat/Message/MarkdownBlock';
-import { toast, useToast } from '@/hooks/useToast';
 
 export default function PromptTest({
   promptName,
@@ -32,7 +31,7 @@ export default function PromptTest({
   const sendPrompt = useCallback(async () => {
     setLoading(true);
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${getCookie('agixt-agent')}/prompt`,
+      `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${getCookie('aginteractive-agent')}/prompt`,
       {
         prompt_name: promptName,
         prompt_args: variables,

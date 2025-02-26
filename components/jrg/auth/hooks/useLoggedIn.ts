@@ -11,7 +11,7 @@ export default function useLoggedIn() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/user`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user`, {
           headers: {
             Authorization: getCookie('jwt'),
           },

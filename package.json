@@ -2,11 +2,11 @@
   "name": "aginteractive",
   "version": "0.0.0",
   "scripts": {
-    "dev": "rm -rf ./.next && next dev -p 3437",
+    "dev": "rm -rf ./.next && next dev -p 1109",
     "build": "rm -rf ./.next && next build",
     "clean-build": "rm -rf ./.next & rm -rf ./node_nodules && npm install && npm run build && npm start",
     "compile": "tsc --jsx react-jsx --project tsconfig.compile.json && shx mkdir -p ./dist/style && npx postcss ./app/globals.css -o ./dist/style/globals.css",
-    "start": "next start -p 3437",
+    "start": "next start -p 1109",
     "docker": "docker-compose down && docker-compose pull && docker-compose build && docker-compose up -d",
     "lint": "next lint",
     "lint-fix": "next lint --fix",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JamesonRGrieve/AGiXT-Interactive.git"
+    "url": "git+https://github.com/JamesonRGrieve/AGInteractive.git"
   },
   "keywords": [
     "ai",
@@ -28,9 +28,9 @@
   ],
   "author": "Jameson R Grieve",
   "bugs": {
-    "url": "https://github.com/JamesonRGrieve/AGiXT-Interactive/issues"
+    "url": "https://github.com/JamesonRGrieve/AGInteractive/issues"
   },
-  "homepage": "http://jamesonrgrieve.github.io/AGiXT-Interactive",
+  "homepage": "http://jamesonrgrieve.github.io/AGInteractive",
   "files": [
     "dist"
   ],
@@ -38,7 +38,7 @@
     "@": "."
   },
   "exports": {
-    ".": "./dist/components/InteractiveAGiXT.js",
+    ".": "./dist/components/AGInteractive.js",
     "./MarkdownBlock": "./dist/components/Chat/Message/MarkdownBlock.js",
     "./CSVDataGrid": "./dist/components/Chat/Message/Markdown/Code/CSV.js",
     "./AudioRecorder": "./dist/components/Chat/AudioRecorder.js",

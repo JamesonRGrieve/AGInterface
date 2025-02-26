@@ -10,13 +10,12 @@ import '@/components/jrg/zod2gql/zod2gql';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { ReactNode } from 'react';
 import './globals.css';
 import { metadata, viewport } from './metadata';
 
-const inter = Inter({ subsets: ['latin'] });
+// const inter = Inter({ subsets: ['latin'] });
 
 export { metadata, viewport };
 
@@ -28,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }): React
   return (
     <html lang='en'>
       <Head />
-      <body className={cn(inter.className, theme, appearance)}>
+      <body className={cn(/*inter.className,*/ theme, appearance)}>
         <InteractiveConfigContextWrapper>
           <SolanaWalletProvider>
             <CommandMenuProvider>

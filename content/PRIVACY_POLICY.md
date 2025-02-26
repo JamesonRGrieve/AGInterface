@@ -4,7 +4,7 @@ Last Updated: December 13, 2024
 
 ## Introduction
 
-This Privacy Policy describes how AGiXT ("we," "our," or "us") collects, uses, stores, and protects your information when you use our cloud-hosted application and services. We are committed to protecting your privacy and ensuring the security of your personal information.
+This Privacy Policy describes how Zephyrex Technologies ("we," "our," or "us") collects, uses, stores, and protects your information when you use our cloud-hosted application and services. We are committed to protecting your privacy and ensuring the security of your personal information.
 
 ## Information We Collect
 
@@ -26,7 +26,7 @@ This Privacy Policy describes how AGiXT ("we," "our," or "us") collects, uses, s
 
 We use your information for the following purposes:
 
-- Providing and maintaining the AGiXT service
+- Providing and maintaining the AGInfrastructure and related services
 - Authentication and account management
 - Improving and optimizing our services
 - Communicating with you about service updates and changes

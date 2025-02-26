@@ -1,20 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { TooltipBasic } from '@/components/ui/tooltip';
-import { Checkbox } from '@/components/ui/checkbox';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import { useEffect, useState } from 'react';
 
 export function OverrideSwitch({ name, label }: { name: string; label: string }): React.JSX.Element {
   const [state, setState] = useState<boolean | null>(
-    getCookie('agixt-' + name) === undefined ? null : getCookie('agixt-' + name) !== 'false',
+    getCookie('aginteractive-' + name) === undefined ? null : getCookie('aginteractive-' + name) !== 'false',
   );
   useEffect(() => {
     if (state === null) {
-      deleteCookie('agixt-' + name, { domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN });
+      deleteCookie('aginteractive-' + name, { domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN });
     } else {
-      setCookie('agixt-' + name, state.toString(), {
+      setCookie('aginteractive-' + name, state.toString(), {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         maxAge: 2147483647,
       });

@@ -1,18 +1,18 @@
 'use client';
 
-import { LuMic, LuPaperclip, LuBook, LuCommand, LuGraduationCap, LuThumbsUp, LuThumbsDown } from 'react-icons/lu';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCookie } from 'cookies-next';
 import { useEffect, useState } from 'react';
+import { LuBook, LuCommand, LuGraduationCap, LuMic, LuPaperclip, LuThumbsDown, LuThumbsUp } from 'react-icons/lu';
 
 export default function GettingStartedPage() {
   const [hasStarted, setHasStarted] = useState(false);
   useEffect(() => {
-    if (getCookie('agixt-has-started') === 'true') {
+    if (getCookie('aginteractive-has-started') === 'true') {
       setHasStarted(true);
     }
-  }, [getCookie('agixt-has-started')]);
+  }, [getCookie('aginteractive-has-started')]);
 
   return (
     <SidebarPage title='Getting Started'>
@@ -23,7 +23,7 @@ export default function GettingStartedPage() {
               <Button
                 size='lg'
                 onClick={() => {
-                  setCookie('agixt-has-started', 'true', {
+                  setCookie('aginteractive-has-started', 'true', {
                     domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
                     expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
                   });

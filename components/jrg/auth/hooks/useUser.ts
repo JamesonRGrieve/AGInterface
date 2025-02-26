@@ -68,7 +68,7 @@ export function useCompany(id?: string): SWRResponse<Company | null> {
           log(['GQL useCompany() Companies', companies], {
             client: 1,
           });
-          const agentName = getCookie('agixt-agent');
+          const agentName = getCookie('aginteractive-agent');
           log(['GQL useCompany() AgentName', agentName], {
             client: 1,
           });
@@ -80,7 +80,7 @@ export function useCompany(id?: string): SWRResponse<Company | null> {
           if (!targetCompany) return null;
           targetCompany.extensions = (
             await axios.get(
-              `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/companies/${targetCompany.id}/extensions`,
+              `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${targetCompany.id}/extensions`,
 
               {
                 headers: {

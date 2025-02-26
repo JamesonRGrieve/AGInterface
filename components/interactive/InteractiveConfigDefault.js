@@ -1,6 +1,6 @@
 const InteractiveConfigDefault = {
-  agent: process.env.NEXT_PUBLIC_AGIXT_AGENT || 'XT',
-  agixt: null,
+  agent: process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || 'XT',
+  sdk: null,
   openai: null,
   overrides: {
     mode: 'prompt',

@@ -8,7 +8,7 @@ type Conversation = {
   updated_at: string;
 };
 
-export default class AGiXTSDK {
+export default class AGInterfaceSDK {
   private baseUri: string;
   private headers: AxiosRequestConfig['headers'];
 
@@ -499,7 +499,7 @@ export default class AGiXTSDK {
     commandName = 'Store information in my long term memory',
     commandArgs = { input: 'Voice transcription from user' },
     tts = false,
-    conversationName = 'AGiXT Terminal',
+    conversationName = 'AGInfrastructure Terminal',
   ) {
     return this.request<{ response: string }>('post', `/api/agent/${agentName}/command`, {
       command_name: 'Command with Voice',
@@ -590,7 +590,7 @@ export default class AGiXTSDK {
     promptName = 'Custom Input',
     promptArgs = { context_results: 6, inject_memories_from_collection_number: 0 },
     tts = false,
-    conversationName = 'AGiXT Terminal',
+    conversationName = 'AGInfrastructure Terminal',
   ) {
     return this.request<{ response: string }>('post', `/api/agent/${agentName}/command`, {
       command_name: 'Prompt with Voice',

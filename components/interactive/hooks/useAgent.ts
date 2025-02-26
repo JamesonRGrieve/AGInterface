@@ -67,7 +67,7 @@ export function useAgent(
       const primaryAgent = primaryCompany?.agents.find((a) => a.default);
       foundEarly = primaryAgent || primaryCompany?.agents[0];
       searchName = foundEarly?.name;
-      setCookie('agixt-agent', searchName, {
+      setCookie('aginteractive-agent', searchName, {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
       });
     }
@@ -76,7 +76,7 @@ export function useAgent(
   const companiesHook = useCompanies();
   const { data: companies } = companiesHook;
   const state = useContext(InteractiveConfigContext);
-  let searchName = name || (getCookie('agixt-agent') as string | undefined);
+  let searchName = name || (getCookie('aginteractive-agent') as string | undefined);
   let foundEarly = null;
 
   if (!searchName && companies?.length) {
@@ -124,13 +124,16 @@ export function useAgent(
               client: 3,
             });
             toReturn.extensions = (
-              await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${toReturn.agent.name}/extensions`, {
-                headers: {
-                  Authorization: getCookie('jwt'),
+              await axios.get(
+                `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${toReturn.agent.name}/extensions`,
+                {
+                  headers: {
+                    Authorization: getCookie('jwt'),
+                  },
                 },
-              })
+              )
             ).data.extensions;
-            toReturn.commands = await state.agixt.getCommands(toReturn.agent.name);
+            toReturn.commands = await state.sdk.getCommands(toReturn.agent.name);
           } else {
             log(['GQL useAgent() Did Not Get Agent', toReturn], {
               client: 3,

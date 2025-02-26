@@ -26,7 +26,7 @@ export function AgentSelector() {
 
   const switchAgents = (agent: Agent) => {
     // setActiveAgent(agent);
-    setCookie('agixt-agent', agent.name, {
+    setCookie('aginteractive-agent', agent.name, {
       domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
     });
     mutateActiveCompany();

@@ -46,13 +46,13 @@ on:
         default: true
       registry-readme:
         type: string
-        default: https://raw.githubusercontent.com/Josh-XT/AGiXT/main/docs/README.md
+        default: https://raw.githubusercontent.com/JamesonRGrieve/AGInfrastructure/main/docs/README.md
       runs-on:
         type: string
         default: ubuntu-latest
       platforms:
         type: string
-        default: linux/amd64,linux/arm64/v8
+        default: linux/arm64/v8 #, linux/amd64
       cache-from:
         type: string
         default: type=gha
@@ -80,7 +80,7 @@ jobs:
       contents: read
 
     outputs:
-      digest: ${{ steps.dockerBuild.outputs.digest }}
+      digest: ${{ steps.build-docker.outputs.digest }}
       primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
 
     steps:
@@ -174,7 +174,7 @@ jobs:
       ######
 
       - name: Build and push Docker images
-        id: dockerBuild
+        id: build-docker
         uses: docker/build-push-action@v6.9.0
         with:
           platforms: ${{ inputs.platforms }}
@@ -216,11 +216,11 @@ jobs:
           readme-filepath: ${{ env.registry-readme }}
 
       - name: Selecting primary image from
-        run: echo "${{ fromJSON(steps.dockerBuild.outputs.metadata)['image.name'] }}"
+        run: echo "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}"
 
       - name: Primary image will be
-        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.dockerBuild.outputs.metadata)['image.name'] }}" )"
+        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )"
 
       - name: Set output image
         id: get-primary-image
-        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.dockerBuild.outputs.metadata)['image.name'] }}" )" >> "$GITHUB_OUTPUT"
+        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )" >> "$GITHUB_OUTPUT"

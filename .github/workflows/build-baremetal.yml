@@ -1,0 +1,14 @@
+name: Build and Test
+on:
+  workflow_call:
+jobs:
+  build-baremetal:
+    runs-on: ubuntu-latest
+    name: Build / Baremetal
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Install Packages and Build
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 20
+      - run: npm i lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu sass-embedded-linux-x64 && npm install && npm run build

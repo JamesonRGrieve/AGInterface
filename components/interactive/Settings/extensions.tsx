@@ -55,7 +55,7 @@ export function Extensions() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [error, setError] = useState<ErrorState>(null);
   const [showEnabledOnly, setShowEnabledOnly] = useState(false);
-  const agent_name = (getCookie('agixt-agent') || process.env.NEXT_PUBLIC_AGIXT_AGENT) ?? agent;
+  const agent_name = (getCookie('aginteractive-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT) ?? agent;
   const { data: activeCompany, mutate: mutateCompany } = useCompany();
 
   const { data: providerData } = useProviders();
@@ -114,8 +114,8 @@ export function Extensions() {
     try {
       const result = await axios.patch(
         searchParams.get('mode') === 'company'
-          ? `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/companies/${activeCompany?.id}/command`
-          : `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${agent_name}/command`,
+          ? `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${activeCompany?.id}/command`
+          : `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}/command`,
 
         {
           command_name: commandName,
@@ -148,7 +148,7 @@ export function Extensions() {
     try {
       setError(null);
       const response = await axios.put<{ status: number; data: any }>(
-        `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${agent_name}`,
+        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}`,
         {
           agent_name: agent_name,
           settings: settings,

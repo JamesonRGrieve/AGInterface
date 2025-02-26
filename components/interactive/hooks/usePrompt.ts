@@ -31,7 +31,7 @@ export function usePrompts(): SWRResponse<Prompt[]> & {
 } {
   const client = createGraphQLClient();
   const { toast } = useToast();
-  const { agixt } = useInteractiveConfig();
+  const { sdk: sdk } = useInteractiveConfig();
   const router = useRouter();
 
   const swrHook = useSWR<Prompt[]>(
@@ -54,7 +54,7 @@ export function usePrompts(): SWRResponse<Prompt[]> & {
   return Object.assign(swrHook, {
     create: async (name: string, content: string) => {
       try {
-        await agixt.addPrompt(name, content);
+        await sdk.addPrompt(name, content);
         swrHook.mutate();
         router.push(`/settings/prompts?prompt=${name}`);
         toast({
@@ -74,7 +74,7 @@ export function usePrompts(): SWRResponse<Prompt[]> & {
     },
     import: async (name: string, file: File) => {
       name = name || file.name.replace('.json', '');
-      await agixt.addPrompt(name, await file.text());
+      await sdk.addPrompt(name, await file.text());
       router.push(`/settings/prompts?&prompt=${name}`);
     },
   });
@@ -93,7 +93,7 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
 } {
   const promptsHook = usePrompts();
   const { data: prompts, error: promptsError, isLoading: promptsLoading, mutate: promptsMutate } = promptsHook;
-  const { agixt } = useInteractiveConfig();
+  const { sdk: sdk } = useInteractiveConfig();
   const { toast } = useToast();
   const router = useRouter();
   const swrHook = useSWR<Prompt | null>([name, prompts], () => prompts?.find((p) => p.name === name) || null, {
@@ -108,7 +108,7 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
     {
       delete: async () => {
         try {
-          await agixt.deletePrompt(name);
+          await sdk.deletePrompt(name);
           promptsMutate();
           router.push(`/settings/prompts?prompt=${(prompts && prompts.filter((p) => p.name !== name)[0]?.name) || ''}`);
           toast({
@@ -128,7 +128,7 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
       },
       rename: async (newName: string) => {
         try {
-          await agixt.renamePrompt(name, newName);
+          await sdk.renamePrompt(name, newName);
           swrHook.mutate();
           promptsMutate();
           toast({
@@ -148,7 +148,7 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
       },
       update: async (content: string) => {
         try {
-          await agixt.updatePrompt(name, content);
+          await sdk.updatePrompt(name, content);
           swrHook.mutate();
           toast({
             title: 'Success',
@@ -177,7 +177,7 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
         const element = document.createElement('a');
         const file = new Blob([swrHook.data?.content], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
-        element.download = `AGiXT-Prompt-${name}.txt`;
+        element.download = `AGInteractive-Prompt-${name}.txt`;
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);

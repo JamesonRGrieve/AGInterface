@@ -14,7 +14,7 @@ export default function AgentMenu() {
 
   const handleToggleAll = async () => {
     const allEnabled = Object.values(agentData.commands).every((command) => command);
-    await context.agixt.toggleCommand(context.agent, '*', !allEnabled);
+    await context.sdk.toggleCommand(context.agent, '*', !allEnabled);
     mutate(`/agent/commands?agent=${context.agent}`);
   };
 
@@ -42,7 +42,7 @@ function AgentMenuItem({ name, enabled }) {
   const context = useInteractiveConfig();
 
   const handleToggle = async () => {
-    await context.agixt.toggleCommand(context.agent, name, !enabled);
+    await context.sdk.toggleCommand(context.agent, name, !enabled);
     mutate(`/agent/commands?agent=${context.agent}`);
   };
 

@@ -1,19 +1,19 @@
 'use client';
-import React, { ReactNode, useContext } from 'react';
+import assert from '@/components/jrg/assert/assert';
+import deepMerge from '@/lib/objects';
 import { notFound } from 'next/navigation';
+import { ReactNode, useContext } from 'react';
+import { AuthenticationContext } from './AuthenticationContext';
+import ErrorPage, { ErrorPageProps } from './ErrorPage';
 import User, { IdentifyProps } from './Identify';
 import Login, { LoginProps } from './Login';
-import Manage, { ManageProps } from './management';
-import Register, { RegisterProps } from './Register';
-import Close, { CloseProps } from './oauth2/Close';
 import Logout, { LogoutProps } from './Logout';
-import Subscribe, { SubscribeProps } from './Subscribe';
-import { AuthenticationContext } from './AuthenticationContext';
-import OrganizationalUnit, { OrganizationalUnitProps } from './OU';
-import ErrorPage, { ErrorPageProps } from './ErrorPage';
+import Manage, { ManageProps } from './management';
+import Close, { CloseProps } from './oauth2/Close';
 import oAuth2Providers from './oauth2/OAuthProviders';
-import deepMerge from '@/lib/objects';
-import assert from '@/components/jrg/assert/assert';
+import OrganizationalUnit, { OrganizationalUnitProps } from './OU';
+import Register, { RegisterProps } from './Register';
+import Subscribe, { SubscribeProps } from './Subscribe';
 
 type RouterPageProps = {
   path: string;
@@ -91,7 +91,7 @@ const pageConfigDefaults: AuthenticationConfig = {
   },
   appName: process.env.NEXT_PUBLIC_APP_NAME,
   authBaseURI: process.env.NEXT_PUBLIC_AUTH_WEB,
-  authServer: process.env.NEXT_PUBLIC_AGIXT_SERVER,
+  authServer: process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER,
   authModes: {
     basic: false,
     oauth2: Object.values(oAuth2Providers).some((provider) => !!provider.client_id),

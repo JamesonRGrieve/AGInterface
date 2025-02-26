@@ -24,9 +24,9 @@ export default function AgentPanel({ setShowCreateDialog }) {
   const handleConfirm = async () => {
     if (renaming) {
       try {
-        await context.agixt.renameAgent(agentData.agent.name, newName);
+        await context.sdk.renameAgent(agentData.agent.name, newName);
         setRenaming(false);
-        setCookie('agixt-agent', newName, {
+        setCookie('aginteractive-agent', newName, {
           domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         });
         mutateAgent();
@@ -36,7 +36,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
     } else if (creating) {
       try {
         const newResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent`,
+          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent`,
           { agent_name: newName, settings: { company_id: companyData.id } },
           {
             headers: {
@@ -45,7 +45,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
             },
           },
         );
-        setCookie('agixt-agent', newName, {
+        setCookie('aginteractive-agent', newName, {
           domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         });
 
@@ -60,7 +60,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
 
   const handleDelete = async () => {
     try {
-      await context.agixt.deleteAgent(agentData.agent.name);
+      await context.sdk.deleteAgent(agentData.agent.name);
       mutateCompany();
       mutateAgent();
       router.push(pathname);
@@ -71,7 +71,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
 
   const handleExport = async () => {
     try {
-      const agentConfig = await context.agixt.getAgentConfig(agentData.agent.name);
+      const agentConfig = await context.sdk.getAgentConfig(agentData.agent.name);
       const element = document.createElement('a');
       const file = new Blob([JSON.stringify(agentConfig)], { type: 'application/json' });
       element.href = URL.createObjectURL(file);
@@ -127,7 +127,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
               handleConfirm();
             } else {
               setRenaming(true);
-              setNewName(getCookie('agixt-agent')?.toString() || '');
+              setNewName(getCookie('aginteractive-agent')?.toString() || '');
             }
           }}
           disabled={creating}

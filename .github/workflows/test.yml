@@ -14,11 +14,19 @@ on:
       front-end-image:
         type: string
         description: 'Front end image to run'
-        default: 'ghcr.io/jamesonrgrieve/interactive:main'
+        default: 'ghcr.io/jamesonrgrieve/aginteractive:main-cicd'
+        required: true
+      back-end-image:
+        type: string
+        description: 'Front end image to run'
+        default: 'ghcr.io/jamesonrgrieve/aginfrastructure:main-cicd'
         required: true
       front-end-port:
         type: string
-        default: '3437'
+        default: '1109'
+      back-end-port:
+        type: string
+        default: '7437'
       port-mapping:
         type: string
       additional-python-dependencies:
@@ -45,9 +53,6 @@ on:
         description: Optional ezlocalai uri available as os.getenv('EZLOCALAI_URI') in your notebook
       EZLOCALAI_API_KEY:
         description: Optional ezlocalai api key available as os.getenv('EZLOCALAI_API_KEY') in your notebook
-      DEEPSEEK_API_KEY:
-        description: Optional deepseek api key available as os.getenv('DEEPSEEK_API_KEY') in your notebook
-
 jobs:
   test:
     name: Tests
@@ -56,43 +61,42 @@ jobs:
       contents: read
       packages: read
     outputs:
-      digest: ${{ steps.dockerBuild.outputs.digest }}
+      digest: ${{ steps.build-docker.outputs.digest }}
     services:
-      # [Previous services configuration remains the same]
-      agixt:
-        image: ghcr.io/josh-xt/agixt:main
+      backend:
+        image: ${{ inputs.back-end-image }}
         credentials:
-          username: josh-xt
+          username: jamesonrgrieve
           password: ${{ secrets.GHCR_PAT }}
         ports:
-          - '7437:7437'
+          - ${{ format('{0}:{1}', inputs.back-end-port, inputs.back-end-port) }}
         options: >-
-          --health-cmd "curl -f http://localhost:7437"
+          --health-cmd "curl -f http://localhost:${{ inputs.back-end-port }}"
           --health-interval 10s
           --health-timeout 15s
           --health-retries 10
           --health-start-period 5m
         env:
-          DATABASE_TYPE: sqlite
-          DATABASE_NAME: agixt
-          AGIXT_API_KEY: just-a-test
-          AGIXT_URI: http://agixt:7437
-          APP_URI: http://localhost:3437
-          AGENT_NAME: XT
-          WORKING_DIRECTORY: /agixt/WORKSPACE
+          AGINFRASTRUCTURE_API_KEY: just-a-test
+          AGINFRASTRUCTURE_URI: http://backend:${{ inputs.front-end-port }}
+          APP_URI: http://frontend:${{ inputs.front-end-port }}
+          AGENT_NAME: CICD
+          WORKING_DIRECTORY: /aginfrastructure/WORKSPACE
           TOKENIZERS_PARALLELISM: 'false'
           UVICORN_WORKERS: 10
           LOG_LEVEL: INFO
-          TZ: America/New_York
-          SEED_DATA: true
+          TZ: America/Edmonton
           EZLOCALAI_URI: https://api.ezlocal.ai/v1/
           EZLOCALAI_API_KEY: 'n0ne'
           EZLOCALAI_MAX_TOKENS: '32000'
           EZLOCALAI_VOICE: 'HAL9000'
-      front-end:
+      frontend:
         image: ${{ inputs.front-end-image }}
+        credentials:
+          username: jamesonrgrieve
+          password: ${{ secrets.GHCR_PAT }}
         ports:
-          - ${{ inputs.port-mapping || format('{0}:{1}', inputs.front-end-port, inputs.front-end-port) }}
+          - ${{ format('{0}:{1}', inputs.front-end-port, inputs.front-end-port) }}
         options: >-
           --health-cmd "curl -f http://localhost:${{ inputs.front-end-port }}"
           --health-interval 10s
@@ -102,22 +106,22 @@ jobs:
         env:
           mode: production
           NEXT_TELEMETRY_DISABLED: 1
-          AGIXT_AGENT: XT
-          AGIXT_FOOTER_MESSAGE: 'AGiXT 2024'
-          APP_DESCRIPTION: 'XT is an advanced artificial intelligence agent orchestration agent.'
-          APP_NAME: XT
-          AGIXT_FILE_UPLOAD_ENABLED: true
-          AGIXT_VOICE_INPUT_ENABLED: true
-          AGIXT_RLHF: true
-          AGIXT_ALLOW_MESSAGE_EDITING: true
-          AGIXT_ALLOW_MESSAGE_DELETION: true
-          AGIXT_SHOW_OVERRIDE_SWITCHES: tts,websearch,analyze-user-input
+          AGINTERACTIVE_AGENT: XT
+          AGINTERACTIVE_FOOTER_MESSAGE: 'JamesonRGrieve 2025'
+          APP_DESCRIPTION: 'AGInteractive is an advanced artificial intelligence agent orchestration interface.'
+          APP_NAME: AGInteractive CICD
+          AGINTERACTIVE_FILE_UPLOAD_ENABLED: true
+          AGINTERACTIVE_VOICE_INPUT_ENABLED: true
+          AGINTERACTIVE_RLHF: true
+          AGINTERACTIVE_ALLOW_MESSAGE_EDITING: true
+          AGINTERACTIVE_ALLOW_MESSAGE_DELETION: true
+          AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES: tts,websearch,analyze-user-input
           INTERACTIVE_MODE: chat
           ALLOW_EMAIL_SIGN_IN: true
-          APP_URI: http://localhost:${{ inputs.front-end-port }}
-          AGIXT_SERVER: http://localhost:7437
+          APP_URI: http://frontend:${{ inputs.front-end-port }}
+          AGINFRASTRUCTURE_SERVER: http://backend:${{ inputs.back-end-port }}
           LOG_VERBOSITY_SERVER: 3
-          TZ: America/New_York
+          TZ: America/Edmonton
     steps:
       - uses: actions/setup-python@v5.3.0
         with:
@@ -146,11 +150,11 @@ jobs:
             echo "artifact-file=${notebook}/*.pdf"  >> "$GITHUB_ENV"
           fi
 
-      - name: Check AGiXT logs
-        run: docker logs ${{ job.services.agixt.id }} --follow &
+      - name: Check back-end logs
+        run: docker logs ${{ job.services.aginfrastructure.id }} --follow &
 
       - name: Check front-end logs
-        run: docker logs ${{ job.services.front-end.id }} --follow &
+        run: docker logs ${{ job.services.aginteractive.id }} --follow &
 
       - name: Execute notebook
         id: execute_notebook
@@ -176,16 +180,12 @@ jobs:
         run: |
           # Set message based on stored test outcome
           BRANCH_NAME=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')
-          if [ "${{ github.actor }}" == "Josh-XT" ]; then
-            DISCORD_NAME="<@381837595522367488>"
-          elif [ "${{ github.actor }}" == "JamesonRGrieve" ]; then
+          if [ "${{ github.actor }}" == "JamesonRGrieve" ]; then
             DISCORD_NAME="<@329145730725838858>"
           elif [ "${{ github.actor }}" == "waiscodes" ]; then
             DISCORD_NAME="<@670762167037067304>"
-          elif [ "${{ github.actor }}" == "birdup000" ]; then
-            DISCORD_NAME="<@856308374567256074>"
-          elif [ "${{ github.actor }}" == "Nick-XT" ]; then
-            DISCORD_NAME="<@381908912951001088>"
+          elif [ "${{ github.actor }}" == "austinleblanc" ]; then
+            DISCORD_NAME="<@670762167037067304>"
           else
             DISCORD_NAME="**${{ github.actor }}**"
           fi

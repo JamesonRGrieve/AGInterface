@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import clipboardCopy from 'clipboard-copy';
 import { getCookie } from 'cookies-next';
 import { Loader2, Volume2 } from 'lucide-react';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useState } from 'react';
 import { LuCopy, LuDownload, LuPen as LuEdit, LuGitFork, LuThumbsDown, LuThumbsUp, LuTrash2 } from 'react-icons/lu';
 import { mutate } from 'swr';
 import { InteractiveConfigContext } from '../../InteractiveConfigContext';
@@ -45,14 +45,14 @@ export function MessageActions({
   const [vote, setVote] = useState(chatItem.rlhf ? (chatItem.rlhf.positive ? 1 : -1) : 0);
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
-  const enableMessageEditing = process.env.NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_EDITING === 'true';
-  const enableMessageDeletion = process.env.NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_DELETION === 'true';
+  const enableMessageEditing = process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_EDITING === 'true';
+  const enableMessageDeletion = process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_DELETION === 'true';
 
   return (
     <div className={cn('flex', chatItem.role === 'USER' && 'justify-end items-center')}>
       {(audios?.message?.trim() || !audios) && (
         <>
-          {chatItem.role !== 'USER' && process.env.NEXT_PUBLIC_AGIXT_RLHF === 'true' && (
+          {chatItem.role !== 'USER' && process.env.NEXT_PUBLIC_AGINTERACTIVE_RLHF === 'true' && (
             <>
               <TooltipBasic title='Provide Positive Feedback'>
                 <Button
@@ -102,7 +102,7 @@ export function MessageActions({
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
+                    `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
                     {
                       method: 'POST',
                       headers: {
@@ -180,7 +180,7 @@ export function MessageActions({
                   }}
                   title='Edit Message'
                   onConfirm={async () => {
-                    await state.agixt.updateConversationMessage(
+                    await state.sdk.updateConversationMessage(
                       convData?.find((item) => item.id === state.overrides.conversation).name,
                       chatItem.id,
                       updatedMessage,
@@ -211,7 +211,7 @@ export function MessageActions({
                     ButtonProps={{ variant: 'ghost', size: 'icon', children: <LuTrash2 /> }}
                     title='Delete Message'
                     onConfirm={async () => {
-                      await state.agixt.deleteConversationMessage(
+                      await state.sdk.deleteConversationMessage(
                         convData?.find((item) => item.id === state.overrides.conversation).name,
                         chatItem.id,
                       );
@@ -245,7 +245,7 @@ export function MessageActions({
                   onClick={() => {
                     setOpen(false);
                     if (vote === 1) {
-                      state.agixt.addConversationFeedback(
+                      state.sdk.addConversationFeedback(
                         true,
                         chatItem.role,
                         chatItem.id,
@@ -254,7 +254,7 @@ export function MessageActions({
                         state.overrides.conversation,
                       );
                     } else {
-                      state.agixt.addConversationFeedback(
+                      state.sdk.addConversationFeedback(
                         false,
                         chatItem.role,
                         chatItem.id,

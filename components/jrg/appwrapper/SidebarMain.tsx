@@ -16,10 +16,10 @@ export function SidebarMain({ ...props }: React.ComponentProps<typeof Sidebar>) 
   const pathname = usePathname();
 
   useEffect(() => {
-    if (getCookie('agixt-has-started') === 'true') {
+    if (getCookie('aginteractive-has-started') === 'true') {
       setHasStarted(true);
     }
-  }, [getCookie('agixt-has-started')]);
+  }, [getCookie('aginteractive-has-started')]);
 
   if (pathname === '/' || (pathname.startsWith('/user') && pathname !== '/user/manage')) return null;
 

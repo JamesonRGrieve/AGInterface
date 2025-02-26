@@ -1,14 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
-import OAuth2Login from 'react-simple-oauth2-login';
+import { useEffect, useState } from 'react';
 import { LuPlus as Plus, LuUnlink as Unlink } from 'react-icons/lu';
+import OAuth2Login from 'react-simple-oauth2-login';
 import oAuth2Providers from '../oauth2/OAuthProviders';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface ConnectedService {
   provider: string;
@@ -41,7 +40,7 @@ export const ConnectedServices = () => {
   const fetchConnections = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/oauth2`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2`, {
         headers: {
           Authorization: getCookie('jwt'),
         },
@@ -70,7 +69,7 @@ export const ConnectedServices = () => {
 
   const handleDisconnect = async (provider: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/oauth2/${provider.toLowerCase()}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2/${provider.toLowerCase()}`, {
         headers: {
           Authorization: getCookie('jwt'),
         },
@@ -98,7 +97,7 @@ export const ConnectedServices = () => {
       }
 
       const result = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/oauth2/${provider}`,
+        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2/${provider}`,
         {
           code: response.code,
           referrer: `${process.env.NEXT_PUBLIC_AUTH_WEB}/close/${provider}`,

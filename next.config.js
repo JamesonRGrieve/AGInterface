@@ -12,14 +12,14 @@ const mergeConfigs = (obj1, obj2) =>
 
 let APP_URI,
   AUTH_WEB,
-  AGIXT_SERVER,
+  AGINTERACTIVE_SERVER,
   ENV = (process.env.ENV || process.env.NODE_ENV || 'development').toLowerCase();
 
 const useBasicConfig = () => ({
   env: {
-    NEXT_PUBLIC_APP_NAME: process.env.APP_NAME || 'AGiXT',
-    NEXT_PUBLIC_APP_DESCRIPTION: process.env.APP_DESCRIPTION || 'An AGiXT application.',
-    APP_URI: (APP_URI = process.env.APP_URI || 'http://localhost:3437'),
+    NEXT_PUBLIC_APP_NAME: process.env.APP_NAME || 'AGInteractive',
+    NEXT_PUBLIC_APP_DESCRIPTION: process.env.APP_DESCRIPTION || 'An AGInteractive application.',
+    APP_URI: (APP_URI = process.env.APP_URI || 'http://localhost:1109'),
     NEXT_PUBLIC_APP_URI: APP_URI,
     NEXT_PUBLIC_THEME_DEFAULT_MODE: process.env.DEFAULT_THEME_MODE || 'dark',
     NEXT_PUBLIC_TZ: process.env.TZ || 'America/New_York', // Server timezone
@@ -53,8 +53,8 @@ const useAuthConfig = () => ({
     PRIVATE_ROUTES: process.env.PRIVATE_ROUTES || '/chat,/team,/settings/',
     AUTH_WEB: (AUTH_WEB = process.env.AUTH_WEB || `${APP_URI}/user`),
     NEXT_PUBLIC_AUTH_WEB: AUTH_WEB,
-    AGIXT_SERVER: (AGIXT_SERVER = process.env.AGIXT_SERVER || 'https://api.app.agixt.chat'),
-    NEXT_PUBLIC_AGIXT_SERVER: AGIXT_SERVER,
+    AGINTERACTIVE_SERVER: (AGINTERACTIVE_SERVER = process.env.AGINTERACTIVE_SERVER || 'https://api.ai.zephyrex.dev'),
+    NEXT_PUBLIC_AGINTERACTIVE_SERVER: AGINTERACTIVE_SERVER,
     NEXT_PUBLIC_ALLOW_EMAIL_SIGN_IN: process.env.ALLOW_EMAIL_SIGN_IN || 'true',
   },
 });
@@ -135,47 +135,47 @@ const useStripeConfig = () => ({
     NEXT_PUBLIC_STRIPE_PRICING_TABLE_ID: process.env.STRIPE_PRICING_TABLE_ID || '',
   },
 });
-const useAGiXTConfig = () => ({
+const useAGInteractiveConfig = () => ({
   env: {
-    NEXT_PUBLIC_AGIXT_API_KEY: process.env.AGIXT_API_KEY || '',
-    NEXT_PUBLIC_AGIXT_CONVERSATION_NAME: process.env.AGIXT_CONVERSATION || '-',
-    NEXT_PUBLIC_AGIXT_CONVERSATION_MODE: process.env.AGIXT_CONVERSATION_MODE || 'static', // static, select or uuid
+    NEXT_PUBLIC_AGINTERACTIVE_API_KEY: process.env.AGINTERACTIVE_API_KEY || '',
+    NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_NAME: process.env.AGINTERACTIVE_CONVERSATION || '-',
+    NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_MODE: process.env.AGINTERACTIVE_CONVERSATION_MODE || 'static', // static, select or uuid
     // UI Options
     NEXT_PUBLIC_INTERACTIVE_UI: process.env.INTERACTIVE_UI || 'chat',
-    NEXT_PUBLIC_AGIXT_SHOW_APP_BAR: process.env.AGIXT_SHOW_APP_BAR || 'true',
-    NEXT_PUBLIC_AGIXT_SHOW_SELECTION:
-      process.env.AGIXT_SHOW_SELECTION || (process.env.AGIXT_CONVERSATION_MODE === 'select' ? 'conversation' : ''), // csv of: 'agent', 'conversation' and/or 'prompt'
-    NEXT_PUBLIC_AGIXT_FOOTER_MESSAGE: process.env.AGIXT_FOOTER_MESSAGE || 'Powered by AGiXT',
-    NEXT_PUBLIC_AGIXT_RLHF: process.env.AGIXT_RLHF || 'true',
-    NEXT_PUBLIC_AGIXT_SHOW_CHAT_THEME_TOGGLES:
-      process.env.AGIXT_SHOW_CHAT_THEME_TOGGLES || process.env.AGIXT_SHOW_APP_BAR === 'false' ? 'true' : 'false',
-    NEXT_PUBLIC_AGIXT_FILE_UPLOAD_ENABLED: process.env.AGIXT_FILE_UPLOAD_ENABLED || 'true',
-    NEXT_PUBLIC_AGIXT_VOICE_INPUT_ENABLED: process.env.AGIXT_VOICE_INPUT_ENABLED || 'true',
-    NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_EDITING: process.env.AGIXT_ALLOW_MESSAGE_EDITING || 'true',
-    NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_DELETION: process.env.AGIXT_ALLOW_MESSAGE_DELETION || 'true',
-    NEXT_PUBLIC_AGIXT_SHOW_OVERRIDE_SWITCHES: process.env.AGIXT_SHOW_OVERRIDE_SWITCHES || 'tts,websearch',
+    NEXT_PUBLIC_AGINTERACTIVE_SHOW_APP_BAR: process.env.AGINTERACTIVE_SHOW_APP_BAR || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_SHOW_SELECTION:
+      process.env.AGINTERACTIVE_SHOW_SELECTION || (process.env.AGINTERACTIVE_CONVERSATION_MODE === 'select' ? 'conversation' : ''), // csv of: 'agent', 'conversation' and/or 'prompt'
+    NEXT_PUBLIC_AGINTERACTIVE_FOOTER_MESSAGE: process.env.AGINTERACTIVE_FOOTER_MESSAGE || 'Powered by AGInteractive',
+    NEXT_PUBLIC_AGINTERACTIVE_RLHF: process.env.AGINTERACTIVE_RLHF || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES:
+      process.env.AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES || process.env.AGINTERACTIVE_SHOW_APP_BAR === 'false' ? 'true' : 'false',
+    NEXT_PUBLIC_AGINTERACTIVE_FILE_UPLOAD_ENABLED: process.env.AGINTERACTIVE_FILE_UPLOAD_ENABLED || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_VOICE_INPUT_ENABLED: process.env.AGINTERACTIVE_VOICE_INPUT_ENABLED || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_EDITING: process.env.AGINTERACTIVE_ALLOW_MESSAGE_EDITING || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_DELETION: process.env.AGINTERACTIVE_ALLOW_MESSAGE_DELETION || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES: process.env.AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES || 'tts,websearch',
     // Override Options
-    NEXT_PUBLIC_AGIXT_ENABLE_SEARCHPARAM_CONFIG: process.env.AGIXT_ENABLE_SEARCHPARAM_CONFIG || 'true',
-    NEXT_PUBLIC_AGIXT_MODE: process.env.AGIXT_MODE || 'prompt',
+    NEXT_PUBLIC_AGINTERACTIVE_ENABLE_SEARCHPARAM_CONFIG: process.env.AGINTERACTIVE_ENABLE_SEARCHPARAM_CONFIG || 'true',
+    NEXT_PUBLIC_AGINTERACTIVE_MODE: process.env.AGINTERACTIVE_MODE || 'prompt',
     // State Options
-    NEXT_PUBLIC_AGIXT_AGENT: process.env.AGIXT_AGENT || 'AGiXT',
-    NEXT_PUBLIC_AGIXT_INSIGHT_AGENT: process.env.AGIXT_INSIGHT_AGENT || '',
-    NEXT_PUBLIC_AGIXT_USE_SELECTED_AGENT: process.env.AGIXT_USE_SELECTED_AGENT,
+    NEXT_PUBLIC_AGINTERACTIVE_AGENT: process.env.AGINTERACTIVE_AGENT || 'My Agent',
+    NEXT_PUBLIC_AGINTERACTIVE_INSIGHT_AGENT: process.env.AGINTERACTIVE_INSIGHT_AGENT || '',
+    NEXT_PUBLIC_AGINTERACTIVE_USE_SELECTED_AGENT: process.env.AGINTERACTIVE_USE_SELECTED_AGENT,
     // Prompt Mode Options
-    NEXT_PUBLIC_AGIXT_PROMPT_NAME: process.env.AGIXT_PROMPT_NAME || 'Think About It',
-    NEXT_PUBLIC_AGIXT_PROMPT_CATEGORY: process.env.AGIXT_PROMPT_CATEGORY || 'Default',
+    NEXT_PUBLIC_AGINTERACTIVE_PROMPT_NAME: process.env.AGINTERACTIVE_PROMPT_NAME || 'Think About It',
+    NEXT_PUBLIC_AGINTERACTIVE_PROMPT_CATEGORY: process.env.AGINTERACTIVE_PROMPT_CATEGORY || 'Default',
     // Command Mode Options
-    NEXT_PUBLIC_AGIXT_COMMAND: process.env.AGIXT_COMMAND || '',
-    NEXT_PUBLIC_AGIXT_COMMAND_MESSAGE_ARG: process.env.AGIXT_COMMAND_MESSAGE_ARG || 'message',
+    NEXT_PUBLIC_AGINTERACTIVE_COMMAND: process.env.AGINTERACTIVE_COMMAND || '',
+    NEXT_PUBLIC_AGINTERACTIVE_COMMAND_MESSAGE_ARG: process.env.AGINTERACTIVE_COMMAND_MESSAGE_ARG || 'message',
     // Chain Mode Options
-    NEXT_PUBLIC_AGIXT_CHAIN: process.env.AGIXT_CHAIN || '',
-    NEXT_PUBLIC_AGIXT_CHAIN_ARGS: process.env.AGIXT_CHAIN_ARGS || '{}',
+    NEXT_PUBLIC_AGINTERACTIVE_CHAIN: process.env.AGINTERACTIVE_CHAIN || '',
+    NEXT_PUBLIC_AGINTERACTIVE_CHAIN_ARGS: process.env.AGINTERACTIVE_CHAIN_ARGS || '{}',
   },
-  images: AGIXT_SERVER && {
+  images: AGINTERACTIVE_SERVER && {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: AGIXT_SERVER.split('://')[1].split(':')[0].split('/')[0],
+        hostname: AGINTERACTIVE_SERVER.split('://')[1].split(':')[0].split('/')[0],
         port: '',
         pathname: '/outputs/**',
       },
@@ -187,7 +187,7 @@ const configs = [
   useAuthConfig,
   useOAuth2Config,
   useCookiesConfig,
-  useAGiXTConfig,
+  useAGInteractiveConfig,
   useStripeConfig,
   useProductionSkipLintingConfig,
 ];

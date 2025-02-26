@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthMode, getAuthMode, getJWT, verifyJWT, generateCookieString, getQueryParams, getRequestedURI } from './utils';
+import { AuthMode, generateCookieString, getAuthMode, getJWT, getQueryParams, getRequestedURI, verifyJWT } from './utils';
 
 export type MiddlewareHook = (req: NextRequest) => Promise<{
   activated: boolean;
@@ -22,7 +22,7 @@ export const useAuth: MiddlewareHook = async (req) => {
     }
     if (queryParams['verify_email'] && queryParams['email']) {
       console.log('VERIFYING EMAIL: ', queryParams['email'], queryParams['verify_email']);
-      await fetch(`${process.env.AGIXT_SERVER}/v1/user/verify/email`, {
+      await fetch(`${process.env.AGINTERACTIVE_SERVER}/v1/user/verify/email`, {
         method: 'POST',
         body: JSON.stringify({
           email: queryParams['email'],
@@ -211,7 +211,7 @@ export const useOAuth2: MiddlewareHook = async (req) => {
   };
   const queryParams = getQueryParams(req);
   if (queryParams.code) {
-    const oAuthEndpoint = `${process.env.AGIXT_SERVER || ''.replace('localhost', (process.env.SERVERSIDE_AGIXT_SERVER || '').split(',')[0])}/v1/oauth2/${provider}`;
+    const oAuthEndpoint = `${process.env.AGINTERACTIVE_SERVER || ''.replace('localhost', (process.env.SERVERSIDE_AGINTERACTIVE_SERVER || '').split(',')[0])}/v1/oauth2/${provider}`;
 
     // Use the state parameter as the JWT if present
     const jwt = queryParams.state || getJWT(req);

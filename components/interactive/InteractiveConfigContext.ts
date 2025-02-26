@@ -1,7 +1,7 @@
 'use client';
+import AGInterfaceSDK from '@/lib/sdk';
 import OpenAI from 'openai';
 import { Context, createContext, useContext } from 'react';
-import AGiXTSDK from '@/lib/sdk';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ConfigDefault = require('./InteractiveConfigDefault');
@@ -35,7 +35,7 @@ export type Overrides = {
 };
 export type InteractiveConfig = {
   agent: string;
-  agixt: AGiXTSDK;
+  sdk: AGInterfaceSDK;
   openai?: OpenAI;
   overrides?: Overrides;
   mutate?: (InteractiveConfig) => void | ((previous: InteractiveConfig) => InteractiveConfig);

@@ -1,18 +1,18 @@
 'use client';
-import Link from 'next/link';
-import { LuCheck as CheckIcon, LuMinus as MinusIcon } from 'react-icons/lu';
-import { getCookie } from 'cookies-next';
-import axios from 'axios';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import Link from 'next/link';
+import { LuCheck as CheckIcon, LuMinus as MinusIcon } from 'react-icons/lu';
 // import { Label } from '@/components/ui/label';
 // import { Switch } from '@/components/ui/switch';
 import useProducts from '@/components/jrg/auth/hooks/useProducts';
-import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useState } from 'react';
 // const defaultPricingData = [
 //   {
 //     name: 'Free',
@@ -170,7 +170,7 @@ export function PricingCard({
               onClick={async () => {
                 const checkout_uri = (
                   await axios.post(
-                    process.env.NEXT_PUBLIC_AGIXT_SERVER + '/v1/checkout',
+                    process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER + '/v1/checkout',
                     {
                       cart: [
                         {

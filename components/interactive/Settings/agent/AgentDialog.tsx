@@ -19,7 +19,7 @@ export function AgentDialog({ open, setOpen }: { open: boolean; setOpen: (open: 
   const [provider, setProvider] = useState('local');
 
   const handleNewAgent = async () => {
-    await context.agixt.addAgent(newAgentName, { provider: provider });
+    await context.sdk.addAgent(newAgentName, { provider: provider });
     setOpen(false);
     router.push(`/agent?agent=${newAgentName}`);
   };
@@ -33,7 +33,7 @@ export function AgentDialog({ open, setOpen }: { open: boolean; setOpen: (open: 
         setNewAgentName(fileName);
       }
       const settings = JSON.parse(fileContent);
-      await context.agixt.addAgent(newAgentName, settings);
+      await context.sdk.addAgent(newAgentName, settings);
       router.push(`/agent?agent=${newAgentName}`);
     }
     setOpen(false);

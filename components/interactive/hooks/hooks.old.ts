@@ -9,7 +9,7 @@ export function useOldCompanies() {
   return useSWR<string[]>(
     `/companies`,
     async () => {
-      return await state.agixt.getCompanies();
+      return await state.sdk.getCompanies();
     },
     {
       fallbackData: [],
@@ -21,7 +21,7 @@ export function useOldInvitations(company_id?: string) {
   const state = useContext(InteractiveConfigContext);
   return useSWR<string[]>(
     company_id ? `/invitations/${company_id}` : '/invitations',
-    async () => await state.agixt.getInvitations(company_id),
+    async () => await state.sdk.getInvitations(company_id),
     {
       fallbackData: [],
     },
@@ -33,8 +33,8 @@ export function useOldActiveCompany() {
   return useSWR<any>(
     [`/companies`, companyData?.id ?? null],
     async () => {
-      const companies = await state.agixt.getCompanies();
-      const user = await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/user`, {
+      const companies = await state.sdk.getCompanies();
+      const user = await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user`, {
         headers: {
           Authorization: getCookie('jwt'),
         },

@@ -9,14 +9,14 @@ import { getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { UIProps } from '../InteractiveAGiXT';
+import { UIProps } from '../AGInteractive';
 import { InteractiveConfigContext, Overrides } from '../InteractiveConfigContext';
 import { useConversations } from '../hooks/useConversation';
 import ChatBar from './ChatInput';
 import ChatLog from './ChatLog';
 
 export async function getAndFormatConversastion(state): Promise<any[]> {
-  const rawConversation = await state.agixt.getConversation('', state.overrides.conversation, 100, 1);
+  const rawConversation = await state.sdk.getConversation('', state.overrides.conversation, 100, 1);
   log(['Raw conversation: ', rawConversation], { client: 3 });
   return rawConversation.reduce((accumulator, currentMessage: { id: string; message: string }) => {
     const messageType = currentMessage.message.split(' ')[0];
@@ -95,15 +95,17 @@ export default function Chat({
         })), // Spread operator to include all file contents
       ],
       ...(activeCompany?.id ? { company_id: activeCompany?.id } : {}),
-      ...(getCookie('agixt-create-image') ? { create_image: getCookie('agixt-create-image') } : {}),
-      ...(getCookie('agixt-tts') ? { tts: getCookie('agixt-tts') } : {}),
-      ...(getCookie('agixt-websearch') ? { websearch: getCookie('agixt-websearch') } : {}),
-      ...(getCookie('agixt-analyze-user-input') ? { analyze_user_input: getCookie('agixt-analyze-user-input') } : {}),
+      ...(getCookie('aginteractive-create-image') ? { create_image: getCookie('aginteractive-create-image') } : {}),
+      ...(getCookie('aginteractive-tts') ? { tts: getCookie('aginteractive-tts') } : {}),
+      ...(getCookie('aginteractive-websearch') ? { websearch: getCookie('aginteractive-websearch') } : {}),
+      ...(getCookie('aginteractive-analyze-user-input')
+        ? { analyze_user_input: getCookie('aginteractive-analyze-user-input') }
+        : {}),
     });
 
     const toOpenAI = {
       messages: messages,
-      model: getCookie('agixt-agent'),
+      model: getCookie('aginteractive-agent'),
       user: state.overrides.conversation,
     };
     setLoading(true);
@@ -113,7 +115,7 @@ export default function Chat({
     mutate(conversationSWRPath + state.overrides.conversation);
     try {
       const completionResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/chat/completions`,
+        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/chat/completions`,
         {
           ...toOpenAI,
         },
@@ -136,9 +138,9 @@ export default function Chat({
         router.push(`/chat/${chatCompletion.id}`);
         // let response;
         // if (state.overrides.conversation === '-') {
-        //   response = await state.agixt.renameConversation(state.agent, state.overrides.conversation);
+        //   response = await state.sdk.renameConversation(state.agent, state.overrides.conversation);
         //   // response = await axios.put(
-        //   //   `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/conversation`,
+        //   //   `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/conversation`,
         //   //   {
         //   //     agent_name: state.agent,
         //   //     conversation_name: state.overrides?.conversation,
@@ -175,7 +177,7 @@ export default function Chat({
     }
   }
   const handleDeleteConversation = async (): Promise<void> => {
-    await state.agixt.deleteConversation(currentConversation?.id || '-');
+    await state.sdk.deleteConversation(currentConversation?.id || '-');
     await mutate();
     state.mutate((oldState) => ({
       ...oldState,
@@ -185,7 +187,7 @@ export default function Chat({
 
   const handleExportConversation = async (): Promise<void> => {
     // Get the full conversation content
-    const conversationContent = await state.agixt.getConversation('', currentConversation?.id || '-');
+    const conversationContent = await state.sdk.getConversation('', currentConversation?.id || '-');
 
     // Format the conversation for export
     const exportData = {
@@ -263,7 +265,7 @@ export default function Chat({
                 icon: renaming ? Check : Pencil,
                 func: renaming
                   ? () => {
-                      state.agixt.renameConversation(state.agent, currentConversation.id, newName);
+                      state.sdk.renameConversation(state.agent, currentConversation.id, newName);
                       setRenaming(false);
                     }
                   : () => setRenaming(true),
@@ -323,8 +325,8 @@ export default function Chat({
         setLoading={setLoading}
         showOverrideSwitchesCSV={showOverrideSwitchesCSV}
         showResetConversation={
-          process.env.NEXT_PUBLIC_AGIXT_SHOW_CONVERSATION_BAR !== 'true' &&
-          process.env.NEXT_PUBLIC_AGIXT_CONVERSATION_MODE === 'uuid'
+          process.env.NEXT_PUBLIC_AGINTERACTIVE_SHOW_CONVERSATION_BAR !== 'true' &&
+          process.env.NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_MODE === 'uuid'
         }
       />
     </>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, ReactNode, useContext } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
 import { LuLightbulb as LightBulbIcon } from 'react-icons/lu';
 import { InteractiveConfigContext } from '../../../../InteractiveConfigContext';
 
@@ -100,7 +100,7 @@ export const RendererXSV = ({
       ),
     );
 
-    await context.agixt.runChain('Data Analysis', userMessage, context.agent, false, 1, {
+    await context.sdk.runChain('Data Analysis', userMessage, context.agent, false, 1, {
       conversation_name: context.overrides.conversation,
       text: [
         ['id', ...stringifiedColumns].join(separator.toString() === '/\\t/' ? '\t' : separator.toString()),

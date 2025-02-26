@@ -7,7 +7,7 @@ export const AuthMode = {
 };
 export const getAuthMode = (): number => {
   let authMode = AuthMode.None;
-  if (process.env.NEXT_PUBLIC_AUTH_WEB && process.env.NEXT_PUBLIC_AGIXT_SERVER) {
+  if (process.env.NEXT_PUBLIC_AUTH_WEB && process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER) {
     if (process.env.APP_URI && process.env.NEXT_PUBLIC_AUTH_WEB.startsWith(process.env.APP_URI)) {
       authMode = AuthMode.MagicalAuth;
       if (!process.env.NEXT_PUBLIC_AUTH_WEB.endsWith('/user')) {
@@ -48,13 +48,19 @@ export const getJWT = (req: NextRequest) => {
   return jwt;
 };
 export const verifyJWT = async (jwt: string): Promise<Response> => {
-  if (!process.env.SERVERSIDE_AGIXT_SERVER) {
-    process.env.SERVERSIDE_AGIXT_SERVER = ['agixt', 'localhost', 'back-end', 'boilerplate', 'back-end-image'].join(',');
-    console.log('Initialized container names: ', process.env.SERVERSIDE_AGIXT_SERVER);
+  if (!process.env.SERVERSIDE_AGINTERACTIVE_SERVER) {
+    process.env.SERVERSIDE_AGINTERACTIVE_SERVER = [
+      'aginfrastructure',
+      'localhost',
+      'back-end',
+      'boilerplate',
+      'back-end-image',
+    ].join(',');
+    console.log('Initialized container names: ', process.env.SERVERSIDE_AGINTERACTIVE_SERVER);
   }
-  const containerNames = process.env.SERVERSIDE_AGIXT_SERVER.split(',');
+  const containerNames = process.env.SERVERSIDE_AGINTERACTIVE_SERVER.split(',');
   const responses = {} as any;
-  const authEndpoint = `${process.env.AGIXT_SERVER}/v1/user`;
+  const authEndpoint = `${process.env.AGINTERACTIVE_SERVER}/v1/user`;
   let response;
   for (const containerName of containerNames) {
     const testEndpoint = authEndpoint.replace('localhost', containerName);
@@ -79,8 +85,8 @@ export const verifyJWT = async (jwt: string): Promise<Response> => {
               return 0;
             }
           });
-          process.env.SERVERSIDE_AGIXT_SERVER = containerNames.join(',');
-          console.log('New container names: ', process.env.SERVERSIDE_AGIXT_SERVER);
+          process.env.SERVERSIDE_AGINTERACTIVE_SERVER = containerNames.join(',');
+          console.log('New container names: ', process.env.SERVERSIDE_AGINTERACTIVE_SERVER);
         }
         return response;
       } else {

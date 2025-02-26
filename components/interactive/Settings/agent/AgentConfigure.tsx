@@ -25,7 +25,7 @@ export default function AgentConfigure() {
   }, [agentData]);
 
   const handleConfigure = async () => {
-    await context.agixt.updateAgentSettings(context.agent, {
+    await context.sdk.updateAgentSettings(context.agent, {
       provider: provider,
       ...agentState,
     });

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { v4 as uuidv4 } from 'uuid';
-import { UIProps } from '../InteractiveAGiXT';
-import { InteractiveConfigContext, Overrides } from '../InteractiveConfigContext';
+import { UIProps } from '../AGInteractive';
 import ConversationBar from '../Chat/ChatBar';
+import { InteractiveConfigContext, Overrides } from '../InteractiveConfigContext';
 import FormInput from './FormInput';
 import FormOutput from './FormOutput';
 
@@ -19,7 +19,7 @@ export default function Form({
   const { data: results } = useSWR(
     '/results',
     async () => {
-      const conversations = await Promise.all(uuids.map(async (uuid) => await state.agixt.getConversation(uuid, 5, 1)));
+      const conversations = await Promise.all(uuids.map(async (uuid) => await state.sdk.getConversation(uuid, 5, 1)));
       return conversations.reduce((obj, conversation, index) => {
         obj[uuids[index.toString()]] = conversation;
         return obj;
@@ -32,7 +32,7 @@ export default function Form({
   const { data: promptArgs } = useSWR(
     '/prompt/args',
     async () =>
-      (await state.agixt.getPromptArgs(state.overrides.prompt, state.overrides.promptCategory)).filter(
+      (await state.sdk.getPromptArgs(state.overrides.prompt, state.overrides.promptCategory)).filter(
         (arg) => arg !== 'user_input',
       ),
     {

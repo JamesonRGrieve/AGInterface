@@ -1,12 +1,12 @@
+import AGInteractive from '@/components/interactive/AGInteractive';
 import { cookies } from 'next/headers';
-import AGiXTInteractive from '@/components/interactive/InteractiveAGiXT';
 import ConvSwitch from './ConvSwitch';
 
 export default function Home({ params }: { params: { id: string } }) {
   return (
     <>
       <ConvSwitch id={params.id} />
-      <AGiXTInteractive
+      <AGInteractive
         stateful={false}
         uiConfig={{
           showAppBar: false,
@@ -16,10 +16,10 @@ export default function Home({ params }: { params: { id: string } }) {
           alternateBackground: 'primary',
         }}
         serverConfig={{
-          agixtServer: process.env.NEXT_PUBLIC_AGIXT_SERVER as string,
+          backEndURI: process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER as string,
           apiKey: cookies().get('jwt')?.value ?? '',
         }}
-        agent={process.env.NEXT_PUBLIC_AGIXT_AGENT || 'XT'}
+        agent={process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || 'XT'}
         overrides={{
           conversation: params.id,
         }}

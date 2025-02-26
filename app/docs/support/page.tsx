@@ -49,7 +49,7 @@ export default function SupportPage() {
           do, please make note of your most recent actions and{' '}
           <Link
             className='text-info hover:underline'
-            href='https://github.com/JamesonRGrieve/AGiXT-Interactive/issues/new?template=bug_report_prod.yml'
+            href='https://github.com/JamesonRGrieve/AGInteractive/issues/new?template=bug_report_prod.yml'
           >
             let us know by making a report here
           </Link>
@@ -138,8 +138,7 @@ interface SubmissionData {
 }
 
 function sendAsEmail(submissionData: SubmissionData) {
-  // Get the top level domain name from next_public_agixt_server
-  const tld = process.env.NEXT_PUBLIC_AGIXT_SERVER?.split('.').slice(-2).join('.') || 'example.com';
+  const tld = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER?.split('.').slice(-2).join('.') || 'example.com';
   const emailAddress = `support@${tld}`;
 
   // Format the email body

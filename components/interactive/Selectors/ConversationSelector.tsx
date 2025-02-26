@@ -23,7 +23,7 @@ export default function ConversationSelector(): React.JSX.Element {
 
   useEffect(() => {
     setChangedConversation(state.overrides.conversation);
-    setCookie('agixt-conversation', state.overrides.conversation, {
+    setCookie('aginteractive-conversation', state.overrides.conversation, {
       domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
     });
   }, [state.overrides.conversation]);
@@ -37,7 +37,7 @@ export default function ConversationSelector(): React.JSX.Element {
 
   const handleRenameConversation = async (magic = true): Promise<void> => {
     if (state.overrides.conversation) {
-      const response = await state.agixt.renameConversation(
+      const response = await state.sdk.renameConversation(
         state.agent,
         state.overrides.conversation,
         magic ? '-' : changedConversation,
@@ -51,7 +51,7 @@ export default function ConversationSelector(): React.JSX.Element {
 
   const handleDeleteConversation = async (): Promise<void> => {
     if (state.overrides.conversation) {
-      await state.agixt.deleteConversation(state.overrides.conversation);
+      await state.sdk.deleteConversation(state.overrides.conversation);
       await mutate('/conversation');
       state.mutate((oldState) => ({
         ...oldState,

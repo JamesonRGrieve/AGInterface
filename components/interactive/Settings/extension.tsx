@@ -1,7 +1,5 @@
-import { Plus, Unlink, Wrench, Power, PowerOff } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import MarkdownBlock from '../Chat/Message/MarkdownBlock';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -11,10 +9,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getCookie, setCookie } from 'cookies-next';
+import { Plus, Power, PowerOff, Unlink, Wrench } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import MarkdownBlock from '../Chat/Message/MarkdownBlock';
 
 const OVERRIDE_EXTENSIONS = {
   'text-to-speech': { name: 'tts', label: 'Text to Speech' },
@@ -38,7 +38,7 @@ export default function Extension({
   useEffect(() => {
     setState(
       Object.keys(OVERRIDE_EXTENSIONS).includes(extension.extension_name)
-        ? getCookie(`agixt-${OVERRIDE_EXTENSIONS[extension.extension_name].name}`) === 'true'
+        ? getCookie(`aginteractive-${OVERRIDE_EXTENSIONS[extension.extension_name].name}`) === 'true'
         : false,
     );
   }, [extension.extension_name]);
@@ -67,8 +67,10 @@ export default function Extension({
             size='sm'
             className='gap-2'
             onClick={() => {
-              console.log('SETTING ' + `agixt-${OVERRIDE_EXTENSIONS[extension.extension_name].name}` + ` to ${!state}`);
-              setCookie(`agixt-${OVERRIDE_EXTENSIONS[extension.extension_name].name}`, (!state).toString(), {
+              console.log(
+                'SETTING ' + `aginteractive-${OVERRIDE_EXTENSIONS[extension.extension_name].name}` + ` to ${!state}`,
+              );
+              setCookie(`aginteractive-${OVERRIDE_EXTENSIONS[extension.extension_name].name}`, (!state).toString(), {
                 domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
                 maxAge: 2147483647,
                 path: '/',

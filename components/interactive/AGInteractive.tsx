@@ -37,9 +37,9 @@ export type UIProps = {
 };
 export type ServerProps = {
   apiKey: string;
-  agixtServer: string;
+  backEndURI: string;
 };
-export type AGiXTInteractiveProps = {
+export type AGInteractiveProps = {
   agent?: string;
   overrides?: Overrides;
   uiConfig?: UIProps;
@@ -69,7 +69,7 @@ function removeUndefined(obj: object): object {
 const generateSearchParamConfig = (searchParams: URLSearchParams): InteractiveConfig =>
   removeUndefined({
     agent: searchParams.get('agent') || undefined,
-    agixt: undefined,
+    sdk: undefined,
     openai: undefined,
     overrides: {
       mode: (searchParams.get('mode') as 'prompt' | 'chain' | 'command') || undefined,
@@ -117,12 +117,12 @@ function useMediaQuery(query: string) {
 
   return matches;
 }
-const Stateful = (props: AGiXTInteractiveProps): React.JSX.Element => {
+const Stateful = (props: AGInteractiveProps): React.JSX.Element => {
   const searchParams = useSearchParams();
   const searchParamConfig = generateSearchParamConfig(searchParams);
 
   const uuid = getCookie('uuid');
-  if (process.env.NEXT_PUBLIC_AGIXT_CONVERSATION_MODE === 'uuid' && !uuid) {
+  if (process.env.NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_MODE === 'uuid' && !uuid) {
     setCookie('uuid', crypto.randomUUID(), { domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN, maxAge: 2147483647 });
   }
   log(['Overrides Prop Provided to Stateful:', props.overrides], { client: 3, server: 3 });
@@ -130,29 +130,29 @@ const Stateful = (props: AGiXTInteractiveProps): React.JSX.Element => {
   log(['Server Config Prop Provided to Stateful:', props.serverConfig], { client: 3, server: 3 });
   return (
     <ContextWrapper
-      apiKey={props.serverConfig?.apiKey || process.env.NEXT_PUBLIC_AGIXT_API_KEY || getCookie('jwt') || ''}
-      agixtServer={props.serverConfig?.agixtServer || process.env.NEXT_PUBLIC_AGIXT_SERVER || 'http://localhost:7437'}
+      apiKey={props.serverConfig?.apiKey || process.env.NEXT_PUBLIC_AGINTERACTIVE_API_KEY || getCookie('jwt') || ''}
+      backEndURI={props.serverConfig?.backEndURI || process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER || 'http://localhost:7437'}
       initialState={{
         ...InteractiveConfigDefault,
-        agent: props.agent ?? process.env.NEXT_PUBLIC_AGIXT_AGENT ?? InteractiveConfigDefault.agent,
+        agent: props.agent ?? process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT ?? InteractiveConfigDefault.agent,
         overrides: {
           ...InteractiveConfigDefault.overrides,
-          mode: process.env.NEXT_PUBLIC_AGIXT_MODE,
-          prompt: process.env.NEXT_PUBLIC_AGIXT_PROMPT_NAME,
-          promptCategory: process.env.NEXT_PUBLIC_AGIXT_PROMPT_CATEGORY,
-          chain: process.env.NEXT_PUBLIC_AGIXT_CHAIN,
-          command: process.env.NEXT_PUBLIC_AGIXT_COMMAND,
-          commandMessageArg: process.env.NEXT_PUBLIC_AGIXT_COMMAND_MESSAGE_ARG,
+          mode: process.env.NEXT_PUBLIC_AGINTERACTIVE_MODE,
+          prompt: process.env.NEXT_PUBLIC_AGINTERACTIVE_PROMPT_NAME,
+          promptCategory: process.env.NEXT_PUBLIC_AGINTERACTIVE_PROMPT_CATEGORY,
+          chain: process.env.NEXT_PUBLIC_AGINTERACTIVE_CHAIN,
+          command: process.env.NEXT_PUBLIC_AGINTERACTIVE_COMMAND,
+          commandMessageArg: process.env.NEXT_PUBLIC_AGINTERACTIVE_COMMAND_MESSAGE_ARG,
           conversation:
-            process.env.NEXT_PUBLIC_AGIXT_CONVERSATION_MODE === 'uuid'
+            process.env.NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_MODE === 'uuid'
               ? uuid
-              : process.env.NEXT_PUBLIC_AGIXT_CONVERSATION_NAME,
+              : process.env.NEXT_PUBLIC_AGINTERACTIVE_CONVERSATION_NAME,
           ...props.overrides,
         },
-        ...(process.env.NEXT_PUBLIC_AGIXT_ENABLE_SEARCHPARAM_CONFIG === 'true' ? searchParamConfig : {}),
-        ...(getCookie('agixt-conversation') && {
+        ...(process.env.NEXT_PUBLIC_AGINTERACTIVE_ENABLE_SEARCHPARAM_CONFIG === 'true' ? searchParamConfig : {}),
+        ...(getCookie('aginteractive-conversation') && {
           overrides: {
-            conversation: getCookie('agixt-conversation'),
+            conversation: getCookie('aginteractive-conversation'),
           },
         }),
       }}
@@ -174,7 +174,7 @@ const Interactive = (props: Overrides & UIProps): React.JSX.Element => {
     error,
   } = useSWR('/user', async () => {
     return (
-      await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/user`, {
+      await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user`, {
         headers: {
           Authorization: `${getCookie('jwt')}`,
         },
@@ -275,39 +275,40 @@ const Interactive = (props: Overrides & UIProps): React.JSX.Element => {
     </AppWrapper>
   );
 };
-const InteractiveAGiXT = ({
+const AGInteractive = ({
   stateful = true,
   agent,
   overrides = {
-    mode: (process.env.NEXT_PUBLIC_AGIXT_MODE && ['chain', 'prompt'].includes(process.env.NEXT_PUBLIC_AGIXT_MODE)
-      ? process.env.NEXT_PUBLIC_AGIXT_MODE
+    mode: (process.env.NEXT_PUBLIC_AGINTERACTIVE_MODE &&
+    ['chain', 'prompt'].includes(process.env.NEXT_PUBLIC_AGINTERACTIVE_MODE)
+      ? process.env.NEXT_PUBLIC_AGINTERACTIVE_MODE
       : 'prompt') as 'chain' | 'prompt',
   },
   serverConfig = null,
   uiConfig = {},
-}: AGiXTInteractiveProps & { stateful?: boolean; agent?: string }): React.JSX.Element => {
+}: AGInteractiveProps & { stateful?: boolean; agent?: string }): React.JSX.Element => {
   const uiConfigWithEnv = useMemo(
     () => ({
-      showAppBar: process.env.NEXT_PUBLIC_AGIXT_SHOW_APP_BAR === 'true', // Show the conversation selection bar to create, delete, and export conversations
-      showRLHF: process.env.NEXT_PUBLIC_AGIXT_RLHF === 'true',
-      showChatThemeToggles: process.env.NEXT_PUBLIC_AGIXT_SHOW_CHAT_THEME_TOGGLES === 'true',
-      footerMessage: process.env.NEXT_PUBLIC_AGIXT_FOOTER_MESSAGE || '',
-      showOverrideSwitchesCSV: process.env.NEXT_PUBLIC_AGIXT_SHOW_OVERRIDE_SWITCHES || '',
+      showAppBar: process.env.NEXT_PUBLIC_AGINTERACTIVE_SHOW_APP_BAR === 'true', // Show the conversation selection bar to create, delete, and export conversations
+      showRLHF: process.env.NEXT_PUBLIC_AGINTERACTIVE_RLHF === 'true',
+      showChatThemeToggles: process.env.NEXT_PUBLIC_AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES === 'true',
+      footerMessage: process.env.NEXT_PUBLIC_AGINTERACTIVE_FOOTER_MESSAGE || '',
+      showOverrideSwitchesCSV: process.env.NEXT_PUBLIC_AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES || '',
       alternateBackground: 'primary' as 'primary' | 'secondary',
-      showSelectorsCSV: process.env.NEXT_PUBLIC_AGIXT_SHOW_SELECTION,
-      enableVoiceInput: process.env.NEXT_PUBLIC_AGIXT_VOICE_INPUT_ENABLED === 'true',
-      enableFileUpload: process.env.NEXT_PUBLIC_AGIXT_FILE_UPLOAD_ENABLED === 'true',
-      enableMessageDeletion: process.env.NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_DELETION === 'true',
-      enableMessageEditing: process.env.NEXT_PUBLIC_AGIXT_ALLOW_MESSAGE_EDITING === 'true',
+      showSelectorsCSV: process.env.NEXT_PUBLIC_AGINTERACTIVE_SHOW_SELECTION,
+      enableVoiceInput: process.env.NEXT_PUBLIC_AGINTERACTIVE_VOICE_INPUT_ENABLED === 'true',
+      enableFileUpload: process.env.NEXT_PUBLIC_AGINTERACTIVE_FILE_UPLOAD_ENABLED === 'true',
+      enableMessageDeletion: process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_DELETION === 'true',
+      enableMessageEditing: process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_EDITING === 'true',
       ...uiConfig,
     }),
     [uiConfig],
   );
   log(
     [
-      `InteractiveAGiXT initialized as ${stateful ? '' : 'not '}stateful. ${
+      `AGInteractive initialized as ${stateful ? '' : 'not '}stateful. ${
         stateful
-          ? 'InteractiveAGiXT will provide its own InteractiveConfigContext Provider and state.'
+          ? 'AGInteractive will provide its own InteractiveConfigContext Provider and state.'
           : 'Assuming a InteractiveConfigContext Provider encloses this instance.'
       }`,
     ],
@@ -321,4 +322,4 @@ const InteractiveAGiXT = ({
     <Interactive {...uiConfigWithEnv} {...overrides} />
   );
 };
-export default InteractiveAGiXT;
+export default AGInteractive;

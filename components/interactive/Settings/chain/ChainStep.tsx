@@ -65,7 +65,7 @@ export default function ChainStep({
   const { mutate: mutateChainList } = useChains();
 
   const { data: agentData } = useSWR('/agents', async () =>
-    (await context.agixt.getAgents())
+    (await context.sdk.getAgents())
       .map((agent: any) => agent.name)
       .sort((a: any, b: any) => {
         const nameA = typeof a.name === 'string' ? a.name.trim().toLowerCase() : '';
@@ -117,11 +117,11 @@ export default function ChainStep({
     (async (): Promise<void> => {
       let newArgs;
       if (stepType === 'Prompt') {
-        newArgs = await context.agixt.getPromptArgs(targetName, targetCategory);
+        newArgs = await context.sdk.getPromptArgs(targetName, targetCategory);
       } else if (stepType === 'Chain') {
-        newArgs = await context.agixt.getChainArgs(targetName);
+        newArgs = await context.sdk.getChainArgs(targetName);
       } else {
-        newArgs = await context.agixt.getCommandArgs(targetName);
+        newArgs = await context.sdk.getCommandArgs(targetName);
         if (typeof newArgs === 'string' && newArgs.includes('AxiosError')) {
           setArgs({});
           return;
@@ -150,12 +150,12 @@ export default function ChainStep({
   }, [step_object.prompt_category]);
 
   const handleIncrement = async (): Promise<void> => {
-    await context.agixt.moveStep(searchParams.get('chain') ?? '', step, Number(step) + 1);
+    await context.sdk.moveStep(searchParams.get('chain') ?? '', step, Number(step) + 1);
     mutate();
   };
 
   const handleDecrement = async (): Promise<void> => {
-    await context.agixt.moveStep(searchParams.get('chain') ?? '', step, Number(step) - 1);
+    await context.sdk.moveStep(searchParams.get('chain') ?? '', step, Number(step) - 1);
     mutate();
   };
 
@@ -169,13 +169,13 @@ export default function ChainStep({
     } else {
       nameObj['chain_name'] = targetName;
     }
-    await context.agixt.updateStep(searchParams.get('chain') ?? '', step, agentName, stepType, { ...args, ...nameObj });
+    await context.sdk.updateStep(searchParams.get('chain') ?? '', step, agentName, stepType, { ...args, ...nameObj });
     mutate();
     setModified(false);
   };
 
   const handleDelete = async (): Promise<void> => {
-    await context.agixt.deleteStep(searchParams.get('chain') ?? '', step);
+    await context.sdk.deleteStep(searchParams.get('chain') ?? '', step);
     mutateChainList();
   };
 

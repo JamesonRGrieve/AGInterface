@@ -1,12 +1,11 @@
 'use client';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { getCookie } from 'cookies-next';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import React, { Suspense } from 'react';
 import { useAuthentication } from './Router';
 import PricingTable from './stripe/PricingTable';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import Link from 'next/link';
 
 export type SubscribeProps = { redirectTo?: string };
 
@@ -32,7 +31,7 @@ export default function Subscribe({ searchParams }: { searchParams: any }): JSX.
             you do, please make note of your most recent actions and{' '}
             <Link
               className='text-info hover:underline'
-              href='https://github.com/JamesonRGrieve/AGiXT-Interactive/issues/new?template=bug_report_prod.yml'
+              href='https://github.com/JamesonRGrieve/AGInteractive/issues/new?template=bug_report_prod.yml'
             >
               let us know by making a report here
             </Link>

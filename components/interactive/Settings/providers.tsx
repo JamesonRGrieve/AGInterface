@@ -56,7 +56,7 @@ export function Providers() {
   const { data: agentData, mutate } = useAgent(true);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [error, setError] = useState<ErrorState>(null);
-  const agent_name = (getCookie('agixt-agent') || process.env.NEXT_PUBLIC_AGIXT_AGENT) ?? agent;
+  const agent_name = (getCookie('aginteractive-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT) ?? agent;
   const { data: activeCompany } = useCompany();
   const { data: providerData } = useProviders();
 
@@ -110,7 +110,7 @@ export function Providers() {
     try {
       setError(null);
       const response = await axios.put<{ status: number; data: any }>(
-        `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${agent_name}`,
+        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}`,
         {
           agent_name: agent_name,
           settings: settings,

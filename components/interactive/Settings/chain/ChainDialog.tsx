@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useInteractiveConfig } from '@/components/interactive/InteractiveConfigContext';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useInteractiveConfig } from '@/components/interactive/InteractiveConfigContext';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function ChainDialog({ open, setOpen }) {
   const router = useRouter();
@@ -14,7 +14,7 @@ export function ChainDialog({ open, setOpen }) {
   const [newChainName, setNewChainName] = useState('');
 
   const handleNewChain = async () => {
-    await context.agixt.addChain(newChainName);
+    await context.sdk.addChain(newChainName);
     router.push(`/settings/chains?chain=${newChainName}`);
     setOpen(false);
   };
@@ -28,8 +28,8 @@ export function ChainDialog({ open, setOpen }) {
         setNewChainName(filename);
       }
       const steps = JSON.parse(fileContent);
-      await context.agixt.addChain(newChainName);
-      await context.agixt.importChain(newChainName, steps);
+      await context.sdk.addChain(newChainName);
+      await context.sdk.importChain(newChainName, steps);
       router.push(`/chains?chain=${newChainName}`);
     }
     setOpen(false);

@@ -104,7 +104,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
     setIsLoadingAudio(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AGIXT_SERVER}/v1/conversation/${state.overrides.conversation}/tts/${chatItem.id}`,
+        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/conversation/${state.overrides.conversation}/tts/${chatItem.id}`,
         {
           method: 'GET',
           headers: {
@@ -166,7 +166,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
         <div className={cn('flex gap-2', chatItem.role === 'USER' && 'justify-end items-center')}>
           {(audios?.message?.trim() || !audios) && (
             <>
-              {chatItem.role !== 'USER' && process.env.NEXT_PUBLIC_AGIXT_RLHF === 'true' && (
+              {chatItem.role !== 'USER' && process.env.NEXT_PUBLIC_AGINTERACTIVE_RLHF === 'true' && (
                 <>
                   <TooltipBasic title='Provide Positive Feedback'>
                     <Button
@@ -216,7 +216,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                   size='icon'
                   onClick={async () => {
                     try {
-                      const response = await fetch(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/conversation/fork`, {
+                      const response = await fetch(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/conversation/fork`, {
                         method: 'POST',
                         headers: {
                           Authorization: getCookie('jwt'),
@@ -296,7 +296,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                       }}
                       title='Edit Message'
                       onConfirm={async () => {
-                        await state.agixt.updateConversationMessage(
+                        await state.sdk.updateConversationMessage(
                           state.overrides.conversation,
                           chatItem.message,
                           updatedMessage,
@@ -326,7 +326,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                         ButtonProps={{ variant: 'ghost', size: 'icon', children: <LuTrash2 /> }}
                         title='Delete Message'
                         onConfirm={async () => {
-                          await state.agixt.deleteConversationMessage(state.overrides.conversation, chatItem.message);
+                          await state.sdk.deleteConversationMessage(state.overrides.conversation, chatItem.message);
                           mutate('/conversation/' + state.overrides.conversation);
                         }}
                         content={`Are you sure you'd like to permanently delete this message from the conversation?`}
@@ -361,7 +361,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                       onClick={() => {
                         setOpen(false);
                         if (vote === 1) {
-                          state.agixt.addConversationFeedback(
+                          state.sdk.addConversationFeedback(
                             true,
                             chatItem.role,
                             chatItem.message,
@@ -370,7 +370,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                             state.overrides.conversation,
                           );
                         } else {
-                          state.agixt.addConversationFeedback(
+                          state.sdk.addConversationFeedback(
                             false,
                             chatItem.role,
                             chatItem.message,

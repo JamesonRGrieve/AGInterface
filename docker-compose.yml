@@ -1,17 +1,17 @@
 services:
-  agixt:
-    image: joshxt/agixt:latest
+  aginfrastructure:
+    image: jamesonrgrieve/aginfrastructure:latest
     init: true
     environment:
       DATABASE_TYPE: ${DATABASE_TYPE:-sqlite}
-      DATABASE_NAME: ${DATABASE_NAME:-models/agixt}
+      DATABASE_NAME: ${DATABASE_NAME:-models/aginfrastructure}
       UVICORN_WORKERS: ${UVICORN_WORKERS:-10}
-      AGIXT_API_KEY: ${AGIXT_API_KEY:-None}
-      AGIXT_URI: ${AGIXT_URI:-http://agixt:7437}
-      MAGIC_LINK_URL: ${AUTH_WEB:-http://localhost:3437}
+      AGINTERACTIVE_API_KEY: ${AGINTERACTIVE_API_KEY:-None}
+      AGINTERACTIVE_URI: ${AGINTERACTIVE_URI:-http://aginfrastructure:7437}
+      MAGIC_LINK_URL: ${AUTH_WEB:-http://localhost:1109}
       DISABLED_EXTENSIONS: ${DISABLED_EXTENSIONS}
       DISABLED_PROVIDERS: ${DISABLED_PROVIDERS}
-      WORKING_DIRECTORY: ${WORKING_DIRECTORY:-/agixt/WORKSPACE}
+      WORKING_DIRECTORY: ${WORKING_DIRECTORY:-/aginfrastructure/WORKSPACE}
       REGISTRATION_DISABLED: ${REGISTRATION_DISABLED:-false}
       TOKENIZERS_PARALLELISM: 'false'
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -26,11 +26,11 @@ services:
       MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
       MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
       STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
-      STORAGE_CONTAINER: ${STORAGE_CONTAINER:-agixt-workspace}
+      STORAGE_CONTAINER: ${STORAGE_CONTAINER:-aginteractive-workspace}
       B2_KEY_ID: ${B2_KEY_ID:-}
       B2_APPLICATION_KEY: ${B2_APPLICATION_KEY:-}
       B2_REGION: ${B2_REGION:-us-west-002}
-      S3_BUCKET: ${S3_BUCKET:-agixt-workspace}
+      S3_BUCKET: ${S3_BUCKET:-aginteractive-workspace}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
@@ -38,7 +38,7 @@ services:
       AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-}
       AZURE_STORAGE_KEY: ${AZURE_STORAGE_KEY:-}
       SEED_DATA: ${SEED_DATA:-true}
-      AGENT_NAME: ${AGIXT_AGENT:-XT}
+      AGENT_NAME: ${AGINTERACTIVE_AGENT:-XT}
       AGENT_PERSONA: ${AGENT_PERSONA}
       TRAINING_URLS: ${TRAINING_URLS}
       ENABLED_COMMANDS: ${ENABLED_COMMANDS}
@@ -68,39 +68,41 @@ services:
       GRAPHIQL: ${GRAPHIQL:-true}
       TZ: ${TZ:-America/New_York}
     ports:
-      - '${AGIXT_PORT:-7437}:7437'
+      - '${AGINTERACTIVE_PORT:-7437}:7437'
     volumes:
-      - ./models:/agixt/models
-      - ./WORKSPACE:/agixt/WORKSPACE
+      - ./models:/aginfrastructure/models
+      - ./WORKSPACE:/aginfrastructure/WORKSPACE
       - /var/run/docker.sock:/var/run/docker.sock
-  agixt-interactive:
-    image: jamesonrgrieve/agixt-interactive:main
+  aginteractive:
+    image: jamesonrgrieve/aginteractive:main
     init: true
-    environment:
-      MODE: production
-      NEXT_TELEMETRY_DISABLED: 1
-      AGIXT_AGENT: ${AGIXT_AGENT:-XT}
-      AGIXT_FOOTER_MESSAGE: ${AGIXT_FOOTER_MESSAGE:-AGiXT 2024}
-      AGIXT_SERVER: ${AGIXT_SERVER:-http://localhost:7437}
-      APP_DESCRIPTION: ${APP_DESCRIPTION-AGiXT is an advanced artificial intelligence agent orchestration agent.}
-      APP_NAME: ${APP_NAME:-AGiXT}
-      APP_URI: ${APP_URI:-http://localhost:3437}
-      LOG_VERBOSITY_SERVER: ${LOG_VERBOSITY_SERVER:-3}
-      AGIXT_FILE_UPLOAD_ENABLED: ${AGIXT_FILE_UPLOAD_ENABLED:-true}
-      AGIXT_VOICE_INPUT_ENABLED: ${AGIXT_VOICE_INPUT_ENABLED:-true}
-      AGIXT_RLHF: ${AGIXT_RLHF:-true}
-      AGIXT_ALLOW_MESSAGE_EDITING: ${AGIXT_ALLOW_MESSAGE_EDITING:-true}
-      AGIXT_ALLOW_MESSAGE_DELETION: ${AGIXT_ALLOW_MESSAGE_DELETION:-true}
-      AGIXT_SHOW_OVERRIDE_SWITCHES: ${AGIXT_SHOW_OVERRIDE_SWITCHES:-tts,websearch,analyze-user-input}
-      AGIXT_CONVERSATION_MODE: ${AGIXT_CONVERSATION_MODE:-select}
-      INTERACTIVE_MODE: ${INTERACTIVE_MODE:-chat}
-      ALLOW_EMAIL_SIGN_IN: ${ALLOW_EMAIL_SIGN_IN:-true}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
-      TZ: ${TZ:-America/New_York}
+    build:
+      context: .
+      args:
+        MODE: production
+        NEXT_TELEMETRY_DISABLED: 1
+        AGINTERACTIVE_AGENT: ${AGINTERACTIVE_AGENT:-XT}
+        AGINTERACTIVE_FOOTER_MESSAGE: ${AGINTERACTIVE_FOOTER_MESSAGE:-JamesonRGrieve 2024}
+        AGINTERACTIVE_SERVER: ${AGINTERACTIVE_SERVER:-http://localhost:7437}
+        APP_DESCRIPTION: ${APP_DESCRIPTION-AGInfrastructure is an advanced artificial intelligence agent orchestration platform.}
+        APP_NAME: ${APP_NAME:-AGInteractive}
+        APP_URI: ${APP_URI:-http://localhost:1109}
+        LOG_VERBOSITY_SERVER: ${LOG_VERBOSITY_SERVER:-3}
+        AGINTERACTIVE_FILE_UPLOAD_ENABLED: ${AGINTERACTIVE_FILE_UPLOAD_ENABLED:-true}
+        AGINTERACTIVE_VOICE_INPUT_ENABLED: ${AGINTERACTIVE_VOICE_INPUT_ENABLED:-true}
+        AGINTERACTIVE_RLHF: ${AGINTERACTIVE_RLHF:-true}
+        AGINTERACTIVE_ALLOW_MESSAGE_EDITING: ${AGINTERACTIVE_ALLOW_MESSAGE_EDITING:-true}
+        AGINTERACTIVE_ALLOW_MESSAGE_DELETION: ${AGINTERACTIVE_ALLOW_MESSAGE_DELETION:-true}
+        AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES: ${AGINTERACTIVE_SHOW_OVERRIDE_SWITCHES:-tts,websearch,analyze-user-input}
+        AGINTERACTIVE_CONVERSATION_MODE: ${AGINTERACTIVE_CONVERSATION_MODE:-select}
+        INTERACTIVE_MODE: ${INTERACTIVE_MODE:-chat}
+        ALLOW_EMAIL_SIGN_IN: ${ALLOW_EMAIL_SIGN_IN:-true}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+        MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
+        TZ: ${TZ:-America/New_York}
     ports:
-      - '${AGIXT_INTERACTIVE_PORT:-3437}:3437'
+      - '${AGINTERACTIVE_INTERACTIVE_PORT:-1109}:1109'
     restart: unless-stopped
     volumes:
       - ./node_modules:/app/node_modules

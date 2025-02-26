@@ -37,7 +37,7 @@
 //  * @returns Configured GraphQLClient instance
 //  */
 // export const createGraphQLClient = (): GraphQLClient =>
-//   new GraphQLClient(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/graphql`, {
+//   new GraphQLClient(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/graphql`, {
 //     headers: { authorization: getCookie('jwt') || '' },
 //   });
 
@@ -99,7 +99,7 @@
 //       const primaryAgent = primaryCompany?.agents.find((a) => a.default);
 //       foundEarly = primaryAgent || primaryCompany?.agents[0];
 //       searchName = foundEarly?.name;
-//       setCookie('agixt-agent', searchName, {
+//       setCookie('aginteractive-agent', searchName, {
 //         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
 //       });
 //     }
@@ -108,7 +108,7 @@
 //   const companiesHook = useCompanies();
 //   const { data: companies } = companiesHook;
 //   const state = useContext(InteractiveConfigContext);
-//   let searchName = name || (getCookie('agixt-agent') as string | undefined);
+//   let searchName = name || (getCookie('aginteractive-agent') as string | undefined);
 //   let foundEarly = null;
 
 //   if (!searchName && companies?.length) {
@@ -156,13 +156,13 @@
 //               client: 3,
 //             });
 //             toReturn.extensions = (
-//               await axios.get(`${process.env.NEXT_PUBLIC_AGIXT_SERVER}/api/agent/${toReturn.agent.name}/extensions`, {
+//               await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${toReturn.agent.name}/extensions`, {
 //                 headers: {
 //                   Authorization: getCookie('jwt'),
 //                 },
 //               })
 //             ).data.extensions;
-//             toReturn.commands = await state.agixt.getCommands(toReturn.agent.name);
+//             toReturn.commands = await state.sdk.getCommands(toReturn.agent.name);
 //           } else {
 //             log(['GQL useAgent() Did Not Get Agent', toReturn], {
 //               client: 3,
@@ -226,7 +226,7 @@
 // } {
 //   const promptsHook = usePrompts();
 //   const { data: prompts, error: promptsError, isLoading: promptsLoading, mutate: promptsMutate } = promptsHook;
-//   const { agixt } = useInteractiveConfig();
+//   const { sdk } = useInteractiveConfig();
 //   const { toast } = useToast();
 //   const router = useRouter();
 //   const swrHook = useSWR<Prompt | null>([name, prompts], () => prompts?.find((p) => p.name === name) || null, {
@@ -241,7 +241,7 @@
 //     {
 //       delete: async () => {
 //         try {
-//           await agixt.deletePrompt(name);
+//           await sdk.deletePrompt(name);
 //           promptsMutate();
 //           router.push(`/settings/prompts?prompt=${(prompts && prompts.filter((p) => p.name !== name)[0]?.name) || ''}`);
 //           toast({
@@ -261,7 +261,7 @@
 //       },
 //       rename: async (newName: string) => {
 //         try {
-//           await agixt.renamePrompt(name, newName);
+//           await sdk.renamePrompt(name, newName);
 //           swrHook.mutate();
 //           promptsMutate();
 //           toast({
@@ -281,7 +281,7 @@
 //       },
 //       update: async (content: string) => {
 //         try {
-//           await agixt.updatePrompt(name, content);
+//           await sdk.updatePrompt(name, content);
 //           swrHook.mutate();
 //           toast({
 //             title: 'Success',
@@ -310,7 +310,7 @@
 //         const element = document.createElement('a');
 //         const file = new Blob([swrHook.data?.content], { type: 'text/plain' });
 //         element.href = URL.createObjectURL(file);
-//         element.download = `AGiXT-Prompt-${name}.txt`;
+//         element.download = `AGInteractive-Prompt-${name}.txt`;
 //         document.body.appendChild(element);
 //         element.click();
 //         document.body.removeChild(element);
@@ -329,7 +329,7 @@
 // } {
 //   const client = createGraphQLClient();
 //   const { toast } = useToast();
-//   const { agixt } = useInteractiveConfig();
+//   const { sdk } = useInteractiveConfig();
 //   const router = useRouter();
 
 //   const swrHook = useSWR<Prompt[]>(
@@ -352,7 +352,7 @@
 //   return Object.assign(swrHook, {
 //     create: async (name: string, content: string) => {
 //       try {
-//         await agixt.addPrompt(name, content);
+//         await sdk.addPrompt(name, content);
 //         swrHook.mutate();
 //         router.push(`/settings/prompts?prompt=${name}`);
 //         toast({
@@ -372,7 +372,7 @@
 //     },
 //     import: async (name: string, file: File) => {
 //       name = name || file.name.replace('.json', '');
-//       await agixt.addPrompt(name, await file.text());
+//       await sdk.addPrompt(name, await file.text());
 //       router.push(`/settings/prompts?&prompt=${name}`);
 //     },
 //   });

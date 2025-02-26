@@ -28,13 +28,13 @@ export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
   }, [renaming]);
 
   const handleDelete = async () => {
-    await context.agixt.deleteChain(searchParams.get('chain') ?? '');
+    await context.sdk.deleteChain(searchParams.get('chain') ?? '');
     router.push(pathname);
   };
 
   const handleRename = async () => {
     if ((newName && newName !== searchParams.get('chain')) ?? '') {
-      (await context.agixt.searchParams.get('chain')) ?? ''(searchParams.get('chain') ?? '', newName);
+      (await context.sdk.searchParams.get('chain')) ?? ''(searchParams.get('chain') ?? '', newName);
       setRenaming(false);
       const current = new URLSearchParams(Array.from(searchParams.entries()));
       current.set('chain', newName);
@@ -43,7 +43,7 @@ export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
   };
 
   const handleExportChain = async () => {
-    const chainData = await context.agixt.getChain(searchParams.get('chain') ?? '');
+    const chainData = await context.sdk.getChain(searchParams.get('chain') ?? '');
     const element = document.createElement('a');
     const file = new Blob([JSON.stringify(chainData.steps)], { type: 'application/json' });
     element.href = URL.createObjectURL(file);

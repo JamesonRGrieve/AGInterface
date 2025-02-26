@@ -179,8 +179,8 @@ const Training = (): React.ReactElement => {
   const { data: activeCompany } = useCompany();
 
   const apiKey = getCookie('jwt') || '';
-  const apiServer = process.env.NEXT_PUBLIC_AGIXT_SERVER as string;
-  const agentName = getCookie('agixt-agent') || process.env.NEXT_PUBLIC_AGIXT_AGENT || DEFAULT_AGENT;
+  const apiServer = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER as string;
+  const agentName = getCookie('aginteractive-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || DEFAULT_AGENT;
   const router = useRouter();
   useEffect(() => {
     if (activeCompany?.id || searchParams.get('mode') !== 'company') {

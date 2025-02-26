@@ -1,20 +1,20 @@
 'use client';
-import React, { useState, ReactNode, useEffect } from 'react';
-import OpenAI from 'openai';
+import AGInterfaceSDK from '@/lib/sdk';
 import { getCookie } from 'cookies-next';
-import { InteractiveConfigContext, InteractiveConfigDefault, InteractiveConfig } from './InteractiveConfigContext';
-import AGiXTSDK from '@/lib/sdk';
+import OpenAI from 'openai';
+import React, { ReactNode, useState } from 'react';
 import log from '../jrg/next-log/log';
+import { InteractiveConfig, InteractiveConfigContext, InteractiveConfigDefault } from './InteractiveConfigContext';
 
 export default function InteractiveConfigContextWrapper({
   initialState = InteractiveConfigDefault,
   apiKey = getCookie('jwt') || '',
-  agixtServer = process.env.NEXT_PUBLIC_AGIXT_SERVER,
+  backEndURI: backEndURI = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER,
   children,
 }: {
   requireKey?: boolean;
   apiKey?: string;
-  agixtServer?: string;
+  backEndURI?: string;
   initialState?: InteractiveConfig;
   children: ReactNode;
 }): React.JSX.Element {
@@ -49,13 +49,13 @@ export default function InteractiveConfigContextWrapper({
       'Booting State With',
     );
   }
-  const agixt: AGiXTSDK = new AGiXTSDK({
-    baseUri: agixtServer,
+  const sdk: AGInterfaceSDK = new AGInterfaceSDK({
+    baseUri: backEndURI,
     apiKey: apiKey,
   });
   const openai: OpenAI = new OpenAI({
     apiKey: apiKey.replace('Bearer ', ''),
-    baseURL: agixtServer + '/v1',
+    baseURL: backEndURI + '/v1',
     dangerouslyAllowBrowser: true,
   });
   // Used to determine whether to render the app or not (populates with any fetch errors from tryFetch calls).
@@ -64,18 +64,18 @@ export default function InteractiveConfigContextWrapper({
     ...InteractiveConfigDefault,
     ...initialState,
     // Overridden in context provider.
-    agixt: agixt,
+    sdk: sdk,
     openai: openai,
     mutate: null,
   } as InteractiveConfig);
 
-  log([`Context Wrapper initializing AGiXTSDK and OpenAI with baseUri ${agixtServer} and apiKey ${apiKey}.`], {
+  log([`Context Wrapper initializing AGInterfaceSDK and OpenAI with baseUri ${backEndURI} and apiKey ${apiKey}.`], {
     client: 1,
   });
 
   return (
     <InteractiveConfigContext.Provider
-      value={{ ...InteractiveConfigState, agixt: agixt, openai: openai, mutate: setInteractiveConfigState }}
+      value={{ ...InteractiveConfigState, sdk, openai: openai, mutate: setInteractiveConfigState }}
     >
       {children}
     </InteractiveConfigContext.Provider>
