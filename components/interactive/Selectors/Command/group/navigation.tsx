@@ -1,10 +1,9 @@
-import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
-import { CommandItemComponent, CommandMenuGroup } from '../index';
-import { useCommandMenu } from '../command-menu-context';
 import { CommandGroup, CommandSeparator } from '@/components/ui/command';
-import { items } from '@/components/jrg/appwrapper/NavMain';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
+import { useCommandMenu } from '../command-menu-context';
+import { CommandItemComponent, CommandMenuGroup } from '../index';
 
 export function NavigationGroup() {
   const router = useRouter();

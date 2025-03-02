@@ -2,8 +2,6 @@
 
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-
 import { items } from '@/components/interactive/NavMenu';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -19,8 +17,10 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCompany } from '../auth/hooks/useUser';
 
+export const navItems = items;
 export type Item = {
   title: string;
   url?: string;
