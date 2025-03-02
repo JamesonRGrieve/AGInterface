@@ -10,7 +10,7 @@ jobs:
     name: Build / Docker
     with:
       registry-dockerhub-enable: false # ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      registry-repo-name: AGInteractive
+      registry-repo-name: AGInterface
       registry-readme: ./docs/README.md
       build-args: |
         API_URI=http://aginfrastructure:7437
