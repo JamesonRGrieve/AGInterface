@@ -1,3 +1,4 @@
+import { navItems } from '@/components/jrg/appwrapper/NavMain';
 import { CommandGroup, CommandSeparator } from '@/components/ui/command';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -37,7 +38,7 @@ export const navigationGroup: CommandMenuGroup = {
   heading: 'Navigation',
   items: [
     // Add root level items that don't have children
-    ...items
+    ...navItems
       .filter((item) => item.url && !item.items)
       .map((item) => ({
         icon: item.icon,
@@ -47,7 +48,7 @@ export const navigationGroup: CommandMenuGroup = {
         keywords: ['page', 'navigate', item.title],
       })),
     // Add nested items
-    ...items
+    ...navItems
       .filter((item) => item.items)
       .flatMap((group) =>
         (group.items ?? []).map((item) => ({

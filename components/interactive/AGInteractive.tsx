@@ -131,7 +131,7 @@ const Stateful = (props: AGInteractiveProps): React.JSX.Element => {
   return (
     <ContextWrapper
       apiKey={props.serverConfig?.apiKey || process.env.NEXT_PUBLIC_AGINTERACTIVE_API_KEY || getCookie('jwt') || ''}
-      backEndURI={props.serverConfig?.backEndURI || process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER || 'http://localhost:7437'}
+      backEndURI={props.serverConfig?.backEndURI || process.env.NEXT_PUBLIC_API_URI || 'http://localhost:7437'}
       initialState={{
         ...InteractiveConfigDefault,
         agent: props.agent ?? process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT ?? InteractiveConfigDefault.agent,
@@ -174,7 +174,7 @@ const Interactive = (props: Overrides & UIProps): React.JSX.Element => {
     error,
   } = useSWR('/user', async () => {
     return (
-      await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user`, {
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/v1/user`, {
         headers: {
           Authorization: `${getCookie('jwt')}`,
         },
