@@ -2,14 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipBasic, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
 import clipboardCopy from 'clipboard-copy';
 import { getCookie } from 'cookies-next';
-import { Loader2, Volume2 } from 'lucide-react';
-import { useContext, useState } from 'react';
+import { Loader2, Plus, Volume2, X } from 'lucide-react';
+import { useContext, useRef, useState } from 'react';
 import { LuCopy, LuDownload, LuPen as LuEdit, LuGitFork, LuThumbsDown, LuThumbsUp, LuTrash2 } from 'react-icons/lu';
 import { mutate } from 'swr';
 import { InteractiveConfigContext } from '../../InteractiveConfigContext';
@@ -39,6 +40,7 @@ export function MessageActions({
   updatedMessage: string;
   setUpdatedMessage: (value: string) => void;
 }) {
+  const [feedbackPoints, setFeedbackPoints] = useState([]);
   const state = useContext(InteractiveConfigContext);
   const { data: convData } = useConversations();
   const { toast } = useToast();
@@ -47,6 +49,44 @@ export function MessageActions({
   const [feedback, setFeedback] = useState('');
   const enableMessageEditing = process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_EDITING === 'true';
   const enableMessageDeletion = process.env.NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_DELETION === 'true';
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const handleTTS = async () => {
+    if (!state.overrides.conversation) return;
+
+    setIsLoadingAudio(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/v1/conversation/${state.overrides.conversation}/tts/${chatItem.id}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `${getCookie('jwt')}`,
+          },
+        },
+      );
+      if (!response.ok) throw new Error('Failed to fetch audio');
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+
+      // Play audio automatically when loaded
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate speech',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoadingAudio(false);
+    }
+  };
 
   return (
     <div className={cn('flex', chatItem.role === 'USER' && 'justify-end items-center')}>
@@ -102,7 +142,7 @@ export function MessageActions({
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URI}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
+                    `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
                     {
                       method: 'POST',
                       headers: {
@@ -236,6 +276,48 @@ export function MessageActions({
                 <DialogTitle>Provide Feedback</DialogTitle>
                 <DialogDescription>Please provide some feedback regarding the message.</DialogDescription>
               </DialogHeader>
+              <div className='flex items-center space-x-2'>
+                <p className='text-sm text-muted-foreground'>Specific Feedback</p>
+                <Button
+                  onClick={() => {
+                    setFeedbackPoints((old) => [...old, '']);
+                  }}
+                  size='icon'
+                  variant='ghost'
+                >
+                  <Plus className='h-4 w-4' />
+                </Button>
+              </div>
+              {feedbackPoints && (
+                <ul className='flex flex-col gap-2'>
+                  {feedbackPoints.map((point, index) => (
+                    <li key={index} className='flex items-center space-x-2'>
+                      <Input
+                        value={point}
+                        onChange={(e) => {
+                          const newFeedbackPoints = [...feedbackPoints];
+                          newFeedbackPoints[index] = e.target.value;
+                          setFeedbackPoints(newFeedbackPoints);
+                        }}
+                        placeholder='Feedback Point'
+                      />
+                      <Button
+                        onClick={() => {
+                          const newFeedbackPoints = [...feedbackPoints];
+                          newFeedbackPoints.splice(index, 1);
+                          setFeedbackPoints(newFeedbackPoints);
+                        }}
+                        size='icon'
+                        variant='ghost'
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <p className='text-sm text-muted-foreground'>General Feedback</p>
               <Textarea value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder='Your feedback here...' />
               <DialogFooter>
                 <Button variant='outline' onClick={() => setOpen(false)}>
@@ -244,13 +326,14 @@ export function MessageActions({
                 <Button
                   onClick={() => {
                     setOpen(false);
+                    const refinedFeedback = `General Feedback: ${feedback}\n\nSpecific Feedback: ${feedbackPoints.join('\n')}`;
                     if (vote === 1) {
                       state.sdk.addConversationFeedback(
                         true,
                         chatItem.role,
                         chatItem.id,
                         lastUserMessage,
-                        feedback,
+                        refinedFeedback,
                         state.overrides.conversation,
                       );
                     } else {
@@ -259,7 +342,7 @@ export function MessageActions({
                         chatItem.role,
                         chatItem.id,
                         lastUserMessage,
-                        feedback,
+                        refinedFeedback,
                         state.overrides.conversation,
                       );
                     }

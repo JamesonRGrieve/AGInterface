@@ -1,18 +1,17 @@
 'use client';
 
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { Badge, Check, Download, Paperclip, Pencil, Plus, Trash2, Upload } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
-import useSWR, { mutate } from 'swr';
-
 import { SidebarContent } from '@/components/jrg/appwrapper/SidebarContentManager';
 import { useCompany } from '@/components/jrg/auth/hooks/useUser';
 import log from '@/components/jrg/next-log/log';
 import { Input } from '@/components/ui/input';
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { toast } from '@/hooks/useToast';
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { Badge, Check, Download, Paperclip, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 import { UIProps } from '../AGInteractive';
 import { InteractiveConfigContext, Overrides } from '../InteractiveConfigContext';
 import { useConversations } from '../hooks/useConversation';
@@ -20,7 +19,7 @@ import ChatBar from './ChatInput';
 import ChatLog from './ChatLog';
 
 export async function getAndFormatConversastion(state): Promise<any[]> {
-  const rawConversation = await state.aginteractive.getConversation('', state.overrides.conversation, 100, 1);
+  const rawConversation = await state.sdk.getConversation('', state.overrides.conversation, 100, 1);
   log(['Raw conversation: ', rawConversation], { client: 3 });
   return rawConversation.reduce((accumulator, currentMessage: { id: string; message: string }) => {
     try {
@@ -149,7 +148,7 @@ export default function Chat({
         router.push(`/chat/${chatCompletion.id}`);
         // let response;
         // if (state.overrides.conversation === '-') {
-        //   response = await state.aginteractive.renameConversation(state.agent, state.overrides.conversation);
+        //   response = await state.sdk.renameConversation(state.agent, state.overrides.conversation);
         //   // response = await axios.put(
         //   //   `${process.env.NEXT_PUBLIC_API_URI}/api/conversation`,
         //   //   {
@@ -188,7 +187,7 @@ export default function Chat({
     }
   }
   const handleDeleteConversation = async (): Promise<void> => {
-    await state.aginteractive.deleteConversation(currentConversation?.id || '-');
+    await state.sdk.deleteConversation(currentConversation?.id || '-');
     await mutate();
     state.mutate((oldState) => ({
       ...oldState,
@@ -198,7 +197,7 @@ export default function Chat({
 
   const handleExportConversation = async (): Promise<void> => {
     // Get the full conversation content
-    const conversationContent = await state.aginteractive.getConversation('', currentConversation?.id || '-');
+    const conversationContent = await state.sdk.getConversation('', currentConversation?.id || '-');
 
     // Format the conversation for export
     const exportData = {
@@ -282,7 +281,7 @@ export default function Chat({
                 icon: renaming ? Check : Pencil,
                 func: renaming
                   ? () => {
-                      state.aginteractive.renameConversation(state.agent, currentConversation.id, newName);
+                      state.sdk.renameConversation(state.agent, currentConversation.id, newName);
                       setRenaming(false);
                     }
                   : () => setRenaming(true),

@@ -1,14 +1,13 @@
 'use client';
 
-import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { LuRefreshCw as AutorenewOutlined } from 'react-icons/lu';
-
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { LuRefreshCw as AutorenewOutlined } from 'react-icons/lu';
 import MarkdownBlock from '../Message/MarkdownBlock';
 import formatDate from '../Message/formatDate';
 import { severities } from './Severtities.tsx';
@@ -78,7 +77,7 @@ export function Activity({
           <Accordion type='single'>
             <AccordionItem value='an-item'>
               <AccordionTrigger
-                className={`${rootStyles} aginteractive-activity aginteractive-activity-${activityType.toLocaleLowerCase()} text-foreground flex items-center cursor-pointer justify-start gap-2`}
+                className={`${rootStyles} agixt-activity agixt-activity-${activityType.toLocaleLowerCase()} text-foreground flex items-center cursor-pointer justify-start gap-2`}
               >
                 <div className='flex items-center justify-between gap-2 m-w-40'>
                   {activityType !== 'info' && !nextTimestamp ? (
@@ -101,7 +100,7 @@ export function Activity({
           </Accordion>
         ) : (
           <div
-            className={`${rootStyles} aginteractive-activity text-foreground flex items-center justify-start cursor-pointer gap-2`}
+            className={`${rootStyles} agixt-activity text-foreground flex items-center justify-start cursor-pointer gap-2`}
           >
             <div className='flex items-center justify-between gap-2 m-w-40'>
               {activityType !== 'info' && !nextTimestamp ? (
