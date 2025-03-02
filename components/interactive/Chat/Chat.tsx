@@ -126,7 +126,7 @@ export default function Chat({
     mutate(conversationSWRPath + state.overrides.conversation);
     try {
       const completionResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/v1/chat/completions`,
+        `${process.env.NEXT_PUBLIC_API_URI}/v1/chat/completions`,
         {
           ...toOpenAI,
         },
@@ -151,7 +151,7 @@ export default function Chat({
         // if (state.overrides.conversation === '-') {
         //   response = await state.aginteractive.renameConversation(state.agent, state.overrides.conversation);
         //   // response = await axios.put(
-        //   //   `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/api/conversation`,
+        //   //   `${process.env.NEXT_PUBLIC_API_URI}/api/conversation`,
         //   //   {
         //   //     agent_name: state.agent,
         //   //     conversation_name: state.overrides?.conversation,
