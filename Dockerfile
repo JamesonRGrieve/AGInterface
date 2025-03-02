@@ -3,6 +3,7 @@ WORKDIR /aginterface-build
 RUN apk add --no-cache python3 make g++ eudev-dev libusb-dev linux-headers eudev-libs
 COPY package*.json ./
 RUN npm install -g npm@latest 
+RUN npm install lightningcss-linux-x64-musl @tailwindcss/oxide-linux-x64-musl
 # && npm i lightningcss-linux-arm64-musl @tailwindcss/oxide-linux-arm64-musl
 RUN npm ci
 COPY . .
