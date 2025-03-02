@@ -7,11 +7,11 @@ export const AuthMode = {
 };
 export const getAuthMode = (): number => {
   let authMode = AuthMode.None;
-  if (process.env.NEXT_PUBLIC_AUTH_WEB && process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER) {
-    if (process.env.APP_URI && process.env.NEXT_PUBLIC_AUTH_WEB.startsWith(process.env.APP_URI)) {
+  if (process.env.NEXT_PUBLIC_AUTH_URI && process.env.NEXT_PUBLIC_API_URI) {
+    if (process.env.APP_URI && process.env.NEXT_PUBLIC_AUTH_URI.startsWith(process.env.APP_URI)) {
       authMode = AuthMode.MagicalAuth;
-      if (!process.env.NEXT_PUBLIC_AUTH_WEB.endsWith('/user')) {
-        throw new Error('Invalid AUTH_WEB. For Magical Auth implementations, AUTH_WEB must point to APP_URI/user.');
+      if (!process.env.NEXT_PUBLIC_AUTH_URI.endsWith('/user')) {
+        throw new Error('Invalid AUTH_URI. For Magical Auth implementations, AUTH_URI must point to APP_URI/user.');
       }
     } else {
       authMode = AuthMode.GTAuth;
@@ -48,19 +48,15 @@ export const getJWT = (req: NextRequest) => {
   return jwt;
 };
 export const verifyJWT = async (jwt: string): Promise<Response> => {
-  if (!process.env.SERVERSIDE_AGINTERACTIVE_SERVER) {
-    process.env.SERVERSIDE_AGINTERACTIVE_SERVER = [
-      'aginfrastructure',
-      'localhost',
-      'back-end',
-      'boilerplate',
-      'back-end-image',
-    ].join(',');
-    console.log('Initialized container names: ', process.env.SERVERSIDE_AGINTERACTIVE_SERVER);
+  if (!process.env.SERVERSIDE_API_URI) {
+    process.env.SERVERSIDE_API_URI = ['aginfrastructure', 'localhost', 'back-end', 'boilerplate', 'back-end-image'].join(
+      ',',
+    );
+    console.log('Initialized container names: ', process.env.SERVERSIDE_API_URI);
   }
-  const containerNames = process.env.SERVERSIDE_AGINTERACTIVE_SERVER.split(',');
+  const containerNames = process.env.SERVERSIDE_API_URI.split(',');
   const responses = {} as any;
-  const authEndpoint = `${process.env.AGINTERACTIVE_SERVER}/v1/user`;
+  const authEndpoint = `${process.env.API_URI}/v1/user`;
   let response;
   for (const containerName of containerNames) {
     const testEndpoint = authEndpoint.replace('localhost', containerName);
@@ -85,8 +81,8 @@ export const verifyJWT = async (jwt: string): Promise<Response> => {
               return 0;
             }
           });
-          process.env.SERVERSIDE_AGINTERACTIVE_SERVER = containerNames.join(',');
-          console.log('New container names: ', process.env.SERVERSIDE_AGINTERACTIVE_SERVER);
+          process.env.SERVERSIDE_API_URI = containerNames.join(',');
+          console.log('New container names: ', process.env.SERVERSIDE_API_URI);
         }
         return response;
       } else {

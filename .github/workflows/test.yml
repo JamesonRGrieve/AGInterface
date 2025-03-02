@@ -119,7 +119,7 @@ jobs:
           INTERACTIVE_MODE: chat
           ALLOW_EMAIL_SIGN_IN: true
           APP_URI: http://frontend:${{ inputs.front-end-port }}
-          AGINFRASTRUCTURE_SERVER: http://backend:${{ inputs.back-end-port }}
+          API_URI: http://backend:${{ inputs.back-end-port }}
           LOG_VERBOSITY_SERVER: 3
           TZ: America/Edmonton
     steps:

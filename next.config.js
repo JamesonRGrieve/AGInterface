@@ -11,8 +11,8 @@ const mergeConfigs = (obj1, obj2) =>
   );
 
 let APP_URI,
-  AUTH_WEB,
-  AGINTERACTIVE_SERVER,
+  AUTH_URI,
+  API_URI,
   ENV = (process.env.ENV || process.env.NODE_ENV || 'development').toLowerCase();
 
 const useBasicConfig = () => ({
@@ -51,10 +51,10 @@ const useCookiesConfig = () => ({
 const useAuthConfig = () => ({
   env: {
     PRIVATE_ROUTES: process.env.PRIVATE_ROUTES || '/chat,/team,/settings/',
-    AUTH_WEB: (AUTH_WEB = process.env.AUTH_WEB || `${APP_URI}/user`),
-    NEXT_PUBLIC_AUTH_WEB: AUTH_WEB,
-    AGINTERACTIVE_SERVER: (AGINTERACTIVE_SERVER = process.env.AGINTERACTIVE_SERVER || 'https://api.ai.zephyrex.dev'),
-    NEXT_PUBLIC_AGINTERACTIVE_SERVER: AGINTERACTIVE_SERVER,
+    AUTH_URI: (AUTH_URI = process.env.AUTH_URI || `${APP_URI}/user`),
+    NEXT_PUBLIC_AUTH_URI: AUTH_URI,
+    API_URI: (API_URI = process.env.API_URI || 'https://api.ai.zephyrex.dev'),
+    NEXT_PUBLIC_API_URI: API_URI,
     NEXT_PUBLIC_ALLOW_EMAIL_SIGN_IN: process.env.ALLOW_EMAIL_SIGN_IN || 'true',
   },
 });
@@ -171,11 +171,11 @@ const useAGInteractiveConfig = () => ({
     NEXT_PUBLIC_AGINTERACTIVE_CHAIN: process.env.AGINTERACTIVE_CHAIN || '',
     NEXT_PUBLIC_AGINTERACTIVE_CHAIN_ARGS: process.env.AGINTERACTIVE_CHAIN_ARGS || '{}',
   },
-  images: AGINTERACTIVE_SERVER && {
+  images: API_URI && {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: AGINTERACTIVE_SERVER.split('://')[1].split(':')[0].split('/')[0],
+        hostname: API_URI.split('://')[1].split(':')[0].split('/')[0],
         port: '',
         pathname: '/outputs/**',
       },

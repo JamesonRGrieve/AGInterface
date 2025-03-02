@@ -40,7 +40,7 @@ export const ConnectedServices = () => {
   const fetchConnections = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/v1/oauth2`, {
         headers: {
           Authorization: getCookie('jwt'),
         },
@@ -69,7 +69,7 @@ export const ConnectedServices = () => {
 
   const handleDisconnect = async (provider: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2/${provider.toLowerCase()}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URI}/v1/oauth2/${provider.toLowerCase()}`, {
         headers: {
           Authorization: getCookie('jwt'),
         },
@@ -97,10 +97,10 @@ export const ConnectedServices = () => {
       }
 
       const result = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/oauth2/${provider}`,
+        `${process.env.NEXT_PUBLIC_API_URI}/v1/oauth2/${provider}`,
         {
           code: response.code,
-          referrer: `${process.env.NEXT_PUBLIC_AUTH_WEB}/close/${provider}`,
+          referrer: `${process.env.NEXT_PUBLIC_AUTH_URI}/close/${provider}`,
         },
         {
           headers: {
@@ -167,7 +167,7 @@ export const ConnectedServices = () => {
                     responseType='code'
                     clientId={provider.client_id}
                     state={getCookie('jwt')}
-                    redirectUri={`${process.env.NEXT_PUBLIC_AUTH_WEB}/close/${service.provider.toLowerCase()}`}
+                    redirectUri={`${process.env.NEXT_PUBLIC_AUTH_URI}/close/${service.provider.toLowerCase()}`}
                     scope={provider.scope}
                     onSuccess={onSuccess}
                     onFailure={onSuccess}

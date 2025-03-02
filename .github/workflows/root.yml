@@ -13,7 +13,7 @@ jobs:
       registry-repo-name: AGInteractive
       registry-readme: ./docs/README.md
       build-args: |
-        AGINTERACTIVE_SERVER=http://aginfrastructure:7437
+        API_URI=http://aginfrastructure:7437
         APP_NAME=AGInteractive CICD
         APP_URI=http://aginteractive:1109
       tags: |

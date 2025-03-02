@@ -90,8 +90,8 @@ const pageConfigDefaults: AuthenticationConfig = {
     heading: 'Error',
   },
   appName: process.env.NEXT_PUBLIC_APP_NAME,
-  authBaseURI: process.env.NEXT_PUBLIC_AUTH_WEB,
-  authServer: process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER,
+  authBaseURI: process.env.NEXT_PUBLIC_AUTH_URI,
+  authServer: process.env.NEXT_PUBLIC_API_URI,
   authModes: {
     basic: false,
     oauth2: Object.values(oAuth2Providers).some((provider) => !!provider.client_id),

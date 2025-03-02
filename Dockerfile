@@ -5,7 +5,7 @@ COPY package*.json ./
 RUN npm install -g npm@latest && npm i lightningcss-linux-arm64-musl @tailwindcss/oxide-linux-arm64-musl
 RUN npm ci
 COPY . .
-ARG AGINTERACTIVE_SERVER
+ARG API_URI
 ARG APP_NAME
 ARG APP_URI
 RUN chmod +x ./env.sh && ./env.sh

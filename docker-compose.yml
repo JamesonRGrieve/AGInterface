@@ -8,7 +8,7 @@ services:
       UVICORN_WORKERS: ${UVICORN_WORKERS:-10}
       AGINTERACTIVE_API_KEY: ${AGINTERACTIVE_API_KEY:-None}
       AGINTERACTIVE_URI: ${AGINTERACTIVE_URI:-http://aginfrastructure:7437}
-      MAGIC_LINK_URL: ${AUTH_WEB:-http://localhost:1109}
+      MAGIC_LINK_URL: ${AUTH_URI:-http://localhost:1109}
       DISABLED_EXTENSIONS: ${DISABLED_EXTENSIONS}
       DISABLED_PROVIDERS: ${DISABLED_PROVIDERS}
       WORKING_DIRECTORY: ${WORKING_DIRECTORY:-/aginfrastructure/WORKSPACE}
@@ -83,7 +83,7 @@ services:
         NEXT_TELEMETRY_DISABLED: 1
         AGINTERACTIVE_AGENT: ${AGINTERACTIVE_AGENT:-XT}
         AGINTERACTIVE_FOOTER_MESSAGE: ${AGINTERACTIVE_FOOTER_MESSAGE:-JamesonRGrieve 2024}
-        AGINTERACTIVE_SERVER: ${AGINTERACTIVE_SERVER:-http://localhost:7437}
+        API_URI: ${API_URI:-http://localhost:7437}
         APP_DESCRIPTION: ${APP_DESCRIPTION-AGInfrastructure is an advanced artificial intelligence agent orchestration platform.}
         APP_NAME: ${APP_NAME:-AGInteractive}
         APP_URI: ${APP_URI:-http://localhost:1109}
