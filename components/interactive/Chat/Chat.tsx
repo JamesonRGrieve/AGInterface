@@ -1,14 +1,18 @@
 'use client';
 
-import { SidebarContent } from '@/components/jrg/appwrapper/SidebarContentManager';
-import { useCompany } from '@/components/jrg/auth/hooks/useUser';
-import log from '@/components/jrg/next-log/log';
-import { toast } from '@/hooks/useToast';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
+import { Badge, Check, Download, Paperclip, Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
+
+import { SidebarContent } from '@/components/jrg/appwrapper/SidebarContentManager';
+import { useCompany } from '@/components/jrg/auth/hooks/useUser';
+import log from '@/components/jrg/next-log/log';
+import { Input } from '@/components/ui/input';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { toast } from '@/hooks/useToast';
 import { UIProps } from '../AGInteractive';
 import { InteractiveConfigContext, Overrides } from '../InteractiveConfigContext';
 import { useConversations } from '../hooks/useConversation';
@@ -16,33 +20,39 @@ import ChatBar from './ChatInput';
 import ChatLog from './ChatLog';
 
 export async function getAndFormatConversastion(state): Promise<any[]> {
-  const rawConversation = await state.sdk.getConversation('', state.overrides.conversation, 100, 1);
+  const rawConversation = await state.aginteractive.getConversation('', state.overrides.conversation, 100, 1);
   log(['Raw conversation: ', rawConversation], { client: 3 });
   return rawConversation.reduce((accumulator, currentMessage: { id: string; message: string }) => {
-    const messageType = currentMessage.message.split(' ')[0];
-    if (messageType.startsWith('[SUBACTIVITY]')) {
-      let target;
-      const parent = messageType.split('[')[2].split(']')[0];
+    try {
+      log(['Processing message: ', currentMessage], { client: 3 });
+      const messageType = currentMessage.message.split(' ')[0];
+      if (messageType.startsWith('[SUBACTIVITY]')) {
+        let target;
+        const parent = messageType.split('[')[2].split(']')[0];
 
-      const parentIndex = accumulator.findIndex((message) => {
-        return message.id === parent || message.children.some((child) => child.id === parent);
-      });
-      if (parentIndex !== -1) {
-        if (accumulator[parentIndex].id === parent) {
-          target = accumulator[parentIndex];
+        const parentIndex = accumulator.findIndex((message) => {
+          return message.id === parent || message.children.some((child) => child.id === parent);
+        });
+        if (parentIndex !== -1) {
+          if (accumulator[parentIndex].id === parent) {
+            target = accumulator[parentIndex];
+          } else {
+            target = accumulator[parentIndex].children.find((child) => child.id === parent);
+          }
+          target.children.push({ ...currentMessage, children: [] });
         } else {
-          target = accumulator[parentIndex].children.find((child) => child.id === parent);
+          throw new Error(
+            `Parent message not found for subactivity ${currentMessage.id} - ${currentMessage.message}, parent ID: ${parent}`,
+          );
         }
-        target.children.push({ ...currentMessage, children: [] });
       } else {
-        throw new Error(
-          `Parent message not found for subactivity ${currentMessage.id} - ${currentMessage.message}, parent ID: ${parent}`,
-        );
+        accumulator.push({ ...currentMessage, children: [] });
       }
-    } else {
-      accumulator.push({ ...currentMessage, children: [] });
+      return accumulator;
+    } catch (e) {
+      console.error(e);
+      return accumulator;
     }
-    return accumulator;
   }, []);
 }
 
@@ -71,6 +81,7 @@ export default function Chat({
     },
   );
   const { data: activeCompany } = useCompany();
+  console.log('CONVERSATION DATA: ', conversation);
   useEffect(() => {
     if (Array.isArray(state.overrides.conversation)) {
       state.mutate((oldState) => ({
@@ -115,7 +126,7 @@ export default function Chat({
     mutate(conversationSWRPath + state.overrides.conversation);
     try {
       const completionResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/chat/completions`,
+        `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/v1/chat/completions`,
         {
           ...toOpenAI,
         },
@@ -138,9 +149,9 @@ export default function Chat({
         router.push(`/chat/${chatCompletion.id}`);
         // let response;
         // if (state.overrides.conversation === '-') {
-        //   response = await state.sdk.renameConversation(state.agent, state.overrides.conversation);
+        //   response = await state.aginteractive.renameConversation(state.agent, state.overrides.conversation);
         //   // response = await axios.put(
-        //   //   `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/conversation`,
+        //   //   `${process.env.NEXT_PUBLIC_AGINFRASTRUCTURE_SERVER}/api/conversation`,
         //   //   {
         //   //     agent_name: state.agent,
         //   //     conversation_name: state.overrides?.conversation,
@@ -177,7 +188,7 @@ export default function Chat({
     }
   }
   const handleDeleteConversation = async (): Promise<void> => {
-    await state.sdk.deleteConversation(currentConversation?.id || '-');
+    await state.aginteractive.deleteConversation(currentConversation?.id || '-');
     await mutate();
     state.mutate((oldState) => ({
       ...oldState,
@@ -187,7 +198,7 @@ export default function Chat({
 
   const handleExportConversation = async (): Promise<void> => {
     // Get the full conversation content
-    const conversationContent = await state.sdk.getConversation('', currentConversation?.id || '-');
+    const conversationContent = await state.aginteractive.getConversation('', currentConversation?.id || '-');
 
     // Format the conversation for export
     const exportData = {
@@ -225,6 +236,12 @@ export default function Chat({
       }, 1000);
     }
   }, [loading, state.overrides.conversation]);
+  const [renaming, setRenaming] = useState(false);
+  useEffect(() => {
+    if (renaming) {
+      setNewName(currentConversation?.name || '');
+    }
+  }, [renaming, currentConversation]);
   useEffect(() => {
     return () => {
       setLoading(false);
@@ -265,7 +282,7 @@ export default function Chat({
                 icon: renaming ? Check : Pencil,
                 func: renaming
                   ? () => {
-                      state.sdk.renameConversation(state.agent, currentConversation.id, newName);
+                      state.aginteractive.renameConversation(state.agent, currentConversation.id, newName);
                       setRenaming(false);
                     }
                   : () => setRenaming(true),
