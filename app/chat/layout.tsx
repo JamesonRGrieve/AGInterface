@@ -1,7 +1,13 @@
 'use client';
 
+import { useConversations } from '@/components/interactive/hooks/useConversation';
+import { InteractiveConfigContext } from '@/components/interactive/InteractiveConfigContext';
 import { SidebarMain } from '@/components/jrg/appwrapper/SidebarHeader';
-import { SidebarInset } from '@/components/ui/sidebar';
+import { Badge } from '@/components/ui/badge';
+import { SidebarHeader, SidebarInset } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Paperclip } from 'lucide-react';
+import { useContext } from 'react';
 
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
   const state = useContext(InteractiveConfigContext);
@@ -28,10 +34,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
                 )}
               </>
             )}
-
-            {!isLoadingConversations && !currentConversation && <p className='text-sm text-muted-foreground'>New Chat</p>}
           </div>
-          <ConversationActions currentConversation={currentConversation || { id: '-' }} />
         </div>
       </SidebarHeader>
       <SidebarMain className='px-0'>{children}</SidebarMain>
