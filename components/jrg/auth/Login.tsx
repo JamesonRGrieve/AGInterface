@@ -1,20 +1,20 @@
 'use client';
 
-import React, { FormEvent, ReactNode, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import { getCookie } from 'cookies-next';
-import { useRouter } from 'next/navigation';
-import QRCode from 'react-qr-code';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { LuCheck as Check, LuCopy as Copy } from 'react-icons/lu';
-import { useAuthentication } from './Router';
-import AuthCard from './AuthCard';
-import { AuthenticatorHelp as MissingAuthenticator } from './mfa/MissingAuthenticator';
+import { useAssertion } from '@/components/jrg/assert/assert';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { validateURI } from '@/lib/validation';
-import { useAssertion } from '@/components/jrg/assert/assert';
-import { Button } from '@/components/ui/button';
+import axios, { AxiosError } from 'axios';
+import { getCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
+import { FormEvent, ReactNode, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { LuCheck as Check, LuCopy as Copy } from 'react-icons/lu';
+import QRCode from 'react-qr-code';
+import AuthCard from './AuthCard';
+import { AuthenticatorHelp as MissingAuthenticator } from './mfa/MissingAuthenticator';
+import { useAuthentication } from './Router';
 
 export type LoginProps = {
   userLoginEndpoint?: string;
@@ -87,7 +87,7 @@ export default function Login({
               Scan the above QR code with Microsoft Authenticator, Google Authenticator or equivalent (or click the copy
               button if you are using your Authenticator device).
             </p>
-            <CopyButton otp_uri={otp_uri} />
+            <CopyButton content={otp_uri} label={'Copy Link'} />
           </div>
         )}
         <input type='hidden' id='email' name='email' value={getCookie('email')} />
@@ -118,7 +118,7 @@ export default function Login({
   );
 }
 
-const CopyButton = ({ otp_uri }: { otp_uri: string }) => {
+export const CopyButton = ({ content, label = 'Copy' }: { content: string; label?: string }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   return (
@@ -129,12 +129,12 @@ const CopyButton = ({ otp_uri }: { otp_uri: string }) => {
       className='flex items-center gap-2 mx-auto'
       onClick={() => {
         setIsCopied(true);
-        navigator.clipboard.writeText(otp_uri);
+        navigator.clipboard.writeText(content);
         setTimeout(() => setIsCopied(false), 2000);
       }}
     >
       {isCopied ? <Check className='w-4 h-4' /> : <Copy className='w-4 h-4' />}
-      {isCopied ? 'Copied!' : 'Copy Link'}
+      {isCopied ? 'Copied!' : label}
     </Button>
   );
 };
