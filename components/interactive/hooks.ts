@@ -37,7 +37,7 @@
 //  * @returns Configured GraphQLClient instance
 //  */
 // export const createGraphQLClient = (): GraphQLClient =>
-//   new GraphQLClient(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/graphql`, {
+//   new GraphQLClient(`${process.env.NEXT_PUBLIC_API_URI}/graphql`, {
 //     headers: { authorization: getCookie('jwt') || '' },
 //   });
 
@@ -156,7 +156,7 @@
 //               client: 3,
 //             });
 //             toReturn.extensions = (
-//               await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${toReturn.agent.name}/extensions`, {
+//               await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/api/agent/${toReturn.agent.name}/extensions`, {
 //                 headers: {
 //                   Authorization: getCookie('jwt'),
 //                 },

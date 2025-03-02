@@ -36,7 +36,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
     } else if (creating) {
       try {
         const newResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent`,
+          `${process.env.NEXT_PUBLIC_API_URI}/api/agent`,
           { agent_name: newName, settings: { company_id: companyData.id } },
           {
             headers: {

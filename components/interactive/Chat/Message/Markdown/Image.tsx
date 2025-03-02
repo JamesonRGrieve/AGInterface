@@ -10,7 +10,7 @@ export interface ImageProps {
 export default function MarkdownImage({ src, alt, className, ...props }: ImageProps): ReactNode {
   if (!src) return null;
 
-  const isAGInfrastructureServer = src.startsWith(process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER as string);
+  const isAGInfrastructureServer = src.startsWith(process.env.NEXT_PUBLIC_API_URI as string);
 
   return (
     <div className={`relative w-full h-80 ${className || ''}`} {...props}>

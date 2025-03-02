@@ -114,8 +114,8 @@ export function Extensions() {
     try {
       const result = await axios.patch(
         searchParams.get('mode') === 'company'
-          ? `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${activeCompany?.id}/command`
-          : `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}/command`,
+          ? `${process.env.NEXT_PUBLIC_API_URI}/v1/companies/${activeCompany?.id}/command`
+          : `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${agent_name}/command`,
 
         {
           command_name: commandName,
@@ -148,7 +148,7 @@ export function Extensions() {
     try {
       setError(null);
       const response = await axios.put<{ status: number; data: any }>(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}`,
+        `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${agent_name}`,
         {
           agent_name: agent_name,
           settings: settings,

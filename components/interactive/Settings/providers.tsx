@@ -110,7 +110,7 @@ export function Providers() {
     try {
       setError(null);
       const response = await axios.put<{ status: number; data: any }>(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${agent_name}`,
+        `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${agent_name}`,
         {
           agent_name: agent_name,
           settings: settings,

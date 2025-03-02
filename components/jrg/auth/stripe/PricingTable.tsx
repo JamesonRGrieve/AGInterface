@@ -170,7 +170,7 @@ export function PricingCard({
               onClick={async () => {
                 const checkout_uri = (
                   await axios.post(
-                    process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER + '/v1/checkout',
+                    process.env.NEXT_PUBLIC_API_URI + '/v1/checkout',
                     {
                       cart: [
                         {

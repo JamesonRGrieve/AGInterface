@@ -80,7 +80,7 @@ export function useCompany(id?: string): SWRResponse<Company | null> {
           if (!targetCompany) return null;
           targetCompany.extensions = (
             await axios.get(
-              `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${targetCompany.id}/extensions`,
+              `${process.env.NEXT_PUBLIC_API_URI}/v1/companies/${targetCompany.id}/extensions`,
 
               {
                 headers: {

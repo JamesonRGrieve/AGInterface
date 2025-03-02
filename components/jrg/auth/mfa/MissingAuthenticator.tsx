@@ -14,7 +14,7 @@ export const AuthenticatorHelp = () => {
   const handleEmailSend = async () => {
     setLoading((prev) => ({ ...prev, email: true }));
     axios.post(
-      `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user/mfa/email`,
+      `${process.env.NEXT_PUBLIC_API_URI}/v1/user/mfa/email`,
       {
         email: getCookie('email'),
       },

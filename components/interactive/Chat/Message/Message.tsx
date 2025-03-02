@@ -104,7 +104,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
     setIsLoadingAudio(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/conversation/${state.overrides.conversation}/tts/${chatItem.id}`,
+        `${process.env.NEXT_PUBLIC_API_URI}/v1/conversation/${state.overrides.conversation}/tts/${chatItem.id}`,
         {
           method: 'GET',
           headers: {
@@ -216,7 +216,7 @@ export default function Message({ chatItem, lastUserMessage, setLoading }: Messa
                   size='icon'
                   onClick={async () => {
                     try {
-                      const response = await fetch(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/conversation/fork`, {
+                      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/api/conversation/fork`, {
                         method: 'POST',
                         headers: {
                           Authorization: getCookie('jwt'),

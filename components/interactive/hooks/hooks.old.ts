@@ -34,7 +34,7 @@ export function useOldActiveCompany() {
     [`/companies`, companyData?.id ?? null],
     async () => {
       const companies = await state.sdk.getCompanies();
-      const user = await axios.get(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/user`, {
+      const user = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/v1/user`, {
         headers: {
           Authorization: getCookie('jwt'),
         },

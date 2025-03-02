@@ -102,7 +102,7 @@ export function MessageActions({
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
+                    `${process.env.NEXT_PUBLIC_API_URI}/v1/conversation/fork/${state.overrides?.conversation}/${chatItem.id}`,
                     {
                       method: 'POST',
                       headers: {

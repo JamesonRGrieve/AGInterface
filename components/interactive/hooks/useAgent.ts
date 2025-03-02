@@ -125,7 +125,7 @@ export function useAgent(
             });
             toReturn.extensions = (
               await axios.get(
-                `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/api/agent/${toReturn.agent.name}/extensions`,
+                `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${toReturn.agent.name}/extensions`,
                 {
                   headers: {
                     Authorization: getCookie('jwt'),

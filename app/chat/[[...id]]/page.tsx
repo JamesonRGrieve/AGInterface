@@ -16,7 +16,7 @@ export default function Home({ params }: { params: { id: string } }) {
           alternateBackground: 'primary',
         }}
         serverConfig={{
-          backEndURI: process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER as string,
+          backEndURI: process.env.NEXT_PUBLIC_API_URI as string,
           apiKey: cookies().get('jwt')?.value ?? '',
         }}
         agent={process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || 'XT'}

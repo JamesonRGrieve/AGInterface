@@ -9,7 +9,7 @@ import { InteractiveConfig, InteractiveConfigContext, InteractiveConfigDefault }
 export default function InteractiveConfigContextWrapper({
   initialState = InteractiveConfigDefault,
   apiKey = getCookie('jwt') || '',
-  backEndURI: backEndURI = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER,
+  backEndURI: backEndURI = process.env.NEXT_PUBLIC_API_URI,
   children,
 }: {
   requireKey?: boolean;

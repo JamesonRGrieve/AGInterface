@@ -179,7 +179,7 @@ const Training = (): React.ReactElement => {
   const { data: activeCompany } = useCompany();
 
   const apiKey = getCookie('jwt') || '';
-  const apiServer = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER as string;
+  const apiServer = process.env.NEXT_PUBLIC_API_URI as string;
   const agentName = getCookie('aginteractive-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || DEFAULT_AGENT;
   const router = useRouter();
   useEffect(() => {

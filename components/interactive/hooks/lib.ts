@@ -12,7 +12,7 @@ import { GraphQLClient } from 'graphql-request';
  * @returns Configured GraphQLClient instance
  */
 export const createGraphQLClient = (): GraphQLClient =>
-  new GraphQLClient(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/graphql`, {
+  new GraphQLClient(`${process.env.NEXT_PUBLIC_API_URI}/graphql`, {
     headers: { authorization: getCookie('jwt') || '' },
   });
 

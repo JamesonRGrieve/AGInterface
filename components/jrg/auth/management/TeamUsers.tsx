@@ -174,7 +174,7 @@ export const Team = () => {
               <DropdownMenuItem
                 onClick={(e) => {
                   axios.delete(
-                    `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${activeCompany?.id}/users/${row.original.id}`,
+                    `${process.env.NEXT_PUBLIC_API_URI}/v1/companies/${activeCompany?.id}/users/${row.original.id}`,
                     {
                       headers: {
                         'Content-Type': 'application/json',
@@ -328,7 +328,7 @@ export const Team = () => {
               <DropdownMenuItem
                 className='text-destructive'
                 onClick={async () => {
-                  await axios.delete(`${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/invitation/${row.original.id}`, {
+                  await axios.delete(`${process.env.NEXT_PUBLIC_API_URI}/v1/invitation/${row.original.id}`, {
                     headers: {
                       Authorization: getCookie('jwt'),
                     },
@@ -354,7 +354,7 @@ export const Team = () => {
       try {
         const companyId = activeCompany?.id;
         await axios.put(
-          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${companyId}`,
+          `${process.env.NEXT_PUBLIC_API_URI}/v1/companies/${companyId}`,
           { name: newName },
           {
             headers: {
@@ -372,7 +372,7 @@ export const Team = () => {
     } else {
       try {
         const newResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies`,
+          `${process.env.NEXT_PUBLIC_API_URI}/v1/companies`,
           { name: newName, agent_name: newName + ' Agent', ...(newParent ? { parent_company_id: newParent } : {}) },
           {
             headers: {
@@ -398,7 +398,7 @@ export const Team = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/invitations`,
+        `${process.env.NEXT_PUBLIC_API_URI}/v1/invitations`,
         {
           email: email,
           role_id: parseInt(roleId),

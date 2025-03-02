@@ -39,7 +39,7 @@ export const Team = () => {
     if (renaming) {
       try {
         await axios.put(
-          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies/${activeCompany?.id}`,
+          `${process.env.NEXT_PUBLIC_API_URI}/v1/companies/${activeCompany?.id}`,
           { name: newName },
           {
             headers: {
@@ -57,7 +57,7 @@ export const Team = () => {
     } else {
       try {
         const newResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/companies`,
+          `${process.env.NEXT_PUBLIC_API_URI}/v1/companies`,
           { name: newName, agent_name: newName + ' Agent', ...(newParent ? { parent_company_id: newParent } : {}) },
           {
             headers: {
@@ -83,7 +83,7 @@ export const Team = () => {
     }
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER}/v1/invitations`,
+        `${process.env.NEXT_PUBLIC_API_URI}/v1/invitations`,
         {
           email: email,
           role_id: parseInt(roleId),
