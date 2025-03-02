@@ -10,7 +10,9 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { ViewVerticalIcon } from '@radix-ui/react-icons';
+import { getCookie } from 'cookies-next';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import { useSidebarContent } from './SidebarContentManager';
 
 const visibleOnPaths = ['/chat', '/settings/prompts'];
@@ -41,4 +43,7 @@ export function SidebarContext({ ...props }: React.ComponentProps<typeof Sidebar
       <SidebarRail side='right' />
     </Sidebar>
   );
+}
+function setHasStarted(arg0: boolean) {
+  throw new Error('Function not implemented.');
 }
