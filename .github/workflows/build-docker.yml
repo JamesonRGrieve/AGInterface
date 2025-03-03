@@ -139,6 +139,7 @@ jobs:
       packages: write
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         platform: [linux/amd64, linux/arm64/v8]
 
@@ -192,7 +193,7 @@ jobs:
           cache-from: ${{ inputs.cache-from }}
           cache-to: ${{ inputs.cache-to }}
           push: false
-          tags: ${{ needs.prepare.outputs.image-names }}:${{ matrix.platform }}
+          tags: ${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-${{ matrix.platform }}
           outputs: type=docker,dest=/tmp/image.tar
 
       # Upload the image tar for the publishing job
@@ -263,8 +264,8 @@ jobs:
         if: inputs.push
         run: |
           # Get the images we just loaded
-          amd64_image="${{ needs.prepare.outputs.image-names }}:linux/amd64"
-          arm64_image="${{ needs.prepare.outputs.image-names }}:linux/arm64/v8"
+          amd64_image="${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-linux-amd64"
+          arm64_image="${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-linux-arm64-v8"
 
           echo "Creating manifest for ${{ needs.prepare.outputs.image-names }}"
 
