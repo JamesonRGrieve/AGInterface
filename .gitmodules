@@ -1,0 +1,3 @@
+[submodule "interactive"]
+	path = interactive
+	url = git@github.com:JamesonRGrieve/AGInteractive.git
