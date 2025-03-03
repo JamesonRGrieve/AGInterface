@@ -1,18 +1,24 @@
 [submodule "interactive"]
-	path = interactive
-	url = git@github.com:JamesonRGrieve/AGInteractive.git
+path = interactive
+url = git@github.com:JamesonRGrieve/AGInteractive.git
+branch = main
 [submodule "components/jrg/next-log"]
-	path = components/jrg/next-log
-	url = git@github.com:JamesonRGrieve/next-log.git
+path = components/jrg/next-log
+url = git@github.com:JamesonRGrieve/next-log.git
+branch = main
 [submodule "components/jrg/auth"]
-	path = components/jrg/auth
-	url = git@github.com:JamesonRGrieve/auth.git
+path = components/jrg/auth
+url = git@github.com:JamesonRGrieve/auth.git
+branch = dev
 [submodule "components/jrg/appwrapper"]
-	path = components/jrg/appwrapper
-	url = git@github.com:JamesonRGrieve/appwrapper.git
+path = components/jrg/appwrapper
+url = git@github.com:JamesonRGrieve/appwrapper.git
+branch = dev
 [submodule "components/jrg/dynamic-form"]
-	path = components/jrg/dynamic-form
-	url = git@github.com:JamesonRGrieve/dynamic-form.git
+path = components/jrg/dynamic-form
+url = git@github.com:JamesonRGrieve/dynamic-form.git
+branch = dev
 [submodule "components/jrg/zod2gql"]
-	path = components/jrg/zod2gql
-	url = git@github.com:JamesonRGrieve/zod2gql.git
+path = components/jrg/zod2gql
+url = git@github.com:JamesonRGrieve/zod2gql.git
+branch = main
