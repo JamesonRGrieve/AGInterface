@@ -193,14 +193,14 @@ jobs:
           cache-to: ${{ inputs.cache-to }}
           push: false
           tags: ${{ needs.prepare.outputs.image-names }}:${{ matrix.platform }}
-          outputs: type=docker,dest=/tmp/${{ matrix.platform }}.tar
+          outputs: type=docker,dest=/tmp/image.tar
 
       # Upload the image tar for the publishing job
       - name: Upload tar artifact
         uses: actions/upload-artifact@v4
         with:
           name: image-${{ matrix.platform }}
-          path: /tmp/${{ matrix.platform }}.tar
+          path: /tmp/image.tar
           retention-days: 1
 
   publish:
@@ -249,9 +249,12 @@ jobs:
       # Load all images
       - name: Load images
         run: |
-          for platform_tar in /tmp/images/image-*/*.tar; do
-            echo "Loading $platform_tar"
-            docker load --input "$platform_tar"
+          for platform_dir in /tmp/images/image-*; do
+            echo "Loading images from $platform_dir"
+            for tar_file in "$platform_dir"/*.tar; do
+              echo "Loading $tar_file"
+              docker load --input "$tar_file"
+            done
           done
 
       # Create and push the manifest
