@@ -35,9 +35,36 @@ export const getQueryParams = (req: NextRequest): any =>
 
 export const getRequestedURI = (req: NextRequest): string => {
   console.log(`Processing: ${req.url}`);
-  return req.url
-    .split('?')[0]
-    .replace(/localhost:\d+/, (process.env.APP_URI || '').replace('https://', '').replace('http://', ''));
+
+  const appUri = process.env.APP_URI || '';
+  const singleWordDomainRegex = /^[a-zA-Z\d-]+$/; // Match single word domains (no TLD)
+
+  // Parse the URL
+  const url = new URL(req.url);
+
+  // Match the protocol, domain, and optional port
+  const processedUrl = url.origin.replace(/https?:\/\/([a-zA-Z\d.-]+)(?::\d+)?/, (match, domain) => {
+    // If the domain is a single word (like localhost or 0f86ff25b193), replace it with APP_URI
+    if (singleWordDomainRegex.test(domain)) {
+      // Remove trailing slash from appUri if it exists
+      const cleanAppUri = appUri.replace(/\/$/, '');
+
+      // Get the path without leading slash
+      const path = url.pathname.replace(/^\//, '');
+
+      // Check if the path is already included in the APP_URI
+      if (cleanAppUri.endsWith(path)) {
+        return cleanAppUri;
+      }
+
+      // Rebuild the URL with the APP_URI and path
+      return `${cleanAppUri}/${path}`;
+    }
+    return match; // Return the match as is if the domain is not a single word
+  });
+
+  // Combine the processed URL with the original path and search params
+  return `${processedUrl}${url.search}`;
 };
 
 export const getJWT = (req: NextRequest) => {
