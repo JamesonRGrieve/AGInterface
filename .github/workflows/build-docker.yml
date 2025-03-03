@@ -80,7 +80,7 @@ jobs:
     strategy:
       matrix:
         platform: [linux/amd64, linux/arm64/v8]
-    
+      fail-fast: false
     outputs:
       image-names: ${{ steps.set-image-names.outputs.image-names }}
       registry-readme: ${{ steps.set-registry-readme.outputs.registry-readme }}
