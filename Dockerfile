@@ -20,6 +20,7 @@ RUN apk add --no-cache python3 libusb eudev make g++ linux-headers eudev-libs
 COPY package*.json ./
 RUN npm install -g npm@latest && npm ci --omit=dev
 
+COPY --from=builder /nursegpt-build/server-wrapper.js /aginterface/
 COPY --from=builder /aginterface-build/public /aginterface/public
 COPY --from=builder /aginterface-build/.next/standalone /aginterface/
 COPY --from=builder /aginterface-build/.next/static /aginterface/.next/static
