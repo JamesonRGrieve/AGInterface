@@ -23,7 +23,7 @@ export default function Home() {
         </div>
         <div className='flex items-center gap-2'>
           <ThemeToggle initialTheme={cookies().get('theme')?.value} />
-          <Link href={process.env.NEXT_PUBLIC_AUTH_WEB || '/user'}>
+          <Link href={process.env.NEXT_PUBLIC_AUTH_URI || '/user'}>
             <Button size='lg' className='px-4 rounded-full'>
               Login or Register
             </Button>

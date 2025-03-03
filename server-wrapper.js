@@ -15,7 +15,7 @@ global.__RUNTIME_CONFIG__ = {
     // Add your runtime variables here
     AGINFRASTRUCTURE_SERVER: process.env.AGINFRASTRUCTURE_SERVER,
     APP_URI: process.env.APP_URI,
-    AUTH_WEB: process.env.AUTH_WEB,
+    AUTH_URI: process.env.AUTH_URI,
     // Add other variables you want to be available at runtime
 };
 
