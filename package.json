@@ -1,5 +1,5 @@
 {
-  "name": "aginteractive",
+  "name": "aginterface",
   "version": "0.0.0",
   "scripts": {
     "dev": "rm -rf ./.next && next dev -p 1109",
