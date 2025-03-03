@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import NewPromptDialog from '@/interactive/Settings/prompt/PromptDialog';
+import PromptPanel from '@/interactive/Settings/prompt/PromptPanel';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useInteractiveConfig } from '@/components/interactive/InteractiveConfigContext';
-import PromptPanel from '@/components/interactive/Settings/prompt/PromptPanel';
-import NewPromptDialog from '@/components/interactive/Settings/prompt/PromptDialog';
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
-import { SidebarContent } from '@/components/jrg/appwrapper/SidebarContentManager';
+import { useState } from 'react';
 
 export default function PromptPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);

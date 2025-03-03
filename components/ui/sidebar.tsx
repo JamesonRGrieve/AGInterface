@@ -1,6 +1,6 @@
 'use client';
 
-import { useIsMobile } from '@/components/jrg/appwrapper/hooks/useMobile';
+import { useIsMobile } from '@/appwrapper/hooks/useMobile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';

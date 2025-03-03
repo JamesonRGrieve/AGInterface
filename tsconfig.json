@@ -23,8 +23,12 @@
     "paths": {
       "@/*": ["./*"],
       "@/jrg/*": ["./components/jrg/*"],
-      "@/auth/*": ["./components/jrg/auth/*"],
-      "@/interactive/*": ["./components/interactive/*"]
+      "@/next-log/*": ["./components/jrg/next-log/src/*"],
+      "@/zod2gql/*": ["./components/jrg/zod2gql/src/*"],
+      "@/auth/*": ["./components/jrg/auth/src/*"],
+      "@/appwrapper/*": ["./components/jrg/appwrapper/src/*"],
+      "@/dynamic-form/*": ["./components/jrg/dynamic-form/src/*"],
+      "@/interactive/*": ["./interactive/src/*"]
     }
   },
   "include": [

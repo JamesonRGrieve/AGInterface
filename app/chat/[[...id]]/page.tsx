@@ -1,4 +1,4 @@
-import AGInteractive from '@/components/interactive/AGInteractive';
+import AGInteractive from '@/interactive/AGInteractive';
 import { cookies } from 'next/headers';
 import ConvSwitch from './ConvSwitch';
 

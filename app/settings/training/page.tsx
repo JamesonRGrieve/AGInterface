@@ -1,8 +1,8 @@
 'use client';
 
-import Training from '@/components/interactive/Settings/training';
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
-import { useUser } from '@/components/jrg/auth/hooks/useUser';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import { useUser } from '@/auth/hooks/useUser';
+import Training from '@/interactive/Settings/training';
 export default function TrainingPage() {
   const { data: user, isLoading } = useUser();
 

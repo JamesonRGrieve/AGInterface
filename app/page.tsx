@@ -1,6 +1,6 @@
-import InteractiveHome from '@/components/interactive/Home';
-import { ThemeToggle } from '@/components/jrg/theme/ThemeToggle';
 import { Button } from '@/components/ui/button';
+import InteractiveHome from '@/interactive/Home';
+import { ThemeToggle } from '@/jrg/theme/ThemeToggle';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';

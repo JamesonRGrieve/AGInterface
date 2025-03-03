@@ -1,7 +1,7 @@
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
 import fs from 'fs';
 import path from 'path';
-import MarkdownBlock from '@/components/interactive/Chat/Message/MarkdownBlock';
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
 
 // Read privacy policy from a local file
 function getPrivacyPolicy() {

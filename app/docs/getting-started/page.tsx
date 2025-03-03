@@ -1,6 +1,6 @@
 'use client';
 
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCookie } from 'cookies-next';
 import { useEffect, useState } from 'react';

@@ -1,10 +1,10 @@
 'use client';
 
-import { ReactNode } from 'react';
-import Link from 'next/link';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
 import { SidebarInset } from '@/components/ui/sidebar';
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ReactNode } from 'react';
 
 export default function UserLayout({ children }: { children: ReactNode }): ReactNode {
   const pathname = usePathname();

@@ -1,7 +1,7 @@
 'use client';
 
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
-import { useUser } from '@/components/jrg/auth/hooks/useUser';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import { useUser } from '@/auth/hooks/useUser';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,3 +1,18 @@
 [submodule "interactive"]
 	path = interactive
 	url = git@github.com:JamesonRGrieve/AGInteractive.git
+[submodule "components/jrg/next-log"]
+	path = components/jrg/next-log
+	url = git@github.com:JamesonRGrieve/next-log.git
+[submodule "components/jrg/auth"]
+	path = components/jrg/auth
+	url = git@github.com:JamesonRGrieve/auth.git
+[submodule "components/jrg/appwrapper"]
+	path = components/jrg/appwrapper
+	url = git@github.com:JamesonRGrieve/appwrapper.git
+[submodule "components/jrg/dynamic-form"]
+	path = components/jrg/dynamic-form
+	url = git@github.com:JamesonRGrieve/dynamic-form.git
+[submodule "components/jrg/zod2gql"]
+	path = components/jrg/zod2gql
+	url = git@github.com:JamesonRGrieve/zod2gql.git

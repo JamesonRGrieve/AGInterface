@@ -1,6 +1,6 @@
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
-import Team from '@/components/jrg/auth/management/Team';
-import TeamUsers from '@/components/jrg/auth/management/TeamUsers';
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import Team from '@/auth/management/Team';
+import TeamUsers from '@/auth/management/TeamUsers';
 
 export default function TeamPage() {
   return (

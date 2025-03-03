@@ -1,9 +1,9 @@
 'use client';
 
+import { SidebarPage } from '@/appwrapper/SidebarPage';
+import { ChainDialog } from '@/interactive/Settings/chain/ChainDialog';
+import ChainPanel from '@/interactive/Settings/chain/ChainPanel';
 import { useState } from 'react';
-import ChainPanel from '@/components/interactive/Settings/chain/ChainPanel';
-import { SidebarPage } from '@/components/jrg/appwrapper/SidebarPage';
-import { ChainDialog } from '@/components/interactive/Settings/chain/ChainDialog';
 
 export default function ChainPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
