@@ -62,176 +62,27 @@ on:
     outputs:
       digest:
         description: 'Digest of docker image'
-        value: ${{ jobs.publish.outputs.digest }}
+        value: ${{ jobs.build.outputs.digest }}
       primary-image:
         description: 'Primary full name of pushed docker image'
-        value: ${{ jobs.publish.outputs.primary-image }}
+        value: ${{ jobs.build.outputs.primary-image }}
     secrets:
       DOCKERHUB_TOKEN:
         required: false
 
 jobs:
-  prepare:
-    name: Prepare Build
-    runs-on: ${{ inputs.runs-on }}
-    outputs:
-      image-names: ${{ steps.set-image-names.outputs.image-names }}
-      registry-readme: ${{ steps.get-registry-readme.outputs.registry-readme }}
-      dockerhub-repo: ${{ steps.generate-dockerhub-path.outputs.dockerhub-repo }}
-      tags: ${{ steps.meta.outputs.tags }}
-
-    steps:
-      - name: Generate dockerhub full repo path
-        id: generate-dockerhub-path
-        if: inputs.registry-dockerhub-enable
-        run: |
-          echo "dockerhub-repo=${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_OUTPUT"
-
-      - name: Set image names
-        id: set-image-names
-        run: |
-          images=""
-          if ${{ inputs.registry-dockerhub-enable }} ; then
-            images="${images}${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }},"
-          fi
-          if ${{ inputs.registry-github-enable }} ; then
-            images="${images}ghcr.io/${{ github.repository_owner }}/${{ inputs.registry-repo-name }},"
-          fi
-          # Remove trailing comma
-          images=${images%,}
-          echo "image-names=${images}" >> "$GITHUB_OUTPUT"
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5.5.1
-        with:
-          images: ${{ steps.set-image-names.outputs.image-names }}
-          tags: ${{ inputs.tags }}
-          flavor: ${{ inputs.flavor }}
-
-      - name: Get remote registry readme
-        if: startsWith(inputs.registry-readme, 'https')
-        run: wget ${{ inputs.registry-readme }} -O README.docker.remote.md
-
-      - name: Set registry readme file path
-        id: get-registry-readme
-        run: |
-          if ${{ startsWith( inputs.registry-readme, 'https' ) }} ; then
-            echo "registry-readme=README.docker.remote.md" >> "$GITHUB_OUTPUT"
-          else 
-            echo "registry-readme=${{ inputs.registry-readme }}" >> "$GITHUB_OUTPUT"
-          fi
-
-      # Upload the readme file for the publishing job
-      - name: Upload readme
-        if: startsWith(inputs.registry-readme, 'https')
-        uses: actions/upload-artifact@v4
-        with:
-          name: readme
-          path: README.docker.remote.md
-          retention-days: 1
-
   build:
-    name: Build Docker - ${{ matrix.platform }}
+    name: Docker (${{ inputs.registry-github-enable == true && inputs.registry-dockerhub-enable == true && 'GitHub, DockerHub' || inputs.registry-github-enable == true && 'GitHub' || 'DockerHub' }})
     runs-on: ${{ inputs.runs-on }}
-    needs: prepare
-    permissions:
-      packages: write
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [linux/amd64, linux/arm64/v8]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 1
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.2.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.7.1
-
-      ## Cache based contexts
-      - name: Restore cached context
-        if: inputs.context-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: cached-context
-          key: ${{ inputs.context-cache }}
-          fail-on-cache-miss: true
-
-      - name: Set docker-context for cache
-        if: inputs.context-cache
-        run: echo "docker-context=cached-context" >> $GITHUB_ENV
-
-      ## Repo based context (fixes submodules etc)
-      - name: Checkout external context
-        uses: actions/checkout@v4.2.2
-        if: inputs.context-repository
-        with:
-          repository: ${{ inputs.context-repository }}
-          ref: ${{ inputs.context-repository-ref }}
-          path: repository-context
-          fetch-depth: 1
-          submodules: recursive
-
-      - name: Set docker-context for repository
-        if: inputs.context-repository
-        run: echo "docker-context=repository-context" >> $GITHUB_ENV
-
-      - name: Build image
-        uses: docker/build-push-action@v6.9.0
-        with:
-          context: ${{ env.docker-context || inputs.context }}
-          file: ${{ inputs.dockerfile }}
-          platforms: ${{ matrix.platform }}
-          build-args: ${{ inputs.build-args }}
-          cache-from: ${{ inputs.cache-from }}
-          cache-to: ${{ inputs.cache-to }}
-          push: false
-          tags: ${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-${{ matrix.platform }}
-          outputs: type=docker,dest=/tmp/image.tar
-
-      # Upload the image tar for the publishing job
-      - name: Upload tar artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-${{ matrix.platform }}
-          path: /tmp/image.tar
-          retention-days: 1
-
-  publish:
-    name: Publish Multi-platform Image
-    runs-on: ${{ inputs.runs-on }}
-    needs: [prepare, build]
     permissions:
       packages: write
       contents: read
 
     outputs:
-      digest: ${{ steps.push.outputs.digest }}
+      digest: ${{ steps.build-docker.outputs.digest }}
       primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
 
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.7.1
-
-      - name: Download all images
-        uses: actions/download-artifact@v4
-        with:
-          path: /tmp/images
-
-      - name: Download readme
-        if: startsWith(inputs.registry-readme, 'https')
-        uses: actions/download-artifact@v4
-        with:
-          name: readme
-          path: /tmp
-
       - name: Log in to Docker Hub
         if: inputs.registry-dockerhub-enable
         uses: docker/login-action@v3.3.0
@@ -247,57 +98,129 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Load all images
-      - name: Load images
+      - name: Generate dockerhub full repo path
+        if: inputs.registry-dockerhub-enable
+        id: step_one
         run: |
-          for platform_dir in /tmp/images/image-*; do
-            echo "Loading images from $platform_dir"
-            for tar_file in "$platform_dir"/*.tar; do
-              echo "Loading $tar_file"
-              docker load --input "$tar_file"
-            done
-          done
+          echo "dockerhub-repo=${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_ENV"
 
-      # Create and push the manifest
-      - name: Create and push manifest
-        id: push
-        if: inputs.push
-        run: |
-          # Get the images we just loaded
-          amd64_image="${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-linux-amd64"
-          arm64_image="${{ needs.prepare.outputs.image-names }}:${{ github.run_id }}-linux-arm64-v8"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.2.0
 
-          echo "Creating manifest for ${{ needs.prepare.outputs.image-names }}"
+      # Needed for cache layers on github registry
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.7.1
 
-          # Create manifest list for all tags
-          for tag in $(echo "${{ needs.prepare.outputs.tags }}" | tr ',' '\n'); do
-            echo "Creating manifest for $tag"
-            # Create the manifest
-            docker buildx imagetools create -t "$tag" \
-              "$amd64_image" \
-              "$arm64_image"
-          done
+      ## Cache based contexts
+      - name: Restore cached context
+        if: inputs.context-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: cached-context
+          key: ${{ inputs.context-cache }}
+          fail-on-cache-miss: true
 
-          # Get the digest of the first tag
-          first_tag=$(echo "${{ needs.prepare.outputs.tags }}" | cut -d ',' -f1)
-          digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$first_tag" | cut -d'@' -f2)
-          echo "digest=$digest" >> $GITHUB_OUTPUT
+      - name: Set docker-context for cache
+        if: inputs.context-cache
+        run: echo "docker-context=cached-context" >> $GITHUB_ENV
+      ######
 
-      # publish README on Docker Hub
-      - name: Checkout for DockerHub description
+      ## Repo based context (fixes submodules etc)
+      - name: Checkout repo
         uses: actions/checkout@v4.2.2
+        if: inputs.context-repository
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+
+      - name: Checkout external context
+        uses: actions/checkout@v4.2.2
+        if: inputs.context-repository
+        with:
+          repository: ${{ inputs.context-repository }}
+          ref: ${{ inputs.context-repository-ref }}
+          path: repository-context
+          fetch-depth: 1
+          submodules: false
+
+      - name: Set docker-context for repository
+        if: inputs.context-repository
+        run: echo "docker-context=repository-context" >> $GITHUB_ENV
+      ######
+
+      ###### Docker build metadata
+
+      - name: Set image names
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "image-names<<$EOF" >> "$GITHUB_ENV"
+          if ${{ inputs.registry-dockerhub-enable }} ; then
+            echo "${{ env.dockerhub-repo }}" >> "$GITHUB_ENV"
+          fi
+          if ${{ inputs.registry-github-enable }} ; then
+            echo "ghcr.io/${{ github.repository_owner }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_ENV"
+          fi
+          echo "$EOF" >> "$GITHUB_ENV"
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: ${{ env.image-names }}
+          # generate Docker tags based on the following events/attributes
+          tags: ${{ inputs.tags }}
+          flavor: ${{ inputs.flavor }}
+
+      ######
+
+      - name: Build and push Docker images
+        id: build-docker
+        uses: docker/build-push-action@v6.9.0
+        with:
+          platforms: ${{ inputs.platforms }}
+          file: ${{ inputs.dockerfile }}
+          context: ${{ env.docker-context || inputs.context }}
+          build-args: ${{ inputs.build-args }}
+          push: ${{ inputs.push }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: ${{ inputs.cache-from }}
+          cache-to: ${{ inputs.cache-to }}
+
+      # publish README on docker hub
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 1
 
+      ###### Load docker readme file from remote
+
+      - name: Get remote registry readme
+        if: startsWith(inputs.registry-readme, 'https')
+        run: wget ${{ inputs.registry-readme }} -O README.docker.remote.md
+
+      - name: Set registry readme file
+        run: |
+          if ${{ startsWith( inputs.registry-readme, 'https' ) }} ; then
+            echo "registry-readme=README.docker.remote.md" >> "$GITHUB_ENV"
+          else 
+            echo "registry-readme=${{ inputs.registry-readme }}" >> "$GITHUB_ENV"
+          fi
+      #######
       - name: Docker Hub Description
-        if: inputs.registry-dockerhub-enable && inputs.push
+        if: inputs.registry-dockerhub-enable
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ needs.prepare.outputs.dockerhub-repo }}
-          readme-filepath: ${{ startsWith(inputs.registry-readme, 'https') && '/tmp/README.docker.remote.md' || inputs.registry-readme }}
+          repository: ${{ env.dockerhub-repo }}
+          readme-filepath: ${{ env.registry-readme }}
+
+      - name: Selecting primary image from
+        run: echo "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}"
+
+      - name: Primary image will be
+        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )"
 
       - name: Set output image
         id: get-primary-image
-        run: echo "primary-image=$(echo "${{ needs.prepare.outputs.tags }}" | cut -d ',' -f 1)" >> "$GITHUB_OUTPUT"
+        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )" >> "$GITHUB_OUTPUT"
