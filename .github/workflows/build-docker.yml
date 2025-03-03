@@ -52,7 +52,7 @@ on:
         default: ubuntu-latest
       platforms:
         type: string
-        default: linux/amd64 #linux/arm64/v8
+        default: linux/amd64, linux/arm64/v8
       cache-from:
         type: string
         default: type=gha
@@ -74,7 +74,6 @@ jobs:
   build:
     name: Docker (${{ inputs.registry-github-enable == true && inputs.registry-dockerhub-enable == true && 'GitHub, DockerHub' || inputs.registry-github-enable == true && 'GitHub' || 'DockerHub' }})
     runs-on: ${{ inputs.runs-on }}
-
     permissions:
       packages: write
       contents: read
