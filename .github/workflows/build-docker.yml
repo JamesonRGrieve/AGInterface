@@ -62,25 +62,29 @@ on:
     outputs:
       digest:
         description: 'Digest of docker image'
-        value: ${{ jobs.build.outputs.digest }}
+        value: ${{ jobs.publish.outputs.digest }}
       primary-image:
         description: 'Primary full name of pushed docker image'
-        value: ${{ jobs.build.outputs.primary-image }}
+        value: ${{ jobs.publish.outputs.primary-image }}
     secrets:
       DOCKERHUB_TOKEN:
         required: false
 
 jobs:
-  build:
-    name: Docker (${{ inputs.registry-github-enable == true && inputs.registry-dockerhub-enable == true && 'GitHub, DockerHub' || inputs.registry-github-enable == true && 'GitHub' || 'DockerHub' }})
+  build-matrix:
+    name: Build Docker - ${{ matrix.platform }}
     runs-on: ${{ inputs.runs-on }}
     permissions:
       packages: write
       contents: read
-
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64/v8]
+    
     outputs:
-      digest: ${{ steps.build-docker.outputs.digest }}
-      primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
+      image-names: ${{ steps.set-image-names.outputs.image-names }}
+      registry-readme: ${{ steps.set-registry-readme.outputs.registry-readme }}
+      dockerhub-repo: ${{ steps.generate-dockerhub-path.outputs.dockerhub-repo }}
 
     steps:
       - name: Log in to Docker Hub
@@ -100,9 +104,9 @@ jobs:
 
       - name: Generate dockerhub full repo path
         if: inputs.registry-dockerhub-enable
-        id: step_one
+        id: generate-dockerhub-path
         run: |
-          echo "dockerhub-repo=${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_ENV"
+          echo "dockerhub-repo=${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.2.0
@@ -151,22 +155,24 @@ jobs:
       ###### Docker build metadata
 
       - name: Set image names
+        id: set-image-names
         run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "image-names<<$EOF" >> "$GITHUB_ENV"
+          images=""
           if ${{ inputs.registry-dockerhub-enable }} ; then
-            echo "${{ env.dockerhub-repo }}" >> "$GITHUB_ENV"
+            images="${images}${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }},"
           fi
           if ${{ inputs.registry-github-enable }} ; then
-            echo "ghcr.io/${{ github.repository_owner }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_ENV"
+            images="${images}ghcr.io/${{ github.repository_owner }}/${{ inputs.registry-repo-name }},"
           fi
-          echo "$EOF" >> "$GITHUB_ENV"
+          # Remove trailing comma
+          images=${images%,}
+          echo "image-names=${images}" >> "$GITHUB_OUTPUT"
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5.5.1
         with:
-          images: ${{ env.image-names }}
+          images: ${{ steps.set-image-names.outputs.image-names }}
           # generate Docker tags based on the following events/attributes
           tags: ${{ inputs.tags }}
           flavor: ${{ inputs.flavor }}
@@ -177,50 +183,134 @@ jobs:
         id: build-docker
         uses: docker/build-push-action@v6.9.0
         with:
-          platforms: ${{ inputs.platforms }}
+          platforms: ${{ matrix.platform }}
           file: ${{ inputs.dockerfile }}
           context: ${{ env.docker-context || inputs.context }}
           build-args: ${{ inputs.build-args }}
-          push: ${{ inputs.push }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: ${{ inputs.cache-from }}
           cache-to: ${{ inputs.cache-to }}
+          outputs: type=image,name=${{ steps.set-image-names.outputs.image-names }},push-by-digest=true,name-canonical=true,push=${{ inputs.push }}
 
-      # publish README on docker hub
-      - uses: actions/checkout@v4.2.2
+      - name: Export digest
+        id: export-digest
+        run: |
+          digest="${{ steps.build-docker.outputs.digest }}"
+          echo "digest=${digest}" >> $GITHUB_OUTPUT
+          echo "platform=${{ matrix.platform }}" >> $GITHUB_OUTPUT
+
+      - name: Set registry readme file path
+        id: set-registry-readme
+        run: |
+          if ${{ startsWith( inputs.registry-readme, 'https' ) }} ; then
+            echo "registry-readme=README.docker.remote.md" >> "$GITHUB_OUTPUT"
+          else 
+            echo "registry-readme=${{ inputs.registry-readme }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Save digest to a file
+      - name: Save digest
+        run: |
+          mkdir -p /tmp/digests
+          echo "${{ steps.export-digest.outputs.digest }}" > "/tmp/digests/${{ matrix.platform }}"
+          
+      # Upload digest file for the next job
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
         with:
-          fetch-depth: 1
+          name: digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
-      ###### Load docker readme file from remote
+  # Merge and publish the images
+  publish:
+    name: Merge and Publish
+    runs-on: ${{ inputs.runs-on }}
+    needs: [build-matrix]
+    permissions:
+      packages: write
+      contents: read
+    
+    outputs:
+      digest: ${{ steps.merge.outputs.digest }}
+      primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
+    
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          name: digests
+          path: /tmp/digests
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.7.1
+
+      - name: Log in to Docker Hub
+        if: inputs.registry-dockerhub-enable
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to the Github registry
+        if: inputs.registry-github-enable
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: ${{ needs.build-matrix.outputs.image-names }}
+          tags: ${{ inputs.tags }}
+          flavor: ${{ inputs.flavor }}
+
+      # Create manifest list and push
+      - name: Merge and push manifests
+        id: merge
+        run: |
+          images=""
+          for digest_file in /tmp/digests/*; do
+            platform=$(basename "$digest_file")
+            digest=$(cat "$digest_file")
+            echo "Platform: $platform, Digest: $digest"
+            for image in $(echo ${{ needs.build-matrix.outputs.image-names }} | tr ',' '\n'); do
+              images="${images} ${image}@${digest}"
+            done
+          done
+          
+          echo "Creating manifest list..."
+          docker buildx imagetools create $(for tag in ${{ steps.meta.outputs.tags }}; do echo "-t ${tag}"; done) ${images}
+          
+          # Get the digest of the manifest list
+          manifest_digest=$(docker buildx imagetools inspect --raw ${{ steps.meta.outputs.tags }} | sha256sum | cut -d' ' -f1)
+          echo "digest=sha256:${manifest_digest}" >> $GITHUB_OUTPUT
+
+      # Load docker readme file from remote
       - name: Get remote registry readme
         if: startsWith(inputs.registry-readme, 'https')
         run: wget ${{ inputs.registry-readme }} -O README.docker.remote.md
 
-      - name: Set registry readme file
-        run: |
-          if ${{ startsWith( inputs.registry-readme, 'https' ) }} ; then
-            echo "registry-readme=README.docker.remote.md" >> "$GITHUB_ENV"
-          else 
-            echo "registry-readme=${{ inputs.registry-readme }}" >> "$GITHUB_ENV"
-          fi
-      #######
+      # publish README on Docker Hub
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 1
+
       - name: Docker Hub Description
         if: inputs.registry-dockerhub-enable
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.dockerhub-repo }}
-          readme-filepath: ${{ env.registry-readme }}
-
-      - name: Selecting primary image from
-        run: echo "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}"
-
-      - name: Primary image will be
-        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )"
+          repository: ${{ needs.build-matrix.outputs.dockerhub-repo }}
+          readme-filepath: ${{ needs.build-matrix.outputs.registry-readme }}
 
       - name: Set output image
         id: get-primary-image
-        run: echo "primary-image=$( cut -d ',' -f 1 <<< "${{ fromJSON(steps.build-docker.outputs.metadata)['image.name'] }}" )" >> "$GITHUB_OUTPUT"
+        run: echo "primary-image=$( echo "${{ steps.meta.outputs.tags }}" | cut -d ',' -f 1 )" >> "$GITHUB_OUTPUT"
