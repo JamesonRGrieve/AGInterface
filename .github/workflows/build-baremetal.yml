@@ -9,6 +9,21 @@ jobs:
       - uses: actions/checkout@v4.2.2
         with:
           submodules: 'recursive'
+          fetch-depth: 1
+      - name: Check Submodules
+        run: |
+          pwd
+          ls -a
+          cd interactive
+          pwd
+          ls -a
+          git remote -v
+          git status 
+          cd ../components/jrg/appwrapper
+          pwd
+          ls -a
+          git remote -v
+          git status 
       - name: Install Packages and Build
         uses: actions/setup-node@v4.1.0
         with:
