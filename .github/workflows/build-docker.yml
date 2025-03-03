@@ -71,93 +71,21 @@ on:
         required: false
 
 jobs:
-  build-matrix:
-    name: Build Docker - ${{ matrix.platform }}
+  prepare:
+    name: Prepare Build
     runs-on: ${{ inputs.runs-on }}
-    permissions:
-      packages: write
-      contents: read
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64/v8]
-      fail-fast: false
     outputs:
       image-names: ${{ steps.set-image-names.outputs.image-names }}
-      registry-readme: ${{ steps.set-registry-readme.outputs.registry-readme }}
+      registry-readme: ${{ steps.get-registry-readme.outputs.registry-readme }}
       dockerhub-repo: ${{ steps.generate-dockerhub-path.outputs.dockerhub-repo }}
+      tags: ${{ steps.meta.outputs.tags }}
 
     steps:
-      - name: Log in to Docker Hub
-        if: inputs.registry-dockerhub-enable
-        uses: docker/login-action@v3.3.0
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Log in to the Github registry
-        if: inputs.registry-github-enable
-        uses: docker/login-action@v3.3.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Generate dockerhub full repo path
-        if: inputs.registry-dockerhub-enable
         id: generate-dockerhub-path
+        if: inputs.registry-dockerhub-enable
         run: |
           echo "dockerhub-repo=${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.registry-repo-name }}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.2.0
-
-      # Needed for cache layers on github registry
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.7.1
-
-      ## Cache based contexts
-      - name: Restore cached context
-        if: inputs.context-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: cached-context
-          key: ${{ inputs.context-cache }}
-          fail-on-cache-miss: true
-
-      - name: Set docker-context for cache
-        if: inputs.context-cache
-        run: echo "docker-context=cached-context" >> $GITHUB_ENV
-      ######
-
-      ## Repo based context (fixes submodules etc)
-      - name: Checkout repo
-        uses: actions/checkout@v4.2.2
-        if: inputs.context-repository
-        with:
-          fetch-depth: 1
-          submodules: 'recursive'
-      - name: Force Submodules
-        if: inputs.context-repository
-        run: |
-          git submodule init
-          git submodule update --remote --merge
-          git submodule foreach 'git checkout $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'
-      - name: Checkout external context
-        uses: actions/checkout@v4.2.2
-        if: inputs.context-repository
-        with:
-          repository: ${{ inputs.context-repository }}
-          ref: ${{ inputs.context-repository-ref }}
-          path: repository-context
-          fetch-depth: 1
-          submodules: false
-
-      - name: Set docker-context for repository
-        if: inputs.context-repository
-        run: echo "docker-context=repository-context" >> $GITHUB_ENV
-      ######
-
-      ###### Docker build metadata
 
       - name: Set image names
         id: set-image-names
@@ -178,36 +106,15 @@ jobs:
         uses: docker/metadata-action@v5.5.1
         with:
           images: ${{ steps.set-image-names.outputs.image-names }}
-          # generate Docker tags based on the following events/attributes
           tags: ${{ inputs.tags }}
           flavor: ${{ inputs.flavor }}
 
-      ######
-
-      - name: Build and push Docker images
-        id: build-docker
-        uses: docker/build-push-action@v6.9.0
-        with:
-          platforms: ${{ matrix.platform }}
-          file: ${{ inputs.dockerfile }}
-          context: ${{ env.docker-context || inputs.context }}
-          build-args: ${{ inputs.build-args }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: ${{ inputs.cache-from }}
-          cache-to: ${{ inputs.cache-to }}
-          outputs: type=image,name=${{ steps.set-image-names.outputs.image-names }},push-by-digest=true,name-canonical=true,push=${{ inputs.push }}
-
-      - name: Export digest
-        id: export-digest
-        run: |
-          digest="${{ steps.build-docker.outputs.digest }}"
-          echo "digest=${digest}" >> $GITHUB_OUTPUT
-          echo "platform=${{ matrix.platform }}" >> $GITHUB_OUTPUT
+      - name: Get remote registry readme
+        if: startsWith(inputs.registry-readme, 'https')
+        run: wget ${{ inputs.registry-readme }} -O README.docker.remote.md
 
       - name: Set registry readme file path
-        id: set-registry-readme
+        id: get-registry-readme
         run: |
           if ${{ startsWith( inputs.registry-readme, 'https' ) }} ; then
             echo "registry-readme=README.docker.remote.md" >> "$GITHUB_OUTPUT"
@@ -215,43 +122,114 @@ jobs:
             echo "registry-readme=${{ inputs.registry-readme }}" >> "$GITHUB_OUTPUT"
           fi
 
-      # Save digest to a file
-      - name: Save digest
-        run: |
-          mkdir -p /tmp/digests
-          echo "${{ steps.export-digest.outputs.digest }}" > "/tmp/digests/${{ matrix.platform }}"
-          
-      # Upload digest file for the next job
-      - name: Upload digest
+      # Upload the readme file for the publishing job
+      - name: Upload readme
+        if: startsWith(inputs.registry-readme, 'https')
         uses: actions/upload-artifact@v4
         with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
+          name: readme
+          path: README.docker.remote.md
           retention-days: 1
 
-  # Merge and publish the images
-  publish:
-    name: Merge and Publish
+  build:
+    name: Build Docker - ${{ matrix.platform }}
     runs-on: ${{ inputs.runs-on }}
-    needs: [build-matrix]
+    needs: prepare
     permissions:
       packages: write
       contents: read
-    
-    outputs:
-      digest: ${{ steps.merge.outputs.digest }}
-      primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
-    
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64/v8]
+
     steps:
-      - name: Download digests
-        uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
         with:
-          name: digests
-          path: /tmp/digests
+          fetch-depth: 1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.2.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.7.1
+
+      ## Cache based contexts
+      - name: Restore cached context
+        if: inputs.context-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: cached-context
+          key: ${{ inputs.context-cache }}
+          fail-on-cache-miss: true
+
+      - name: Set docker-context for cache
+        if: inputs.context-cache
+        run: echo "docker-context=cached-context" >> $GITHUB_ENV
+
+      ## Repo based context (fixes submodules etc)
+      - name: Checkout external context
+        uses: actions/checkout@v4.2.2
+        if: inputs.context-repository
+        with:
+          repository: ${{ inputs.context-repository }}
+          ref: ${{ inputs.context-repository-ref }}
+          path: repository-context
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Set docker-context for repository
+        if: inputs.context-repository
+        run: echo "docker-context=repository-context" >> $GITHUB_ENV
+
+      - name: Build image
+        uses: docker/build-push-action@v6.9.0
+        with:
+          context: ${{ env.docker-context || inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          platforms: ${{ matrix.platform }}
+          build-args: ${{ inputs.build-args }}
+          cache-from: ${{ inputs.cache-from }}
+          cache-to: ${{ inputs.cache-to }}
+          push: false
+          tags: ${{ needs.prepare.outputs.image-names }}:${{ matrix.platform }}
+          outputs: type=docker,dest=/tmp/${{ matrix.platform }}.tar
+
+      # Upload the image tar for the publishing job
+      - name: Upload tar artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-${{ matrix.platform }}
+          path: /tmp/${{ matrix.platform }}.tar
+          retention-days: 1
+
+  publish:
+    name: Publish Multi-platform Image
+    runs-on: ${{ inputs.runs-on }}
+    needs: [prepare, build]
+    permissions:
+      packages: write
+      contents: read
+
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+      primary-image: ${{ steps.get-primary-image.outputs.primary-image }}
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.7.1
+
+      - name: Download all images
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/images
+
+      - name: Download readme
+        if: startsWith(inputs.registry-readme, 'https')
+        uses: actions/download-artifact@v4
+        with:
+          name: readme
+          path: /tmp
 
       - name: Log in to Docker Hub
         if: inputs.registry-dockerhub-enable
@@ -268,54 +246,54 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5.5.1
-        with:
-          images: ${{ needs.build-matrix.outputs.image-names }}
-          tags: ${{ inputs.tags }}
-          flavor: ${{ inputs.flavor }}
-
-      # Create manifest list and push
-      - name: Merge and push manifests
-        id: merge
+      # Load all images
+      - name: Load images
         run: |
-          images=""
-          for digest_file in /tmp/digests/*; do
-            platform=$(basename "$digest_file")
-            digest=$(cat "$digest_file")
-            echo "Platform: $platform, Digest: $digest"
-            for image in $(echo ${{ needs.build-matrix.outputs.image-names }} | tr ',' '\n'); do
-              images="${images} ${image}@${digest}"
-            done
+          for platform_tar in /tmp/images/image-*/*.tar; do
+            echo "Loading $platform_tar"
+            docker load --input "$platform_tar"
           done
-          
-          echo "Creating manifest list..."
-          docker buildx imagetools create $(for tag in ${{ steps.meta.outputs.tags }}; do echo "-t ${tag}"; done) ${images}
-          
-          # Get the digest of the manifest list
-          manifest_digest=$(docker buildx imagetools inspect --raw ${{ steps.meta.outputs.tags }} | sha256sum | cut -d' ' -f1)
-          echo "digest=sha256:${manifest_digest}" >> $GITHUB_OUTPUT
 
-      # Load docker readme file from remote
-      - name: Get remote registry readme
-        if: startsWith(inputs.registry-readme, 'https')
-        run: wget ${{ inputs.registry-readme }} -O README.docker.remote.md
+      # Create and push the manifest
+      - name: Create and push manifest
+        id: push
+        if: inputs.push
+        run: |
+          # Get the images we just loaded
+          amd64_image="${{ needs.prepare.outputs.image-names }}:linux/amd64"
+          arm64_image="${{ needs.prepare.outputs.image-names }}:linux/arm64/v8"
+
+          echo "Creating manifest for ${{ needs.prepare.outputs.image-names }}"
+
+          # Create manifest list for all tags
+          for tag in $(echo "${{ needs.prepare.outputs.tags }}" | tr ',' '\n'); do
+            echo "Creating manifest for $tag"
+            # Create the manifest
+            docker buildx imagetools create -t "$tag" \
+              "$amd64_image" \
+              "$arm64_image"
+          done
+
+          # Get the digest of the first tag
+          first_tag=$(echo "${{ needs.prepare.outputs.tags }}" | cut -d ',' -f1)
+          digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$first_tag" | cut -d'@' -f2)
+          echo "digest=$digest" >> $GITHUB_OUTPUT
 
       # publish README on Docker Hub
-      - uses: actions/checkout@v4.2.2
+      - name: Checkout for DockerHub description
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 1
 
       - name: Docker Hub Description
-        if: inputs.registry-dockerhub-enable
+        if: inputs.registry-dockerhub-enable && inputs.push
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ needs.build-matrix.outputs.dockerhub-repo }}
-          readme-filepath: ${{ needs.build-matrix.outputs.registry-readme }}
+          repository: ${{ needs.prepare.outputs.dockerhub-repo }}
+          readme-filepath: ${{ startsWith(inputs.registry-readme, 'https') && '/tmp/README.docker.remote.md' || inputs.registry-readme }}
 
       - name: Set output image
         id: get-primary-image
-        run: echo "primary-image=$( echo "${{ steps.meta.outputs.tags }}" | cut -d ',' -f 1 )" >> "$GITHUB_OUTPUT"
+        run: echo "primary-image=$(echo "${{ needs.prepare.outputs.tags }}" | cut -d ',' -f 1)" >> "$GITHUB_OUTPUT"
