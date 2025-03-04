@@ -9,15 +9,15 @@ branch = main
 [submodule "components/jrg/auth"]
 path = components/jrg/auth
 url = https://github.com/JamesonRGrieve/auth.git
-branch = dev
+branch = main
 [submodule "components/jrg/appwrapper"]
 path = components/jrg/appwrapper
 url = https://github.com/JamesonRGrieve/appwrapper.git
-branch = dev
+branch = main
 [submodule "components/jrg/dynamic-form"]
 path = components/jrg/dynamic-form
 url = https://github.com/JamesonRGrieve/dynamic-form.git
-branch = dev
+branch = main
 [submodule "components/jrg/zod2gql"]
 path = components/jrg/zod2gql
 url = https://github.com/JamesonRGrieve/zod2gql.git
