@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "rm -rf ./.next && next dev -p 1109",
+    "basic:bitch": "rm -rf ./.next && next dev -p 3000",
     "build": "rm -rf ./.next && next build",
     "clean-build": "rm -rf ./.next & rm -rf ./node_nodules && npm install && npm run build && npm start",
     "compile": "tsc --jsx react-jsx --project tsconfig.compile.json && shx mkdir -p ./dist/style && npx postcss ./app/globals.css -o ./dist/style/globals.css",
