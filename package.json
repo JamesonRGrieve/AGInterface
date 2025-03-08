@@ -55,6 +55,10 @@
     "./Config/Hooks": "./dist/config/Hooks.js",
     "./Style/Global": "./dist/style/globals.css"
   },
+  "optionalDependencies": {
+    "lightningcss-darwin-arm64": "1.24.1",
+    "@tailwindcss/oxide-darwin-arm64": "4.0.0"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-alert-dialog": "^1.1.6",
