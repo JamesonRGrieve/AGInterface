@@ -28,7 +28,8 @@
       "@/auth/*": ["./components/jrg/auth/src/*"],
       "@/appwrapper/*": ["./components/jrg/appwrapper/src/*"],
       "@/dynamic-form/*": ["./components/jrg/dynamic-form/src/*"],
-      "@/interactive/*": ["./interactive/src/*"]
+      "@/interactive/*": ["./interactive/src/*"],
+      "@/interface/*": ["./interface/*"],
     }
   },
   "include": [

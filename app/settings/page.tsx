@@ -1,6 +1,6 @@
 import { SidebarPage } from '@/appwrapper/SidebarPage';
-import AgentPanel from '@/interactive/Settings/agent/AgentPanel';
-import { Providers } from '@/interactive/Settings/providers';
+import AgentPanel from '@/interface/Settings/agent/AgentPanel';
+import { Providers } from '@/interface/Settings/providers';
 
 export default function ProvidersPage() {
   return (

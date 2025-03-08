@@ -2,8 +2,8 @@
 
 import { SidebarPage } from '@/appwrapper/SidebarPage';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import NewPromptDialog from '@/interactive/Settings/prompt/PromptDialog';
-import PromptPanel from '@/interactive/Settings/prompt/PromptPanel';
+import NewPromptDialog from '@/interface/Settings/prompt/PromptDialog';
+import PromptPanel from '@/interface/Settings/prompt/PromptPanel';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 

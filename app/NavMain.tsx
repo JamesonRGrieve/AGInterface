@@ -2,7 +2,7 @@
 
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 
-import { useCompany } from '@/auth/hooks/useUser';
+import { useTeam } from '@/auth/hooks/useTeam';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   SidebarGroup,
@@ -41,7 +41,7 @@ export function NavMain() {
   const router = useRouter();
   const pathname = usePathname();
   const queryParams = useSearchParams();
-  const { data: company } = useCompany();
+  const { data: company } = useTeam();
   const { toggleSidebar, open } = useSidebar('left');
 
   const itemsWithActiveState = items.map((item) => ({

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import InteractiveHome from '@/interactive/Home';
+import InteractiveHome from '@/interface/Home';
 import { ThemeToggle } from '@/jrg/theme/ThemeToggle';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
