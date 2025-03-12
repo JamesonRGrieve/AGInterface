@@ -21,7 +21,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
 function ChatHeader() {
   const { toggleSidebar } = useSidebar('right');
   const { id } = useParams();
-  const { data: conversation } = useConversation(id[0]);
+  const { data: conversation } = useConversation(id ? id[0] : '');
   const title = conversation?.name || 'New Chat';
 
   return (
