@@ -1,6 +1,6 @@
 'use client';
 
-import { useTeam } from '@/auth/hooks/useUser';
+import { useTeam } from '@/auth/hooks/useTeam';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
