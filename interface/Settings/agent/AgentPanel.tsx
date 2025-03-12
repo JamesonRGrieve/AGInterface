@@ -1,6 +1,6 @@
 'use client';
 
-import { useTeam } from '@/auth/hooks/useUser';
+import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
