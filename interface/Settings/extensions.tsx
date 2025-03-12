@@ -7,15 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import { useAgent } from '@/interface/hooks/useAgent';
+import { useProviders } from '@/interface/hooks/useProvider';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { useAgent } from '../../../interface/hooks/useAgent';
-import { useProviders } from '../../../interface/hooks/useProvider';
 import Extension from './extension';
 
-import { useTeam } from '@/auth/hooks/useUser';
+import { useTeam } from '@/auth/hooks/useTeam';
 import { Input } from '@/components/ui/input';
 import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
 

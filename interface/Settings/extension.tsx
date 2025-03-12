@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
 import { getCookie, setCookie } from 'cookies-next';
 import { Plus, Power, PowerOff, Unlink, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import MarkdownBlock from '../Chat/Message/MarkdownBlock';
 
 const OVERRIDE_EXTENSIONS = {
   'text-to-speech': { name: 'tts', label: 'Text to Speech' },

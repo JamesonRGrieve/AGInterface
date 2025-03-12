@@ -8,7 +8,7 @@ export default function ConvSwitch({ id }: { id: string }) {
   useEffect(() => {
     state?.mutate((oldState) => ({
       ...oldState,
-      overrides: { ...oldState.overrides, conversation: id || '-' },
+      overrides: { ...oldState.overrides, conversation: id || null },
     }));
   }, [id]);
   return null;

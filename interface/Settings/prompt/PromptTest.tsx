@@ -2,11 +2,11 @@ import IconButton from '@/components/jrg/theme/IconButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/useToast';
+import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import { Loader2, Repeat, Send } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import MarkdownBlock from '../../Chat/Message/MarkdownBlock';
 
 export default function PromptTest({
   promptName,

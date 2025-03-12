@@ -4,7 +4,7 @@ type Conversation = {
   id: string;
   name: string;
   has_notifications: boolean;
-  created_at: string;
+  createdAt: string;
   updated_at: string;
 };
 
@@ -153,15 +153,12 @@ export default class AGInterfaceSDK {
   }
 
   async deleteConversation(conversationName: string, agentName?: string) {
-    return this.request<{ message: string }>('delete', '/api/conversation', {
-      conversation_name: conversationName,
-      agent_name: agentName,
-    }).then((r) => r.message);
+    return this.request<{ message: string }>('delete', '/v1/conversation/' + conversationName).then((r) => r.message);
   }
 
   // Message Methods
   async updateConversationMessage(conversationName: string, messageId: string, newMessage: string) {
-    return this.request<{ message: string }>('put', `/api/conversation/message/${messageId}`, {
+    return this.request<{ message: string }>('put', `/v1/conversation/message/${messageId}`, {
       conversation_name: conversationName,
       new_message: newMessage,
       message_id: messageId,
@@ -169,10 +166,7 @@ export default class AGInterfaceSDK {
   }
 
   async deleteConversationMessage(conversationName: string, messageId: string) {
-    return this.request<{ message: string }>('delete', `/api/conversation/message/${messageId}`, {
-      conversation_name: conversationName,
-      message_id: messageId,
-    }).then((r) => r.message);
+    return this.request<{ message: string }>('delete', `/v1/conversation/message/${messageId}`).then((r) => r.message);
   }
 
   // Memory Methods
