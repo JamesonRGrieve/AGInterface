@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { useState } from 'react';
 const requestTypes = [
-  { value: 'bug', label: 'Repot a Bug Report' },
+  { value: 'bug', label: 'Report a Bug' },
   { value: 'technical', label: 'Technical Support' },
   { value: 'billing', label: 'Billing Issue' },
   { value: 'feature', label: 'Feature Request' },
