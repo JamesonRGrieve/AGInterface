@@ -37,7 +37,6 @@ export default function RootLayout({ children }: { children: ReactNode }): React
                   {children}
                   <Toaster />
                   {/* <ThemeSetter /> */}
-                  <CommandMenu />
                   <SidebarContext side='right' />
                 </SidebarProvider>
               </SidebarContentProvider>
