@@ -10,6 +10,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LuCheck, LuDownload, LuPencil, LuPlus, LuTrash2 } from 'react-icons/lu';
 import { useAgent } from '../../hooks/useAgent';
+import { SidebarContent } from '@/appwrapper/SidebarContentManager';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { ArrowBigLeft, Check, Download, Pencil, Plus, Save, Trash2, Upload } from 'lucide-react';
+import AgentSelectorBasic from '@/interface/Selectors/AgentSelectorBasic';
+import AgentRotationSelector from '@/interface/Selectors/AgentRotationSelector';
+import TeamSelector from '@/auth/Selectors/TeamSelector';
 
 export default function AgentPanel({ setShowCreateDialog }) {
   const [renaming, setRenaming] = useState(false);
@@ -86,6 +92,87 @@ export default function AgentPanel({ setShowCreateDialog }) {
 
   return (
     <div className='flex flex-col items-center justify-between mb-4 space-x-2 md:flex-row'>
+      <SidebarContent title='Agent Management'>
+        <SidebarGroup>
+          {/* Select Team */}
+          <SidebarGroupLabel>Select Team</SidebarGroupLabel>
+          <SidebarMenuButton className='group-data-[state=expanded]:hidden'>
+            <ArrowBigLeft />
+          </SidebarMenuButton>
+          <div className='w-full group-data-[collapsible=icon]:hidden'>
+            {renaming ? (
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+            ) : (
+              <TeamSelector />
+            )}
+          </div>
+          {/*  Select Agent */}
+          <SidebarGroupLabel>Select Agent</SidebarGroupLabel>
+          <div className='w-full group-data-[collapsible=icon]:hidden'>
+            {renaming ? (
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+            ) : (
+              <AgentSelectorBasic />
+            )}
+          </div>
+          {/* Agent Provider */}
+          <SidebarGroupLabel>Agent Provider</SidebarGroupLabel>
+          <div className='w-full group-data-[collapsible=icon]:hidden'>
+            {renaming ? (
+              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+            ) : (
+              <AgentRotationSelector />
+            )}
+          </div>
+
+          {/* Agent Functions */}
+          <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
+          <SidebarMenu>
+            {[
+              {
+                title: 'Create Agent',
+                icon: Plus,
+                disabled: renaming,
+              },
+              {
+                title: renaming ? 'Save Name' : 'Rename Agent',
+                icon: renaming ? Check : Pencil,
+                func: renaming
+                  ? () => {
+                      setRenaming(false);
+                    }
+                  : () => setRenaming(true),
+                disabled: false,
+              },
+              {
+                title: 'Import Agent',
+                icon: Upload,
+                disabled: renaming,
+              },
+              {
+                title: 'Export Agent',
+                icon: Download,
+                disabled: renaming,
+              },
+              {
+                title: 'Delete Agent',
+                icon: Trash2,
+                disabled: renaming,
+              },
+            ].map(
+              (item) =>
+                item.visible !== false && (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton side='left' tooltip={item.title} onClick={item.func} disabled={item.disabled}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ),
+            )}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
       <div className='flex items-center space-x-2'>
         {renaming || creating ? (
           <>
@@ -103,7 +190,6 @@ export default function AgentPanel({ setShowCreateDialog }) {
           </h3>
         )}
       </div>
-
       <div>
         <Button
           onClick={() => {
