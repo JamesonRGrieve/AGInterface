@@ -58,7 +58,7 @@ export default function AgentRotationSelector({
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Select a Prompt</p>
+          <p>Select an Agent Provider</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

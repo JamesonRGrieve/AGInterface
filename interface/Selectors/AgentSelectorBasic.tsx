@@ -58,7 +58,7 @@ export default function AgentSelectorBasic({
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Select a Prompt</p>
+          <p>Select an Agent</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
