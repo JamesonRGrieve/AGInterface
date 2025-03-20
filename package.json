@@ -87,7 +87,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.98.0",
     "@tanstack/react-table": "^8.20.5",
-    "axios": "^1.7.8",
+    "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clipboard-copy": "^4.0.1",
     "clsx": "^2.1.1",
