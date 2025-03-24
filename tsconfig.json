@@ -30,6 +30,7 @@
       "@/dynamic-form/*": ["./components/jrg/dynamic-form/src/*"],
       "@/interactive/*": ["./interactive/src/*"],
       "@/interface/*": ["./interface/*"],
+      "@/iteration/*": ["./iteration/*"],
     }
   },
   "include": [
