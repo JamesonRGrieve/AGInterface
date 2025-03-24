@@ -22,3 +22,7 @@ branch = main
 path = components/jrg/zod2gql
 url = https://github.com/JamesonRGrieve/zod2gql.git
 branch = main
+[submodule "iteration"]
+	path = iteration
+	url = git@github.com:JamesonRGrieve/AGIteration.git
+	branch = main
