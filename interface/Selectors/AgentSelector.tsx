@@ -25,7 +25,6 @@ export function AgentSelector() {
   const { data: agentsData } = useAgents();
   const router = useRouter();
   console.error({ agentError, teamError });
-  console.log('THING!', teams);
   const switchAgents = (agent: Agent) => {
     // setActiveAgent(agent);
     setCookie('aginterface-agent', agent.id, {

@@ -67,9 +67,6 @@ export default function Extension({
             size='sm'
             className='gap-2'
             onClick={() => {
-              console.log(
-                'SETTING ' + `aginteractive-${OVERRIDE_EXTENSIONS[extension.extension_name].name}` + ` to ${!state}`,
-              );
               setCookie(`aginteractive-${OVERRIDE_EXTENSIONS[extension.extension_name].name}`, (!state).toString(), {
                 domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
                 maxAge: 2147483647,

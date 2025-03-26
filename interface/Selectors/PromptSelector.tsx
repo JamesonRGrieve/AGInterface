@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { InteractiveConfigContext } from '@/interactive/InteractiveConfigContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { usePrompts } from '../hooks/usePrompt';
 
 export default function PromptSelector({
@@ -20,13 +20,9 @@ export default function PromptSelector({
   const state = useContext(InteractiveConfigContext);
   const { data: promptData, error } = usePrompts();
   const searchParams = useSearchParams();
-  console.log('PROMPT DATA', promptData);
   const router = useRouter();
   const pathname = usePathname();
-  console.log(error);
-  useEffect(() => {
-    console.log('Value changed to ', value);
-  }, [value]);
+
   return (
     <TooltipProvider>
       <Tooltip>

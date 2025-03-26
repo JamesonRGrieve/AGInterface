@@ -60,15 +60,8 @@ export function Providers() {
   const { data: activeCompany } = useTeam();
   const { data: providerData } = useProviders();
 
-  console.log('ACTIVE COMPANY', activeCompany);
-
   // Filter connected providers
   const providers = useMemo(() => {
-    console.log('Starting categorization...');
-    console.log('Agent settings length:', agentData?.settings?.length);
-    console.log('Provider data length:', providerData?.length);
-    console.log('AGENT DATA', agentData);
-    console.log('PROVIDER DATA', providerData);
     // Return empty arrays if no data
     if (!agentData?.settings || !providerData?.length) {
       return {
@@ -78,7 +71,6 @@ export function Providers() {
     }
 
     const connected = providerData.filter((provider) => {
-      console.log(`\nChecking provider: ${provider.name}`);
       // Skip providers without settings
       if (!provider.settings?.length) return false;
 
@@ -141,7 +133,6 @@ export function Providers() {
 
   const handleDisconnect = async (name: string) => {
     const extension = providerData?.find((ext) => ext.name === name);
-    console.log('DELETION', extension);
     const emptySettings = extension.settings
       .filter((setting) => {
         return ['API_KEY', 'SECRET', 'PASSWORD', 'TOKEN'].some((keyword) =>
@@ -149,16 +140,11 @@ export function Providers() {
         );
       })
       .reduce((acc, setting) => {
-        console.log('DELETION PROCESSING SETTING', setting);
         return { ...acc, [setting.name]: '' };
       }, {});
-    console.log('SETTING DELETION', emptySettings);
     await handleSaveSettings(extension.name, emptySettings);
   };
 
-  console.log('PROVIDERS', providerData);
-
-  console.log(providers);
   return (
     <div className='space-y-6'>
       <div className='grid gap-4'>

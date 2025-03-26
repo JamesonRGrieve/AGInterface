@@ -22,7 +22,6 @@ export default function PromptPanel() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [importMode, setImportMode] = useState(false);
-  console.log(prompt);
   useEffect(() => {
     if (prompt.data?.content) {
       setPromptBody(prompt.data.content);
