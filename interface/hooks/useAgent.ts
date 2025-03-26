@@ -23,7 +23,7 @@ export function useAgents(): SWRResponse<Agent[]> {
   const router = useRouter();
 
   return useSWR<Agent[]>(
-    '/prompts',
+    '/agents',
     async (): Promise<Agent[]> => {
       try {
         const query = AgentSchema.toGQL('query', 'GetAgents');
@@ -56,7 +56,7 @@ export function useAgent(id?: string): SWRResponse<Agent | null> {
   const { data: agents } = agentsHook;
   if (!id) id = getCookie('aginfrastructure-agent');
   const swrHook = useSWR<Agent | null>(
-    [`/team?id=${id}`, agents, getCookie('jwt')],
+    [`/agent?id=${id}`, agents, getCookie('jwt')],
     async (): Promise<Agent | null> => {
       if (!getCookie('jwt')) return null;
       try {

@@ -1,12 +1,6 @@
 'use client';
 
-import { setCookie } from 'cookies-next';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { FaRobot } from 'react-icons/fa';
-import { useAgent, useAgents } from '../hooks/useAgent';
-import { Agent } from '../hooks/z';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { useTeam, useTeams } from '@/auth/hooks/useTeam';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,16 +9,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTeam } from '@/auth/hooks/useTeam';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { setCookie } from 'cookies-next';
+import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FaRobot } from 'react-icons/fa';
+import { useAgent, useAgents } from '../hooks/useAgent';
+import { Agent } from '../hooks/z';
 
 export function AgentSelector() {
   const { isMobile } = useSidebar('left');
   const { data: activeAgent, mutate: mutateActiveAgent, error: agentError } = useAgent();
+  const { data: teams } = useTeams();
   const { data: activeCompany, mutate: mutateActiveTeam, error: teamError } = useTeam();
   const { data: agentsData } = useAgents();
   const router = useRouter();
   console.error({ agentError, teamError });
-
+  console.log('THING!', teams);
   const switchAgents = (agent: Agent) => {
     // setActiveAgent(agent);
     setCookie('aginteractive-agent', agent.name, {
