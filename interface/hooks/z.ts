@@ -134,35 +134,22 @@ export type CommandArgs = z.infer<typeof CommandArgSchema>;
 export const AgentSchema = z.object({
   id: z.string(),
   name: z.string().min(1),
-  userId: z.string(),
-  companyId: z.string(),
-  favourite: z.boolean(),
+  // userId: z.string(),
+  // teamId: z.string(),
   rotationId: z.string(),
-  imageUrl: z.string().optional().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime().optional().nullable(),
-  updatedByUser: z.string().optional().nullable(),
-  deletedAt: z.string().datetime().optional().nullable(),
-  deletedByUser: z.string().optional().nullable(),
-  default: z.boolean().optional(),
-  status: z.union([z.boolean(), z.literal(null)]).optional(),
-  settings: z
-    .array(
-      z.object({
-        name: z.string(),
-        value: z.string(),
-      }),
-    )
-    .optional(),
-  companyName: z.string().min(1).optional(),
+  // imageUrl: z.string().optional().nullable(),
+  // createdAt: z.string().datetime(),
+  // updatedAt: z.string().datetime().optional().nullable(),
+  // updatedByUser: z.string().optional().nullable(),
+  // companyName: z.string().min(1).optional(),
   // Relationships
-  contextPrompts: z.array(z.any()).optional(),
-  providerInstances: z.array(z.any()).optional(),
-  providerInstanceAbilities: z.array(z.any()).optional(),
-  memories: z.array(z.any()).optional(),
-  labels: z.array(z.any()).optional(),
-  chainSteps: z.array(z.any()).optional(),
-  tasks: z.array(z.any()).optional(),
+  // contextPrompts: z.array(z.any()).optional(),
+  // providerInstances: z.array(z.any()).optional(),
+  // providerInstanceAbilities: z.array(z.any()).optional(),
+  // memories: z.array(z.any()).optional(),
+  // labels: z.array(z.any()).optional(),
+  // chainSteps: z.array(z.any()).optional(),
+  // tasks: z.array(z.any()).optional(),
 });
 
 export type Agent = z.infer<typeof AgentSchema>;
