@@ -1,6 +1,6 @@
 'use client';
 
-import { useTeam, useTeams } from '@/auth/hooks/useTeam';
+import { useTeam } from '@/auth/hooks/useTeam';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +20,7 @@ import { Agent } from '../hooks/z';
 export function AgentSelector() {
   const { isMobile } = useSidebar('left');
   const { data: activeAgent, mutate: mutateActiveAgent, error: agentError } = useAgent();
-  const { data: teams } = useTeams();
-  const { data: activeCompany, mutate: mutateActiveTeam, error: teamError } = useTeam();
+  const { data: activeTeam, mutate: mutateActiveTeam, error: teamError } = useTeam();
   const { data: agentsData } = useAgents();
   const router = useRouter();
   console.error({ agentError, teamError });
@@ -48,8 +47,8 @@ export function AgentSelector() {
                 <FaRobot className='size-4' />
               </div>
               <div className='grid flex-1 text-sm leading-tight text-left'>
-                <span className='font-semibold truncate'>{activeAgent?.agent?.name}</span>
-                <span className='text-xs truncate'>{activeCompany?.name}</span>
+                <span className='font-semibold truncate'>{activeAgent?.name}</span>
+                <span className='text-xs truncate'>{activeTeam?.name}</span>
               </div>
               <ChevronsUpDown className='ml-auto' />
             </SidebarMenuButton>
@@ -70,9 +69,9 @@ export function AgentSelector() {
                 >
                   <div className='flex flex-col'>
                     <span>{agent.name}</span>
-                    <span className='text-xs text-muted-foreground'>{agent.companyName}</span>
+                    <span className='text-xs text-muted-foreground'>-</span>
                   </div>
-                  {activeAgent?.agent?.id === agent.id && <Check className='w-4 h-4 ml-2' />}
+                  {activeAgent?.id === agent.id && <Check className='w-4 h-4 ml-2' />}
                 </DropdownMenuItem>
               ))}
             <DropdownMenuSeparator />
