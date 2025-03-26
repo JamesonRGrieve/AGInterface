@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import {
-    LuDatabase as Database,
-    LuFileText as FileText,
-    LuMessageSquare as MessageSquare,
-    LuSend as Send,
+  LuDatabase as Database,
+  LuFileText as FileText,
+  LuMessageSquare as MessageSquare,
+  LuSend as Send,
 } from 'react-icons/lu';
 
 export function HowItWorks() {

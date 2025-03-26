@@ -1,5 +1,5 @@
-import type { MetadataRoute } from 'next'
- 
+import type { MetadataRoute } from 'next';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: process.env.NEXT_PUBLIC_APP_NAME,
@@ -17,5 +17,5 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/x-icon',
       },
     ],
-  }
+  };
 }

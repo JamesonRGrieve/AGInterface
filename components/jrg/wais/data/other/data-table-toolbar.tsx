@@ -2,12 +2,12 @@
 import { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import usePathname from '@/hooks/usePathname';
 import { AddResident } from '../admin/dialogs/add-resident-dialog';
 import { BatchUpload } from '../admin/dialogs/batch-upload-dialog';
 import { DataTableFilter } from './data-table-filter';
 import { DataTableViewOptions } from './data-table-view-options';
+import usePathname from '@/hooks/usePathname';
+import { Button } from '@/components/ui/button';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;

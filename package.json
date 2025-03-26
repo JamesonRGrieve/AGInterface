@@ -57,8 +57,8 @@
     "./Style/Global": "./dist/style/globals.css"
   },
   "optionalDependencies": {
-    "lightningcss-darwin-arm64": "1.24.1",
-    "@tailwindcss/oxide-darwin-arm64": "4.0.0"
+    "@tailwindcss/oxide-darwin-arm64": "4.0.0",
+    "lightningcss-darwin-arm64": "1.24.1"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -158,6 +158,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-security": "^2.1.1",
     "eslint-plugin-sonarjs": "^0.23.0",
+    "eslint-plugin-storybook": "^0.12.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "prettier": "^3.4.1",
     "tailwindcss": "^4.0.0",
