@@ -2,7 +2,7 @@ import { useToast } from '@/hooks/useToast';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import log from '@/next-log/log';
 import '@/zod2gql/zod2gql';
-import { getCookie } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import useSWR, { SWRResponse } from 'swr';
 import { chainMutations, createGraphQLClient } from '../../interactive/src/hooks/lib';
@@ -28,6 +28,14 @@ export function useAgents(): SWRResponse<Agent[]> {
       try {
         const query = AgentSchema.toGQL('query', 'GetAgents');
         const response = await client.request(query);
+        if (response.agents) {
+          if (
+            !getCookie('aginterface-agent') ||
+            !response.agents.some((agent: any) => agent.id === getCookie('aginterface-agent'))
+          ) {
+            setCookie('aginterface-agent', response.agents[0].id, { domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN });
+          }
+        }
         return response.agents || [];
       } catch (error) {
         log(['GQL useAgents() Error', error], {
@@ -54,7 +62,7 @@ export function useAgents(): SWRResponse<Agent[]> {
 export function useAgent(id?: string): SWRResponse<Agent | null> {
   const agentsHook = useAgents();
   const { data: agents } = agentsHook;
-  if (!id) id = getCookie('aginfrastructure-agent');
+  if (!id) id = getCookie('aginterface-agent');
   const swrHook = useSWR<Agent | null>(
     [`/agent?id=${id}`, agents, getCookie('jwt')],
     async (): Promise<Agent | null> => {

@@ -56,7 +56,7 @@ export function Providers() {
   const { data: agentData, mutate } = useAgent(true);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [error, setError] = useState<ErrorState>(null);
-  const agent_name = (getCookie('aginteractive-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT) ?? agent;
+  const agent_name = (getCookie('aginterface-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT) ?? agent;
   const { data: activeCompany } = useTeam();
   const { data: providerData } = useProviders();
 

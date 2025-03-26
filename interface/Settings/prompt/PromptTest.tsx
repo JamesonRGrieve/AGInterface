@@ -31,7 +31,7 @@ export default function PromptTest({
   const sendPrompt = useCallback(async () => {
     setLoading(true);
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${getCookie('aginteractive-agent')}/prompt`,
+      `${process.env.NEXT_PUBLIC_API_URI}/api/agent/${getCookie('aginterface-agent')}/prompt`,
       {
         prompt_name: promptName,
         prompt_args: variables,

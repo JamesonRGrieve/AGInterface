@@ -28,7 +28,7 @@ export function AgentSelector() {
   console.log('THING!', teams);
   const switchAgents = (agent: Agent) => {
     // setActiveAgent(agent);
-    setCookie('aginteractive-agent', agent.name, {
+    setCookie('aginterface-agent', agent.id, {
       domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
     });
     mutateActiveTeam();

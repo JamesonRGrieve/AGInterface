@@ -26,7 +26,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
       try {
         await context.sdk.renameAgent(agentData.agent.name, newName);
         setRenaming(false);
-        setCookie('aginteractive-agent', newName, {
+        setCookie('aginterface-agent', newName, {
           domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         });
         mutateAgent();
@@ -45,7 +45,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
             },
           },
         );
-        setCookie('aginteractive-agent', newName, {
+        setCookie('aginterface-agent', newName, {
           domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         });
 
@@ -127,7 +127,7 @@ export default function AgentPanel({ setShowCreateDialog }) {
               handleConfirm();
             } else {
               setRenaming(true);
-              setNewName(getCookie('aginteractive-agent')?.toString() || '');
+              setNewName(getCookie('aginterface-agent')?.toString() || '');
             }
           }}
           disabled={creating}

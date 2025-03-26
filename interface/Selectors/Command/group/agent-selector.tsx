@@ -16,7 +16,7 @@ export function AgentSelectorGroup() {
 
   const onSelect = useCallback(
     (agentName: string) => {
-      setCookie('aginteractive-agent', agentName, {
+      setCookie('aginterface-agent', agentName, {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
       });
       mutateActiveCompany();
