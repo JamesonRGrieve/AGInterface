@@ -89,88 +89,14 @@ export default function AgentPanel({ setShowCreateDialog }) {
       console.error('Failed to export agent:', error);
     }
   };
-
   return (
     <div className='flex flex-col items-center justify-between mb-4 space-x-2 md:flex-row'>
       <SidebarContent title='Agent Management'>
         <SidebarGroup>
-          {/* Select Team */}
-          <SidebarGroupLabel>Select Team</SidebarGroupLabel>
-          <SidebarMenuButton className='group-data-[state=expanded]:hidden'>
-            <ArrowBigLeft />
-          </SidebarMenuButton>
-          <div className='w-full group-data-[collapsible=icon]:hidden'>
-            {renaming ? (
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
-            ) : (
-              <TeamSelector />
-            )}
-          </div>
-          {/*  Select Agent */}
-          <SidebarGroupLabel>Select Agent</SidebarGroupLabel>
-          <div className='w-full group-data-[collapsible=icon]:hidden'>
-            {renaming ? (
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
-            ) : (
-              <AgentSelectorBasic />
-            )}
-          </div>
-          {/* Agent Provider */}
-          <SidebarGroupLabel>Agent Provider</SidebarGroupLabel>
-          <div className='w-full group-data-[collapsible=icon]:hidden'>
-            {renaming ? (
-              <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
-            ) : (
-              <AgentRotationSelector />
-            )}
-          </div>
-
-          {/* Agent Functions */}
-          <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
-          <SidebarMenu>
-            {[
-              {
-                title: 'Create Agent',
-                icon: Plus,
-                disabled: renaming,
-              },
-              {
-                title: renaming ? 'Save Name' : 'Rename Agent',
-                icon: renaming ? Check : Pencil,
-                func: renaming
-                  ? () => {
-                      setRenaming(false);
-                    }
-                  : () => setRenaming(true),
-                disabled: false,
-              },
-              {
-                title: 'Import Agent',
-                icon: Upload,
-                disabled: renaming,
-              },
-              {
-                title: 'Export Agent',
-                icon: Download,
-                disabled: renaming,
-              },
-              {
-                title: 'Delete Agent',
-                icon: Trash2,
-                disabled: renaming,
-              },
-            ].map(
-              (item) =>
-                item.visible !== false && (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton side='left' tooltip={item.title} onClick={item.func} disabled={item.disabled}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
-            )}
-          </SidebarMenu>
+          <SelectTeam />
+          <SelectAgent />
+          <AgentProvider />
+          <AgentFunctions />
         </SidebarGroup>
       </SidebarContent>
       <div className='flex items-center space-x-2'>
@@ -233,4 +159,108 @@ export default function AgentPanel({ setShowCreateDialog }) {
       </div>
     </div>
   );
+
+  // Compmonent for Select Team section
+  function SelectTeam() {
+    return (
+      <>
+        <SidebarGroupLabel>Select Team</SidebarGroupLabel>
+        <SidebarMenuButton className='group-data-[state=expanded]:hidden'>
+          <ArrowBigLeft />
+        </SidebarMenuButton>
+        <div className='w-full group-data-[collapsible=icon]:hidden'>
+          {renaming ? (
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+          ) : (
+            <TeamSelector />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // Component for Select
+  function SelectAgent() {
+    return (
+      <>
+        <SidebarGroupLabel>Select Agent</SidebarGroupLabel>
+        <div className='w-full group-data-[collapsible=icon]:hidden'>
+          {renaming ? (
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+          ) : (
+            <AgentSelectorBasic />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // Component for Agent Provider
+  function AgentProvider() {
+    return (
+      <>
+        <SidebarGroupLabel>Agent Provider</SidebarGroupLabel>
+        <div className='w-full group-data-[collapsible=icon]:hidden'>
+          {renaming ? (
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+          ) : (
+            <AgentRotationSelector />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  // Component for Agent Functions
+  function AgentFunctions() {
+    return (
+      <>
+        <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
+        <SidebarMenu>
+          {[
+            {
+              title: 'Create Agent',
+              icon: Plus,
+              disabled: renaming,
+            },
+            {
+              title: renaming ? 'Save Name' : 'Rename Agent',
+              icon: renaming ? Check : Pencil,
+              func: renaming
+                ? () => {
+                    setRenaming(false);
+                  }
+                : () => setRenaming(true),
+              disabled: false,
+            },
+            {
+              title: 'Import Agent',
+              icon: Upload,
+              disabled: renaming,
+            },
+            {
+              title: 'Export Agent',
+              icon: Download,
+              disabled: renaming,
+            },
+            {
+              title: 'Delete Agent',
+              icon: Trash2,
+              disabled: renaming,
+            },
+          ].map(
+            (item) =>
+              item.visible !== false && (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton side='left' tooltip={item.title} onClick={item.func} disabled={item.disabled}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ),
+          )}
+        </SidebarMenu>
+      </>
+    );
+  }
 }
