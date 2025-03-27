@@ -1,0 +1,62 @@
+name: Build and Test
+on:
+  workflow_call:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Storybook
+        run: npm run storybook &
+
+      - name: Wait for Storybook to be ready
+        run: |
+          echo "Waiting for Storybook to start..."
+          # Try to connect to Storybook for up to 60 seconds
+          timeout=60
+          counter=0
+          until $(curl --output /dev/null --silent --head --fail http://localhost:3001); do
+            if [ $counter -eq $timeout ]; then
+              echo "Timed out waiting for Storybook to start"
+              exit 1
+            fi
+            echo "Waiting for Storybook... ($counter seconds so far)"
+            sleep 5
+            counter=$((counter + 5))
+          done
+          echo "Storybook is up and running!"
+
+      - name: Run Storybook tests
+        run: npm run storybook-test
+
+      # Optional: Collect and upload test coverage
+      # - name: Collect coverage
+      #   run: npx nyc report
+      #   if: always()
+      #   continue-on-error: true
+
+      # Upload artifacts if tests fail
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: storybook-test-results
+          path: |
+            ./*-snapshots/
+            ./coverage/
+          retention-days: 7
