@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import { WalletReadyState, type WalletName } from '@solana/wallet-adapter-base';
 import { useWallet, type Wallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';

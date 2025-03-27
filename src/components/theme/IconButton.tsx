@@ -1,7 +1,7 @@
 // IconButton.tsx
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 
 export default function IconButton({ Icon, label, description, ...props }) {
   return (

@@ -1,4 +1,4 @@
-import IconButton from '@/components/jrg/theme/IconButton';
+import IconButton from '@/components/theme/IconButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/useToast';

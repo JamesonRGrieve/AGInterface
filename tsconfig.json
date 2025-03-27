@@ -21,7 +21,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./src/*"],
       "@/next-log/*": ["./src/lib/next-log/src/*"],
       "@/zod2gql/*": ["./src/lib/zod2gql/src/*"],
       "@/auth/*": ["./src/components/auth/src/*"],

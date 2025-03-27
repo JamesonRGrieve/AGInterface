@@ -16,7 +16,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { items } from '@/interactive/NavMenu';
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 

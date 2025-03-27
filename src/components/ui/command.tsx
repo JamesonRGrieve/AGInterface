@@ -5,7 +5,7 @@ import { Command as CommandPrimitive } from 'cmdk';
 import * as React from 'react';
 import { LuSearch as Search } from 'react-icons/lu';
 
-import { cn } from '@/src/lib/utils';
+import { cn } from '@/lib/utils';
 import { Dialog, DialogContent } from './dialog';
 
 const Command = React.forwardRef<
