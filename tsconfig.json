@@ -22,15 +22,14 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/jrg/*": ["./components/jrg/*"],
-      "@/next-log/*": ["./components/jrg/next-log/src/*"],
-      "@/zod2gql/*": ["./components/jrg/zod2gql/src/*"],
-      "@/auth/*": ["./components/jrg/auth/src/*"],
-      "@/appwrapper/*": ["./components/jrg/appwrapper/src/*"],
-      "@/dynamic-form/*": ["./components/jrg/dynamic-form/src/*"],
-      "@/interactive/*": ["./interactive/src/*"],
-      "@/interface/*": ["./interface/*"],
-      "@/iteration/*": ["./iteration/*"]
+      "@/next-log/*": ["./src/lib/next-log/src/*"],
+      "@/zod2gql/*": ["./src/lib/zod2gql/src/*"],
+      "@/auth/*": ["./src/components/auth/src/*"],
+      "@/appwrapper/*": ["./src/components/appwrapper/src/*"],
+      "@/dynamic-form/*": ["./src/components/dynamic-form/src/*"],
+      "@/interactive/*": ["./src/interactive/src/*"],
+      "@/interface/*": ["./src/interface/*"],
+      "@/iteration/*": ["./src/iteration/*"]
     }
   },
   "include": [

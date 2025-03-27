@@ -13,7 +13,12 @@
     "lint-fix": "next lint --fix",
     "prettier": "prettier .",
     "prettier-fix": "prettier --write .",
-    "fix": "prettier --write . && next lint --fix"
+    "fix": "prettier --write . && next lint --fix",
+    "storybook": "storybook dev -p 3001",
+    "storybook-build": "storybook build",
+    "storybook-run": "npx http-server storybook-static -p 3001",
+    "storybook-deploy": "storybook build && gh-pages -d storybook-static",
+    "storybook-test": "test-storybook --url http://localhost:3001 --browsers chromium,firefox,webkit"
   },
   "repository": {
     "type": "git",
@@ -178,6 +183,7 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
   }
 }
