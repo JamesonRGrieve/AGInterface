@@ -1,200 +1,315 @@
+import { InteractiveConfig, InteractiveConfigContext } from '@/interactive/InteractiveConfigContext';
 import { Meta, StoryContext, StoryObj } from '@storybook/react';
-import React from 'react';
-import { SWRConfig } from 'swr';
+import { expect, userEvent, within } from '@storybook/test';
+import { http, HttpResponse } from 'msw';
+import * as usePromptHooks from '../hooks/usePrompt';
 import PromptSelector from './PromptSelector';
 
-// Mock data for prompts
+// Create mock data for prompts that match your real data structure
 const mockPrompts = [
-  {
-    id: 'prompt-1',
-    name: 'Customer Support',
-    content: 'You are a helpful customer support agent...',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'prompt-2',
-    name: 'Marketing Copy',
-    content: 'You are a creative marketing copywriter...',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'prompt-3',
-    name: 'Technical Documentation',
-    content: 'You are a technical writer specializing in documentation...',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
+  { name: 'Think About It', content: 'This is a thinking prompt', category: 'Default' },
+  { name: 'Summarize This', content: 'This is a summary prompt', category: 'Default' },
+  { name: 'Analyze Data', content: 'This is an analysis prompt', category: 'Data' },
+  { name: 'Creative Writing', content: 'This is a creative writing prompt', category: 'Creative' },
+  { name: 'Code Review', content: 'This is a code review prompt', category: 'Development' },
 ];
 
-// Mock state management
-const mockRouter = { push: () => {} };
-let mockPathname = '/chat';
-const mockSearchParams = new URLSearchParams();
-mockSearchParams.set('prompt', 'Customer Support');
-mockSearchParams.set('category', 'Default');
-
-// Mock the context
-const mockInteractiveConfigContext = {
-  config: {},
-  setConfig: () => {},
+// Mock Next.js router
+const mockRouter = {
+  push: (url) => console.log(`[Mock Router] Navigating to: ${url}`),
 };
 
-// Create mock data and error states
-let mockPromptsData = mockPrompts;
-let mockPromptsError = null;
-
-// Mock the modules using object properties
-const nextNavigationMock = {
-  useRouter: () => mockRouter,
-  useSearchParams: () => mockSearchParams,
+// Mock search params
+const createMockSearchParams = (params = {}) => {
+  return {
+    get: (key) => params[key] || null,
+    has: (key) => params.hasOwnProperty(key),
+  };
 };
 
-const usePromptMock = {
-  usePrompts: () => ({
-    data: mockPromptsData,
-    error: mockPromptsError,
-  }),
+// Mock InteractiveConfigContext matching your provided structure
+const mockInteractiveConfig: InteractiveConfig = {
+  agent: 'XT',
+  sdk: null,
+  openai: null,
+  overrides: {
+    mode: 'prompt',
+    prompt: 'Think About It',
+    promptCategory: 'Default',
+    command: '',
+    commandArgs: {},
+    commandMessageArg: 'message',
+    chain: '',
+    chainRunConfig: {
+      chainArgs: {},
+      singleStep: false,
+      fromStep: 0,
+      allResponses: false,
+    },
+    contextResults: 0,
+    shots: 0,
+    websearchDepth: 0,
+    injectMemoriesFromCollectionNumber: 0,
+    conversationResults: 5,
+    conversation: '-',
+    conversationID: '',
+    browseLinks: false,
+    webSearch: false,
+    insightAgentName: '',
+    enableMemory: false,
+  },
+  mutate: () => {},
 };
 
-const usePathnameMock = () => mockPathname;
-
-const interactiveConfigContextMock = {
-  InteractiveConfigContext: React.createContext(mockInteractiveConfigContext),
-};
-
-// Set up module mocks
-import * as UsePathname from '@/auth/hooks/usePathname';
-import * as InteractiveConfig from '@/interactive/InteractiveConfigContext';
-import * as NextNavigation from 'next/navigation';
-import * as UsePrompt from '../hooks/usePrompt';
-
-// Override module functionality
-Object.defineProperty(NextNavigation, 'useRouter', {
-  value: nextNavigationMock.useRouter,
-});
-Object.defineProperty(NextNavigation, 'useSearchParams', {
-  value: nextNavigationMock.useSearchParams,
-});
-Object.defineProperty(UsePrompt, 'usePrompts', {
-  value: usePromptMock.usePrompts,
-});
-Object.defineProperty(UsePathname, 'default', {
-  value: usePathnameMock,
-});
-Object.defineProperty(InteractiveConfig, 'InteractiveConfigContext', {
-  value: interactiveConfigContextMock.InteractiveConfigContext,
-});
-
+// Set up the meta for the story
 const meta: Meta<typeof PromptSelector> = {
   title: 'Components/PromptSelector',
   component: PromptSelector,
-  parameters: {
-    layout: 'centered',
-  },
   decorators: [
     (Story, context: StoryContext) => {
-      // Reset to defaults
-      mockPromptsData = mockPrompts;
-      mockPromptsError = null;
-      mockPathname = '/chat';
+      // Get configuration from story parameters
+      const pathname = context.parameters.pathname || '/some-path';
+      const promptData = context.args.promptData !== undefined ? context.args.promptData : mockPrompts;
+      const params = context.parameters.searchParams || {};
 
-      // Set category in search params
-      if (context.args.category) {
-        mockSearchParams.set('category', context.args.category);
-      }
+      // Mock the usePrompts hook
+      const originalUsePrompts = usePromptHooks.usePrompts;
+      jest.spyOn(usePromptHooks, 'usePrompts').mockImplementation(() => ({
+        data: promptData,
+        error: context.args.error || null,
+        mutate: async () => {},
+        isValidating: false,
+        isLoading: false,
+        create: async () => {},
+        import: async () => {},
+      }));
 
-      // Update search params for value if provided
-      if (context.args.value) {
-        mockSearchParams.set('prompt', context.args.value);
-      }
+      // Mock Next.js hooks for Storybook context
+      // @ts-ignore - Mocking for storybook
+      window.useRouter = () => mockRouter;
+      // @ts-ignore - Mocking for storybook
+      window.useSearchParams = () => createMockSearchParams(params);
+      // @ts-ignore - Mocking for storybook
+      window.usePathname = () => pathname;
 
       return (
-        <SWRConfig value={{ provider: () => new Map() }}>
-          <div style={{ padding: '1rem', width: '300px' }}>
+        <InteractiveConfigContext.Provider value={mockInteractiveConfig}>
+          <div className='p-4 max-w-md'>
             <Story />
           </div>
-        </SWRConfig>
+        </InteractiveConfigContext.Provider>
       );
     },
   ],
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: '/some-path',
+      },
+    },
+    msw: {
+      handlers: [
+        http.get('/api/prompts', () => {
+          return HttpResponse.json(mockPrompts);
+        }),
+      ],
+    },
+  },
+  // Adding argTypes for the component props
   argTypes: {
-    onChange: { action: 'changed' },
+    category: {
+      control: 'text',
+      description: 'The prompt category',
+      defaultValue: 'Default',
+    },
+    value: {
+      control: 'text',
+      description: 'The selected prompt value',
+    },
+    onChange: {
+      action: 'changed',
+      description: 'Callback when prompt selection changes',
+    },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof PromptSelector>;
 
-// Configure mocks for different scenarios
-function configureMocks(options: { emptyPrompts?: boolean; pathInSettings?: boolean }) {
-  if (options.emptyPrompts) {
-    mockPromptsData = [];
-  } else {
-    mockPromptsData = mockPrompts;
-  }
-
-  if (options.pathInSettings) {
-    mockPathname = '/settings/prompts';
-  } else {
-    mockPathname = '/chat';
-  }
-}
-
+// Default story
 export const Default: Story = {
   args: {
     category: 'Default',
   },
+  parameters: {
+    searchParams: {
+      category: 'Default',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Find the Select trigger
+    const selectTrigger = canvas.getByText('Select a Prompt');
+    expect(selectTrigger).toBeInTheDocument();
+  },
 };
 
-export const WithCustomValue: Story = {
+// Story with pre-selected value
+export const WithPreselectedValue: Story = {
+  args: {
+    value: 'Summarize This',
+    category: 'Default',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Should show the pre-selected value
+    const selectValue = canvas.getByText('Summarize This');
+    expect(selectValue).toBeInTheDocument();
+  },
+};
+
+// Story with pre-selected value from URL query param
+export const WithValueFromQueryParam: Story = {
   args: {
     category: 'Default',
-    value: 'Marketing Copy',
+  },
+  parameters: {
+    searchParams: {
+      prompt: 'Analyze Data',
+      category: 'Default',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Should show the value from query param
+    const selectValue = canvas.getByText('Analyze Data');
+    expect(selectValue).toBeInTheDocument();
   },
 };
 
-export const WithCustomCategory: Story = {
-  args: {
-    category: 'Technical',
-    value: 'Technical Documentation',
-  },
-};
-
+// Story with custom onChange handler
 export const WithCustomOnChange: Story = {
   args: {
     category: 'Default',
-    onChange: (value: string) => console.log('onChange called with', value),
+    onChange: (value) => console.log(`Selected prompt: ${value}`),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Open the dropdown
+    const selectTrigger = canvas.getByRole('combobox');
+    await userEvent.click(selectTrigger);
+
+    // Select an option
+    const option = canvas.getByText('Creative Writing');
+    await userEvent.click(option);
+
+    // Can't directly test the console.log, but the dropdown should close after selection
+    expect(canvas.queryByText('Creative Writing')).toBeInTheDocument();
   },
 };
 
+// Story for when in settings page path
 export const InSettingsPage: Story = {
   args: {
     category: 'Default',
   },
-  decorators: [
-    (Story) => {
-      configureMocks({ pathInSettings: true });
-      return <Story />;
+  parameters: {
+    pathname: '/settings/prompts',
+    searchParams: {
+      category: 'Default',
     },
-  ],
-};
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
 
-export const WithRouterNavigation: Story = {
-  args: {
-    category: 'Default',
+    // Open the dropdown
+    const selectTrigger = canvas.getByRole('combobox');
+    await userEvent.click(selectTrigger);
+
+    // Verify that "- Use Agent Default -" option is not shown in settings page
+    const defaultOption = canvas.queryByText('- Use Agent Default -');
+    expect(defaultOption).not.toBeInTheDocument();
   },
 };
 
+// Story for non-settings page (should show agent default option)
+export const NonSettingsPage: Story = {
+  args: {
+    category: 'Default',
+  },
+  parameters: {
+    pathname: '/chat',
+    searchParams: {
+      category: 'Default',
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Open the dropdown
+    const selectTrigger = canvas.getByRole('combobox');
+    await userEvent.click(selectTrigger);
+
+    // Verify that "- Use Agent Default -" option IS shown in non-settings pages
+    const defaultOption = canvas.queryByText('- Use Agent Default -');
+    expect(defaultOption).toBeInTheDocument();
+  },
+};
+
+// Story for empty prompts
 export const EmptyPrompts: Story = {
   args: {
     category: 'Default',
+    promptData: [],
   },
-  decorators: [
-    (Story) => {
-      configureMocks({ emptyPrompts: true });
-      return <Story />;
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Select should be disabled
+    const selectTrigger = canvas.getByRole('combobox');
+    expect(selectTrigger).toBeDisabled();
+  },
+};
+
+// Story with error state
+export const WithError: Story = {
+  args: {
+    category: 'Default',
+    promptData: null,
+    error: new Error('Failed to load prompts'),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Select should be disabled when there's an error
+    const selectTrigger = canvas.getByRole('combobox');
+    expect(selectTrigger).toBeDisabled();
+  },
+};
+
+// Different category filter
+export const DataCategory: Story = {
+  args: {
+    category: 'Data',
+  },
+  parameters: {
+    searchParams: {
+      category: 'Data',
     },
-  ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Open the dropdown
+    const selectTrigger = canvas.getByRole('combobox');
+    await userEvent.click(selectTrigger);
+
+    // Should show data category prompts
+    expect(canvas.queryByText('Analyze Data')).toBeInTheDocument();
+  },
 };

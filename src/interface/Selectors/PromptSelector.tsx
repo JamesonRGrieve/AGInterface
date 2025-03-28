@@ -8,15 +8,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext } from 'react';
 import { usePrompts } from '../hooks/usePrompt';
 
-export default function PromptSelector({
-  category = 'Default',
-  value,
-  onChange,
-}: {
+export type PromptSelectorProps = {
   category?: string;
   value?: string;
   onChange?: (value: string) => void;
-}): React.JSX.Element {
+};
+export default function PromptSelector({ category = 'Default', value, onChange }: PromptSelectorProps): React.JSX.Element {
   const state = useContext(InteractiveConfigContext);
   const { data: promptData, error } = usePrompts();
   const searchParams = useSearchParams();
