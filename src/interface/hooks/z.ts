@@ -135,8 +135,8 @@ export const AgentSchema = z
     teamId: z.string(),
     rotationId: z.string().optional().nullable(),
     // imageUrl: z.string().optional().nullable(),
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime().optional().nullable(),
+    // createdAt: z.string().datetime(),
+    // updatedAt: z.string().datetime().optional().nullable(),
     // updatedByUser: z.string().optional().nullable(),
     // companyName: z.string().min(1).optional(),
     // Relationships

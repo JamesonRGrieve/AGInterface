@@ -2,6 +2,7 @@ import { useToast } from '@/hooks/useToast';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import log from '@/next-log/log';
 import '@/zod2gql';
+import z, { GQLType } from '@/zod2gql';
 import { getCookie, setCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import useSWR, { SWRResponse } from 'swr';
@@ -26,7 +27,7 @@ export function useAgents(): SWRResponse<Agent[]> {
     '/agents',
     async (): Promise<Agent[]> => {
       try {
-        const query = AgentSchema.toGQL('query', 'GetAgents');
+        const query = z.array(AgentSchema).toGQL(GQLType.Query);
         const response = await client.request(query);
         if (response.agents) {
           if (
