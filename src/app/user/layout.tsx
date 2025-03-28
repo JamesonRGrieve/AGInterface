@@ -1,5 +1,4 @@
 'use client';
-
 import { SidebarPage } from '@/appwrapper/SidebarPage';
 import { SidebarInset } from '@/components/ui/sidebar';
 import Link from 'next/link';

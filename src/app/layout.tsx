@@ -18,8 +18,8 @@ import { metadata, viewport } from './metadata';
 
 export { metadata, viewport };
 
-export default function RootLayout({ children }: { children: ReactNode }): ReactNode {
-  const cookieStore = cookies();
+export default async function RootLayout({ children }: { children: ReactNode }): Promise<ReactNode> {
+  const cookieStore = await cookies();
   const theme = cookieStore.get('theme')?.value ?? process.env.NEXT_PUBLIC_THEME_DEFAULT_MODE;
   const appearance = cookieStore.get('appearance')?.value ?? '';
 

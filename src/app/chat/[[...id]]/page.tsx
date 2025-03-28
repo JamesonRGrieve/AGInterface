@@ -2,7 +2,7 @@ import AGInteractive from '@/interactive/AGInteractive';
 import { cookies } from 'next/headers';
 import ConvSwitch from './ConvSwitch';
 
-export default function Home({ params }: { params: { id: string } }) {
+export default async function Home({ params }: { params: { id: string } }) {
   return (
     <>
       <ConvSwitch id={params.id} />
@@ -17,7 +17,7 @@ export default function Home({ params }: { params: { id: string } }) {
         }}
         serverConfig={{
           backEndURI: process.env.NEXT_PUBLIC_API_URI as string,
-          apiKey: cookies().get('jwt')?.value ?? '',
+          apiKey: (await cookies()).get('jwt')?.value ?? '',
         }}
         agent={process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT || 'XT'}
         overrides={{
