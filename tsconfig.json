@@ -23,7 +23,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/next-log/*": ["./src/lib/next-log/src/*"],
-      "@/zod2gql/*": ["./src/lib/zod2gql/src/*"],
+      "@/zod2gql": ["./src/lib/zod2gql/src"],
       "@/auth/*": ["./src/components/auth/src/*"],
       "@/appwrapper/*": ["./src/components/appwrapper/src/*"],
       "@/dynamic-form/*": ["./src/components/dynamic-form/src/*"],

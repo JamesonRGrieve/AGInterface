@@ -8,7 +8,7 @@ import { SolanaWalletProvider } from '@/components/wallet/wallet-provider';
 import InteractiveConfigContextWrapper from '@/interactive/ContextWrapper';
 import { CommandMenuProvider } from '@/interface/Selectors/Command/command-menu-context';
 import { cn } from '@/lib/utils';
-import '@/zod2gql/zod2gql';
+import '@/zod2gql';
 import { cookies } from 'next/headers';
 import { ReactNode } from 'react';
 import './globals.css';
