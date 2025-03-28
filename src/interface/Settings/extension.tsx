@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
+import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 import { getCookie, setCookie } from 'cookies-next';
 import { Plus, Power, PowerOff, Unlink, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';

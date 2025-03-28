@@ -2,7 +2,7 @@ import IconButton from '@/components/theme/IconButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/useToast';
-import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
+import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
 import { Loader2, Repeat, Send } from 'lucide-react';

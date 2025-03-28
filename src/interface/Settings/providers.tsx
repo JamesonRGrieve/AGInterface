@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
+import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import axios from 'axios';
 import { getCookie } from 'cookies-next';

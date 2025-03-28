@@ -17,7 +17,7 @@ import Extension from './extension';
 
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Input } from '@/components/ui/input';
-import MarkdownBlock from '@/interactive/Chat/Message/MarkdownBlock';
+import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 
 // Types remain the same
 type Command = {
