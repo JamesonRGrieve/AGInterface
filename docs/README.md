@@ -7,7 +7,24 @@
 [![GitHub](https://img.shields.io/badge/GitHub-AGInfrastructure%20%28Agentic%20Back%20End%29-blue?logo=github&style=plastic)](https://github.com/JamesonRGrieve) [![GitHub](https://img.shields.io/badge/GitHub-AGInYourPC%20%28Model%20Back%20End%29-blue?logo=github&style=plastic)](https://github.com/JamesonRGrieve/AGInYourPC) [![GitHub](https://img.shields.io/badge/GitHub-AGInterface%20%28Advanced%20User%20Interface%29-blue?logo=github&style=plastic)](https://github.com/JamesonRGrieve) [![GitHub](https://img.shields.io/badge/GitHub-AGInteractive%20%28Basic%20User%20Interface%29-blue?logo=github&style=plastic)](https://github.com/JamesonRGrieve)
 
 The entire family of AGInfrastructure repositories are provided under [the Creative Commons Non-Commercial No-Derivatives license](LICENSE) by default. This means you may use the repositories and associated packages as-is for your personal use, or fork it for credited contribution. Individual commercial licenses may be granted ([contact me](mailto:hello@zephyrex.dev)).
-
+## Installation
+### Cloning
+```sh
+git clone git@github.com:JamesonRGrieve/AGInterface.git --recursive
+```
+**This repository uses submodules and the `--recursive` flag is important!**
+### Requirements
+- NodeJS >= 20
+```sh
+npm install
+npm run dev
+```
+### Environment
+```
+APP_NAME=
+APP_URI=http://localhost:1109
+API_URI=http://localhost:1996
+```
 ---
 
 More details coming soon!
