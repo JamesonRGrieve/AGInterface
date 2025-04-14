@@ -1,24 +1,28 @@
 [submodule "interactive"]
-path = interactive
+	path = src/interactive
 url = https://github.com/JamesonRGrieve/AGInteractive.git
 branch = main
 [submodule "components/jrg/next-log"]
-path = components/jrg/next-log
+	path = src/lib/next-log
 url = https://github.com/JamesonRGrieve/next-log.git
 branch = main
 [submodule "components/jrg/auth"]
-path = components/jrg/auth
+	path = src/components/auth
 url = https://github.com/JamesonRGrieve/auth.git
 branch = main
 [submodule "components/jrg/appwrapper"]
-path = components/jrg/appwrapper
+	path = src/components/appwrapper
 url = https://github.com/JamesonRGrieve/appwrapper.git
 branch = main
 [submodule "components/jrg/dynamic-form"]
-path = components/jrg/dynamic-form
+	path = src/components/dynamic-form
 url = https://github.com/JamesonRGrieve/dynamic-form.git
 branch = main
 [submodule "components/jrg/zod2gql"]
-path = components/jrg/zod2gql
+	path = src/lib/zod2gql
 url = https://github.com/JamesonRGrieve/zod2gql.git
 branch = main
+[submodule "iteration"]
+	path = src/iteration
+	url = git@github.com:JamesonRGrieve/AGIteration.git
+	branch = main

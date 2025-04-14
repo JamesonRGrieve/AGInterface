@@ -5,8 +5,12 @@ jobs:
   build-baremetal:
     uses: ./.github/workflows/build-baremetal.yml
     name: Build / Baremetal
+  test-storybook:
+    uses: ./.github/workflows/test-storybook.yml
+    needs: build-baremetal
   build-docker:
     uses: ./.github/workflows/build-docker.yml
+    needs: test-storybook
     name: Build / Docker
     with:
       registry-dockerhub-enable: false # ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
