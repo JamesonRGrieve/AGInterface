@@ -9,7 +9,7 @@ function getPrivacyPolicy() {
     const filePath = path.join(process.cwd(), 'content', 'privacy-policy.md');
     return fs.readFileSync(filePath, 'utf8');
   } catch (error) {
-    console.error('Error reading privacy policy:', error);
+    console.warn('Error reading privacy policy:', error);
     return '# Privacy Policy\n\nUnable to load privacy policy.';
   }
 }
