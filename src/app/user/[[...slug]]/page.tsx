@@ -19,9 +19,6 @@ export default async function UserRouter({ params }: { params: Promise<{ slug?: 
           register: {
             path: '/register',
             heading: 'Welcome, Please Register',
-            props: {
-              additionalFields: ['first_name', 'last_name'],
-            },
           },
         }}
         additionalPages={{}}
