@@ -4,7 +4,6 @@ import { SidebarContext } from '@/appwrapper/SidebarContext';
 import { SidebarMain } from '@/appwrapper/SidebarMain';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
-import { SolanaWalletProvider } from '@/components/wallet/wallet-provider';
 import InteractiveConfigContextWrapper from '@/interactive/ContextWrapper';
 import { CommandMenuProvider } from '@/interface/Selectors/Command/command-menu-context';
 import { cn } from '@/lib/utils';
@@ -28,19 +27,17 @@ export default async function RootLayout({ children }: { children: ReactNode }):
       <Head />
       <body className={cn(/*inter.className,*/ theme, appearance)}>
         <InteractiveConfigContextWrapper>
-          <SolanaWalletProvider>
-            <CommandMenuProvider>
-              <SidebarContentProvider>
-                <SidebarProvider className='flex-1'>
-                  <SidebarMain side='left' />
-                  {children}
-                  <Toaster />
-                  {/* <ThemeSetter /> */}
-                  <SidebarContext side='right' />
-                </SidebarProvider>
-              </SidebarContentProvider>
-            </CommandMenuProvider>
-          </SolanaWalletProvider>
+          <CommandMenuProvider>
+            <SidebarContentProvider>
+              <SidebarProvider className='flex-1'>
+                <SidebarMain side='left' />
+                {children}
+                <Toaster />
+                {/* <ThemeSetter /> */}
+                <SidebarContext side='right' />
+              </SidebarProvider>
+            </SidebarContentProvider>
+          </CommandMenuProvider>
         </InteractiveConfigContextWrapper>
       </body>
     </html>
