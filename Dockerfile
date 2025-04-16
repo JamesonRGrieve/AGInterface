@@ -22,6 +22,7 @@ RUN ARCH=$(uname -m) && \
 RUN npm ci
 COPY . .
 ARG API_URI
+ARG SERVERSIDE_API_URI
 ARG APP_NAME
 ARG APP_URI
 RUN chmod +x ./env.sh && ./env.sh
