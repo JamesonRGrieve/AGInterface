@@ -49,6 +49,13 @@ export function NavMain() {
     isActive: isActive(item, pathname, queryParams),
   }));
 
+  const sidebarItemClickHanlder = (open: boolean, item: Item) => {
+    if (item?.items && item.items?.length) {
+      if (!open) toggleSidebar();
+    }
+    if (item.url) router.push(item.url);
+  }
+
   // Add logic to determine if team management should be shown
   return (
     <SidebarGroup>
@@ -63,10 +70,7 @@ export function NavMain() {
                     <SidebarMenuButton
                       side='left'
                       tooltip={item.title}
-                      onClick={() => {
-                        if (!open) toggleSidebar();
-                        if (item.url) router.push(item.url);
-                      }}
+                      onClick={() => sidebarItemClickHanlder(open, item)}
                       className={cn(item.isActive && !item.items?.length && 'bg-muted')}
                     >
                       {item.icon && <item.icon />}
