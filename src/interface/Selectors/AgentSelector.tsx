@@ -19,8 +19,8 @@ import { Agent } from '../hooks/z';
 
 export function AgentSelector() {
   const { isMobile } = useSidebar('left');
-  const { data: activeAgent, mutate: mutateActiveAgent, error: agentError } = useAgent();
-  const { data: activeTeam, mutate: mutateActiveTeam, error: teamError } = useTeam();
+  const { data: activeAgent, mutate: mutateActiveAgent, isLoading: isLoadingActiveAgent, error: agentError } = useAgent();
+  const { data: activeTeam, mutate: mutateActiveTeam, isLoading: isLoadingActiveTeam, error: teamError } = useTeam();
   const { data: agentsData } = useAgents();
   const router = useRouter();
   console.error({ agentError, teamError });
@@ -34,6 +34,11 @@ export function AgentSelector() {
     mutateActiveAgent();
   };
 
+  const agentName = isLoadingActiveAgent ? null : activeAgent?.name;
+  const teamName = isLoadingActiveTeam ? null : activeTeam?.name;
+
+  const isDropdownDisabled = !activeTeam || isLoadingActiveTeam || isLoadingActiveAgent;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -42,17 +47,17 @@ export function AgentSelector() {
             <SidebarMenuButton
               side='left'
               size='lg'
-              disabled={!activeTeam}
+              disabled={isDropdownDisabled}
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground disabled:opacity-100'
             >
               <div className='flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground'>
                 <FaRobot className='size-4' />
               </div>
               <div className='grid flex-1 text-sm leading-tight text-left'>
-                <span className='font-semibold truncate'>{activeAgent?.name}</span>
-                <span className='text-xs truncate'>{activeTeam?.name}</span>
+                <span className='font-semibold truncate'>{agentName}</span>
+                <span className='text-xs truncate'>{teamName}</span>
               </div>
-              <ChevronsUpDown className='ml-auto' />
+              {!isDropdownDisabled && <ChevronsUpDown className='ml-auto' />}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
