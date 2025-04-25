@@ -38,6 +38,8 @@ export function AgentSelector() {
   const teamName = isLoadingActiveTeam ? null : activeTeam?.name;
 
   const isDropdownDisabled = !activeTeam || isLoadingActiveTeam || isLoadingActiveAgent;
+  const hasNoAgents = !isLoadingActiveAgent && !isLoadingActiveTeam && (!activeAgent || !activeTeam);
+  const displayName = hasNoAgents ? process.env.NEXT_PUBLIC_APP_NAME : agentName;
 
   return (
     <SidebarMenu>
@@ -54,7 +56,7 @@ export function AgentSelector() {
                 <FaRobot className='size-4' />
               </div>
               <div className='grid flex-1 text-sm leading-tight text-left'>
-                <span className='font-semibold truncate'>{agentName}</span>
+                <span className='font-semibold truncate'>{displayName}</span>
                 <span className='text-xs truncate'>{teamName}</span>
               </div>
               {!isDropdownDisabled && <ChevronsUpDown className='ml-auto' />}
