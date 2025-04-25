@@ -24,6 +24,7 @@ export function AgentSelector() {
   const { data: agentsData } = useAgents();
   const router = useRouter();
   console.error({ agentError, teamError });
+
   const switchAgents = (agent: Agent) => {
     // setActiveAgent(agent);
     setCookie('aginterface-agent', agent.id, {
@@ -41,7 +42,8 @@ export function AgentSelector() {
             <SidebarMenuButton
               side='left'
               size='lg'
-              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+              disabled={!activeTeam}
+              className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground disabled:opacity-100'
             >
               <div className='flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground'>
                 <FaRobot className='size-4' />
