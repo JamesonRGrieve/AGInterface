@@ -125,11 +125,6 @@ export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
           </div>
         </div>
       </TooltipProvider>
-      {chainData && (
-        <div className='mt-4'>
-          <ChainSteps />
-        </div>
-      )}
     </div>
   );
 }
