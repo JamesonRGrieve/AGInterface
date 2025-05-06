@@ -1,4 +1,4 @@
-const path = require('path');
+import path from "path";
 
 const config = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)'],
@@ -14,7 +14,7 @@ const config = {
   staticDirs: ['../public'],
   webpackFinal: async (config, { configType }) => {
     if (config.resolve) {
-      const rootDir = path.resolve(__dirname, '../src');
+      const rootDir = path.resolve('../src');
       config.resolve.alias = {
         ...config.resolve.alias,
         '@': rootDir,
