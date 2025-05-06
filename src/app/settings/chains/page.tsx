@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useChain } from '@/interface/hooks/useChain';
 import { useSearchParams } from 'next/navigation';
 import ChainSteps from '@/interface/Settings/chain/ChainSteps';
+import { SidebarContent } from '@/components/appwrapper/src/SidebarContentManager';
 
 export default function ChainPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -15,8 +16,10 @@ export default function ChainPage() {
 
   return (
     <SidebarPage title='Chains'>
-      <ChainPanel showCreateDialog={showCreateDialog} setShowCreateDialog={setShowCreateDialog} />
-      <ChainDialog open={showCreateDialog} setOpen={setShowCreateDialog} />
+      <SidebarContent title='Chains'>
+        <ChainPanel showCreateDialog={showCreateDialog} setShowCreateDialog={setShowCreateDialog} />
+        <ChainDialog open={showCreateDialog} setOpen={setShowCreateDialog} />
+      </SidebarContent>
       {chainData && (
         <div className='mt-4'>
           <ChainSteps />
