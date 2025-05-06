@@ -1,17 +1,21 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import { Check, Download, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowBigLeft, Check, Download, Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ChainSelector } from '../../Selectors/ChainSelector';
 import { useChain } from '../../hooks/useChain';
-import ChainSteps from './ChainSteps';
 
-export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
+export default function ChainPanel({
+  showCreateDialog,
+  setShowCreateDialog,
+}: {
+  showCreateDialog: boolean;
+  setShowCreateDialog: (show: boolean) => void;
+}) {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const context = useInteractiveConfig();
@@ -34,7 +38,7 @@ export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
 
   const handleRename = async () => {
     if ((newName && newName !== searchParams.get('chain')) ?? '') {
-      (await context.sdk.searchParams.get('chain')) ?? ''(searchParams.get('chain') ?? '', newName);
+      await context.sdk.renameChain(searchParams.get('chain') ?? '', newName);
       setRenaming(false);
       const current = new URLSearchParams(Array.from(searchParams.entries()));
       current.set('chain', newName);
@@ -55,81 +59,55 @@ export default function ChainPanel({ showCreateDialog, setShowCreateDialog }) {
 
   return (
     <div className='space-y-4'>
-      <TooltipProvider>
-        <div className='flex items-center space-x-2'>
-          <div className='flex items-center space-x-2'>
-            <div className='w-48'>
-              {renaming ? (
-                <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
-              ) : (
-                <ChainSelector />
-              )}
-            </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  onClick={() => setShowCreateDialog(true)}
-                  disabled={renaming || showCreateDialog}
-                >
-                  <Plus className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add Chain</TooltipContent>
-            </Tooltip>
-            {chainData && (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant='ghost' size='icon' onClick={handleExportChain} disabled={renaming}>
-                      <Download className='h-4 w-4' />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Export Chain</TooltipContent>
-                </Tooltip>
-                {renaming ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        onClick={handleRename}
-                        disabled={(!newName || newName === searchParams.get('chain')) ?? ''}
-                      >
-                        <Check className='h-4 w-4' />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Save Chain Name</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant='ghost' size='icon' onClick={() => setRenaming(true)}>
-                        <Pencil className='h-4 w-4' />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Rename Chain</TooltipContent>
-                  </Tooltip>
-                )}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant='ghost' size='icon' onClick={handleDelete} disabled={renaming}>
-                      <Trash2 className='h-4 w-4' />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete Chain</TooltipContent>
-                </Tooltip>
-              </>
-            )}
-          </div>
+      <SidebarGroup>
+        <SidebarGroupLabel>Select Chain</SidebarGroupLabel>
+        <SidebarMenuButton className='group-data-[state=expanded]:hidden'>
+          <ArrowBigLeft />
+        </SidebarMenuButton>
+        <div className='w-full group-data-[collapsible=icon]:hidden'>
+          {renaming ? (
+            <Input value={newName} onChange={(e) => setNewName(e.target.value)} className='w-full' />
+          ) : (
+            <ChainSelector />
+          )}
         </div>
-      </TooltipProvider>
-      {chainData && (
-        <div className='mt-4'>
-          <ChainSteps />
-        </div>
-      )}
+        <SidebarGroupLabel>Chain Functions</SidebarGroupLabel>
+        <SidebarMenu>
+          {[
+            {
+              title: 'Create Chain',
+              icon: Plus,
+              func: () => setShowCreateDialog(true),
+              disabled: renaming || showCreateDialog,
+            },
+            {
+              title: renaming ? 'Save Name' : 'Rename Chain',
+              icon: renaming ? Check : Pencil,
+              func: renaming ? handleRename : () => setRenaming(true),
+              disabled: !chainData || (renaming && (!newName || newName === searchParams.get('chain'))),
+            },
+            {
+              title: 'Export Chain',
+              icon: Download,
+              func: handleExportChain,
+              disabled: !chainData || renaming,
+            },
+            {
+              title: 'Delete Chain',
+              icon: Trash2,
+              func: handleDelete,
+              disabled: !chainData || renaming,
+            },
+          ].map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton side='left' tooltip={item.title} onClick={item.func} disabled={item.disabled}>
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroup>
     </div>
   );
 }
