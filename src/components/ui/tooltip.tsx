@@ -9,6 +9,10 @@ const TooltipProvider = ({ children }: { children: React.ReactNode }) => {
   return <TooltipPrimitive.Provider>{children}</TooltipPrimitive.Provider>;
 };
 
+const Tooltip = ({ delayDuration = 600, ...props }: TooltipPrimitive.TooltipProps) => (
+  <TooltipPrimitive.Root delayDuration={delayDuration} {...props} />
+);
+
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<
