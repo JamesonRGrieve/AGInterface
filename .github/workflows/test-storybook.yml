@@ -11,8 +11,44 @@ jobs:
     permissions:
       contents: write
 
-  test:
+  sync-linting-files:
     needs: lint
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: '.prettierrc.json,.eslintrc.json,.eslintignore,tsconfig.json'
+      commit_message: 'sync: update linting and TypeScript configuration files'
+    permissions:
+      contents: write
+
+  sync-styling-files:
+    needs: lint
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: 'tailwind.config.js,postcss.config.js,components.json'
+      ignore_submodules: 'zod2gql,next-log'
+      commit_message: 'sync: update UI styling and component configuration files'
+    permissions:
+      contents: write
+
+  sync-build-nextjs-files:
+    needs: lint
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: 'next.config.js,server-wrapper.js,.dockerignore,Dockerfile,env.sh'
+      ignore_submodules: 'zod2gql,next-log,dynamic-form,appwrapper,auth'
+      commit_message: 'sync: update Next.js and deployment configuration files'
+    permissions:
+      contents: write
+
+  lint-again:
+    uses: ./.github/workflows/test-lint.yml
+    needs: [sync-linting-files, sync-styling-files, sync-build-nextjs-files]
+
+    permissions:
+      contents: write
+
+  test:
+    needs: [lint-again]
     runs-on: ubuntu-latest
     strategy:
       matrix:
