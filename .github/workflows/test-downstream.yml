@@ -1,0 +1,510 @@
+name: Stage Downstream Repositories
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-pr-source:
+    runs-on: ubuntu-latest
+    outputs:
+      is_from_dev: ${{ steps.check_branch.outputs.is_from_dev }}
+    steps:
+      - name: Check if workflow is operating from dev branch
+        id: check_branch
+        run: |
+          IS_FROM_DEV="false"
+
+          # For pull requests, check if the source branch is dev
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.head_ref }}" == "dev" ]]; then
+            IS_FROM_DEV="true"
+            echo "This is a pull request coming from the dev branch"
+          # For directly triggered workflows, check the current branch
+          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            IS_FROM_DEV="true"
+            echo "This workflow is running directly on the dev branch"
+          else
+            echo "This workflow is not running from the dev branch (current: ${{ github.head_ref || github.ref }})"
+          fi
+
+          echo "is_from_dev=$IS_FROM_DEV" >> $GITHUB_OUTPUT
+          echo "Branch check result: is_from_dev = $IS_FROM_DEV"
+
+  run-tests:
+    needs: check-pr-source
+    uses: ./.github/workflows/test-pytest.yml
+    permissions:
+      contents: write
+
+  stage-downstream:
+    needs: [check-pr-source, run-tests]
+    if: needs.check-pr-source.outputs.is_from_dev == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "actions-user"
+          git config --global user.email "actions-user@users.noreply.github.com"
+
+      - name: Parse downstream repositories
+        id: parse_repos
+        run: |
+          REPOS_LIST=$(echo ${{ secrets.DOWNSTREAM_REPOSITORIES }} | tr ',' ' ')
+          echo "Found downstream repositories: $REPOS_LIST"
+          echo "REPOS=$REPOS_LIST" >> $GITHUB_ENV
+
+      - name: Create or update downstream pull requests
+        id: create_prs
+        run: |
+          # Arrays to store PR information
+          PR_DATA=()
+
+          CURRENT_REPO="${{ github.repository }}"
+          echo "::notice::Source repository: $CURRENT_REPO"
+
+          for REPO in $REPOS; do
+            echo "Processing downstream repository: $REPO"
+            
+            # Clone the downstream repository using PAT_TOKEN
+            echo "Cloning $REPO..."
+            git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/$REPO.git downstream_repo
+            if [ $? -ne 0 ]; then
+              echo "Failed to clone repository $REPO. Please check repository name and access permissions."
+              exit 1
+            fi
+            cd downstream_repo
+            
+            # Check if dev branch exists in downstream repository
+            echo "Checking for existing dev branch..."
+            if git ls-remote --heads origin dev | grep -q dev; then
+              echo "Dev branch exists in $REPO, checking it out"
+              git checkout dev
+              if [ $? -ne 0 ]; then
+                echo "Failed to checkout dev branch in $REPO"
+                exit 1
+              fi
+            else
+              # Create dev branch if it doesn't exist
+              echo "Dev branch does not exist in $REPO, creating it"
+              git checkout -b dev
+              if [ $? -ne 0 ]; then
+                echo "Failed to create dev branch in $REPO"
+                exit 1
+              fi
+            fi
+            
+            # Add the current repository as a remote
+            echo "Adding $CURRENT_REPO as a remote source..."
+            git remote add source https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/$CURRENT_REPO.git
+            git fetch source dev
+            if [ $? -ne 0 ]; then
+              echo "Failed to fetch dev branch from $CURRENT_REPO"
+              exit 1
+            fi
+            
+            # Try to merge the dev branch from the current repository
+            echo "Attempting to merge $CURRENT_REPO/dev into $REPO/dev..."
+            
+            # Create a temporary branch for testing merge conflicts
+            git checkout -b temp_merge_test
+            
+            # Try a test merge to see if there will be conflicts
+            if ! git merge --no-commit --no-ff source/dev > /dev/null 2>&1; then
+              # Abort the merge attempt
+              git merge --abort
+              
+              # Get more detailed information about potential conflicts
+              echo "Merge conflict detected when trying to merge $CURRENT_REPO/dev into $REPO/dev"
+              
+              # Show divergent commit information
+              echo "Last 5 commits in source/dev:"
+              git log -n 5 --oneline source/dev
+              
+              echo "Last 5 commits in local dev:"
+              git log -n 5 --oneline dev
+              
+              cd ..
+              rm -rf downstream_repo
+              exit 1
+            fi
+            
+            # Reset and go back to dev branch
+            git reset --hard HEAD
+            git checkout dev
+            
+            # Attempt the actual merge
+            if git merge source/dev -m "Merge $CURRENT_REPO dev branch into $REPO dev branch"; then
+              echo "Successfully merged $CURRENT_REPO/dev into $REPO/dev"
+              
+              # Push the changes to the downstream repository
+              echo "Pushing changes to $REPO/dev..."
+              git push origin dev
+              if [ $? -ne 0 ]; then
+                echo "Failed to push to $REPO/dev"
+                exit 1
+              fi
+              
+              # Check if a PR already exists
+              echo "Checking for existing PRs in $REPO..."
+              REPO_OWNER=$(echo $REPO | cut -d'/' -f1)
+              EXISTING_PR=$(curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/$REPO/pulls?head=$REPO_OWNER:dev&base=main&state=open")
+              
+              # If PR exists, use it, otherwise create a new one
+              if [[ $(echo $EXISTING_PR | jq '. | length') -gt 0 ]]; then
+                PR_URL=$(echo $EXISTING_PR | jq -r '.[0].html_url')
+                PR_NUMBER=$(echo $EXISTING_PR | jq -r '.[0].number')
+                echo "Found existing PR #$PR_NUMBER in $REPO: $PR_URL"
+                
+                # Update the PR with a comment to indicate the new merge
+                COMMENT_BODY="Updated with latest changes from $CURRENT_REPO/dev"
+                curl -s -X POST \
+                  -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  https://api.github.com/repos/$REPO/issues/$PR_NUMBER/comments \
+                  -d "{\"body\":\"$COMMENT_BODY\"}"
+              else
+                # Create a new pull request
+                echo "Creating new PR in $REPO..."
+                PR_TITLE="Downstream merge from $CURRENT_REPO"
+                PR_BODY="This PR was automatically created by the stage-downstream workflow in $CURRENT_REPO. It merges changes from the dev branch of $CURRENT_REPO into the main branch of $REPO."
+                
+                PR_RESPONSE=$(curl -X POST \
+                  -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  https://api.github.com/repos/$REPO/pulls \
+                  -d "{\"title\":\"$PR_TITLE\",\"body\":\"$PR_BODY\",\"head\":\"dev\",\"base\":\"main\"}")
+                
+                PR_URL=$(echo $PR_RESPONSE | jq -r .html_url)
+                PR_NUMBER=$(echo $PR_RESPONSE | jq -r .number)
+                
+                if [[ "$PR_URL" == "null" ]]; then
+                  echo "Failed to create PR in $REPO"
+                  echo "API Response: $(echo $PR_RESPONSE | jq -r .message)"
+                  exit 1
+                fi
+                echo "Created new PR #$PR_NUMBER in $REPO: $PR_URL"
+              fi
+              
+              # Save PR data in a format we can parse later
+              PR_DATA+=("$REPO:$PR_NUMBER:$PR_URL")
+            else
+              echo "Failed to merge $CURRENT_REPO/dev into $REPO/dev"
+              
+              # Get more details about why the merge failed
+              echo "Merge output:"
+              git status
+              
+              # Show divergent commit information
+              echo "Last 5 commits in source/dev:"
+              git log -n 5 --oneline source/dev
+              
+              echo "Last 5 commits in local dev:"
+              git log -n 5 --oneline dev
+              
+              exit 1
+            fi
+            
+            cd ..
+            rm -rf downstream_repo
+          done
+
+          # Save the PR data to a file that can be passed to the next job
+          echo "${PR_DATA[*]}" > pr_data.txt
+
+          # Summary output
+          echo "Summary of created/updated PRs:"
+          for PR_ENTRY in "${PR_DATA[@]}"; do
+            IFS=':' read -r PR_REPO PR_NUM PR_LINK <<< "$PR_ENTRY"
+            echo "$PR_REPO: PR #$PR_NUM - $PR_LINK"
+          done
+
+      - name: Upload PR data
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-data
+          path: pr_data.txt
+          retention-days: 1
+
+  check-downstream-prs:
+    needs: stage-downstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PR data
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-data
+
+      - name: Check downstream pull request status
+        run: |
+          # Read PR data from file
+          PR_DATA=$(cat pr_data.txt)
+
+          echo "PR Data Retrieved: $PR_DATA"
+
+          # Parse PR data
+          if [[ -z "$PR_DATA" ]]; then
+            echo "::error::No pull requests found to check"
+            exit 1
+          fi
+
+          # Create arrays to store failed PRs for comprehensive reporting
+          FAILED_PRS=()
+          INCOMPLETE_CHECKS_PRS=()
+          UNMERGEABLE_PRS=()
+
+          # Initialization for waiting logic
+          MAX_RETRIES=30             # Maximum number of polling attempts
+          POLLING_INTERVAL=30        # Wait time between polls in seconds
+
+          # Loop through each PR entry
+          for PR_ENTRY in $PR_DATA; do
+            # Split by colon
+            IFS=':' read -r REPO PR_NUMBER PR_URL <<< "$PR_ENTRY"
+            
+            echo "Checking status of PR #$PR_NUMBER in repository $REPO"
+            
+            # Initialize flags
+            ALL_CHECKS_COMPLETED=false
+            FOUND_FAILURE=false
+            RETRY_COUNT=0
+            
+            # First check if PR is mergeable - quick fail if not
+            echo "Checking if PR is mergeable..."
+            PR_STATUS=$(curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$REPO/pulls/$PR_NUMBER)
+            
+            MERGEABLE=$(echo $PR_STATUS | jq -r '.mergeable // "unknown"')
+            MERGEABLE_STATE=$(echo $PR_STATUS | jq -r '.mergeable_state // "unknown"')
+            
+            echo "Initial mergeability check: $MERGEABLE (state: $MERGEABLE_STATE)"
+            
+            # If PR is clearly unmergeable, fail fast
+            if [ "$MERGEABLE" = "false" ]; then
+              echo "PR #$PR_NUMBER in repository $REPO is not mergeable"
+              echo "Mergeable state: $MERGEABLE_STATE"
+              
+              # Get more info about why it's not mergeable
+              case "$MERGEABLE_STATE" in
+                "dirty")
+                  echo "The PR has merge conflicts that need to be resolved."
+                  ;;
+                "blocked")
+                  echo "The PR is blocked from merging, possibly due to branch protection rules or required status checks."
+                  ;;
+                "behind")
+                  echo "The PR branch is behind the base branch and needs to be updated."
+                  ;;
+                *)
+                  echo "The PR cannot be merged. State: $MERGEABLE_STATE"
+                  ;;
+              esac
+              
+              UNMERGEABLE_PRS+=("$REPO:$PR_NUMBER:$MERGEABLE_STATE")
+              continue
+            fi
+            
+            # Begin polling loop
+            echo "Beginning status check polling..."
+            while [ "$ALL_CHECKS_COMPLETED" = "false" ] && [ "$FOUND_FAILURE" = "false" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              REMAINING_ATTEMPTS=$((MAX_RETRIES - RETRY_COUNT))
+              echo "Polling attempt $((RETRY_COUNT + 1)) of $MAX_RETRIES ($REMAINING_ATTEMPTS attempts remaining)..."
+              
+              # Get the PR head SHA
+              PR_SHA=$(echo $PR_STATUS | jq -r .head.sha)
+              echo "Checking status for commit: $PR_SHA"
+
+              # Get check runs for the PR
+              PR_CHECKS=$(curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/$REPO/commits/$PR_SHA/check-runs)
+
+              # If API request failed (e.g., rate limit), wait and retry
+              if [ -z "$PR_CHECKS" ] || [[ "$PR_CHECKS" == *"API rate limit exceeded"* ]]; then
+                echo "API request failed or rate limited. Waiting before retry."
+                if [[ "$PR_CHECKS" == *"API rate limit exceeded"* ]]; then
+                  echo "Rate limit error response: $PR_CHECKS"
+                fi
+                sleep $POLLING_INTERVAL
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                continue
+              fi
+              
+              # Get check and status counts
+              TOTAL_CHECKS=$(echo $PR_CHECKS | jq '.total_count')
+              
+              # If no checks are running, consider it complete after some time
+              if [ "$TOTAL_CHECKS" -eq 0 ]; then
+                if [ $RETRY_COUNT -gt 3 ]; then
+                  echo "No checks are running for this PR. Assuming it's ready to proceed after $((RETRY_COUNT * POLLING_INTERVAL)) seconds of waiting."
+                  ALL_CHECKS_COMPLETED=true
+                else
+                  echo "No checks detected yet. Waiting for checks to start..."
+                  sleep $POLLING_INTERVAL
+                  RETRY_COUNT=$((RETRY_COUNT + 1))
+                  continue
+                fi
+              else
+                # Check if there are any failed checks (FAIL FAST!)
+                FAILED_CHECKS=$(echo $PR_CHECKS | jq -c '.check_runs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out") | {name: .name, conclusion: .conclusion, url: .html_url}')
+                
+                if [ -n "$FAILED_CHECKS" ]; then
+                  echo "Found failed checks in PR #$PR_NUMBER in $REPO - failing fast!"
+                  echo "Failed checks details:"
+                  echo "$FAILED_CHECKS" | jq -r '. | "- " + .name + " (" + .conclusion + "): " + .url'
+                  FAILED_PRS+=("$REPO:$PR_NUMBER:failed_checks")
+                  FOUND_FAILURE=true
+                  break
+                fi
+                
+                # Check completion status
+                COMPLETED_CHECKS=$(echo $PR_CHECKS | jq '[.check_runs[] | select(.status == "completed")] | length')
+                PENDING_CHECKS=$((TOTAL_CHECKS - COMPLETED_CHECKS))
+                
+                echo "Check status summary:"
+                echo "  - Total checks: $TOTAL_CHECKS"
+                echo "  - Completed checks: $COMPLETED_CHECKS"
+                echo "  - Pending checks: $PENDING_CHECKS"
+                
+                if [ "$PENDING_CHECKS" -eq 0 ]; then
+                  echo "All checks have completed for PR #$PR_NUMBER in $REPO."
+                  ALL_CHECKS_COMPLETED=true
+                else
+                  # List the pending checks
+                  PENDING_CHECK_NAMES=$(echo $PR_CHECKS | jq -r '.check_runs[] | select(.status != "completed") | .name')
+                  echo "Waiting for the following checks to complete:"
+                  echo "$PENDING_CHECK_NAMES" | while read check; do
+                    echo "  - $check"
+                  done
+                  echo "Polling again in $POLLING_INTERVAL seconds..."
+                  sleep $POLLING_INTERVAL
+                  RETRY_COUNT=$((RETRY_COUNT + 1))
+                fi
+              fi
+            done
+            
+            # Check outcomes based on how we exited the polling loop
+            if [ "$FOUND_FAILURE" = "true" ]; then
+              # We already added this PR to FAILED_PRS and broke out early - continue to next PR
+              continue
+            fi
+            
+            if [ "$ALL_CHECKS_COMPLETED" = "false" ]; then
+              echo "Checks did not complete within the maximum wait time ($((MAX_RETRIES * POLLING_INTERVAL)) seconds) for PR #$PR_NUMBER in $REPO"
+              
+              # List the checks that are still pending
+              if [ "$TOTAL_CHECKS" -gt 0 ]; then
+                PENDING_CHECK_NAMES=$(echo $PR_CHECKS | jq -r '.check_runs[] | select(.status != "completed") | .name')
+                echo "Checks still pending:"
+                echo "$PENDING_CHECK_NAMES" | while read check; do
+                  echo "  - $check"
+                done
+              fi
+              
+              INCOMPLETE_CHECKS_PRS+=("$REPO:$PR_NUMBER:timeout_after_${MAX_RETRIES}_retries")
+              continue
+            fi
+            
+            # Now that checks are completed without failures, verify final status
+            if [ "$TOTAL_CHECKS" -gt 0 ]; then
+              echo "Verifying final check statuses..."
+              # Double-check for any non-success status (other than neutral)
+              UNSUCCESSFUL_CHECKS=$(echo $PR_CHECKS | jq -c '.check_runs[] | select(.conclusion != "success" and .conclusion != "neutral") | {name: .name, conclusion: .conclusion, url: .html_url}')
+              
+              if [ -n "$UNSUCCESSFUL_CHECKS" ]; then
+                echo "PR #$PR_NUMBER in repository $REPO has unsuccessful checks"
+                echo "Unsuccessful checks details:"
+                echo "$UNSUCCESSFUL_CHECKS" | jq -r '. | "- " + .name + " (" + .conclusion + "): " + .url'
+                FAILED_PRS+=("$REPO:$PR_NUMBER:unsuccessful_checks")
+                continue
+              fi
+            fi
+            
+            # Final check for mergeability - it might have changed during checks
+            echo "Final mergeability check..."
+            PR_STATUS=$(curl -s -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$REPO/pulls/$PR_NUMBER)
+            
+            MERGEABLE=$(echo $PR_STATUS | jq -r '.mergeable // "unknown"')
+            MERGEABLE_STATE=$(echo $PR_STATUS | jq -r '.mergeable_state // "unknown"')
+            
+            echo "Mergeable: $MERGEABLE"
+            echo "Mergeable state: $MERGEABLE_STATE"
+            
+            if [ "$MERGEABLE" = "false" ] || [ "$MERGEABLE_STATE" = "dirty" ] || [ "$MERGEABLE_STATE" = "blocked" ]; then
+              echo "PR #$PR_NUMBER in repository $REPO is not mergeable"
+              echo "Mergeable state: $MERGEABLE_STATE"
+              
+              # Get more info about why it's not mergeable
+              case "$MERGEABLE_STATE" in
+                "dirty")
+                  echo "The PR has merge conflicts that need to be resolved."
+                  ;;
+                "blocked")
+                  echo "The PR is blocked from merging, possibly due to branch protection rules or required status checks."
+                  ;;
+                "behind")
+                  echo "The PR branch is behind the base branch and needs to be updated."
+                  ;;
+                *)
+                  echo "The PR cannot be merged. State: $MERGEABLE_STATE"
+                  ;;
+              esac
+              
+              UNMERGEABLE_PRS+=("$REPO:$PR_NUMBER:$MERGEABLE_STATE")
+              continue
+            fi
+            
+            echo "PR #$PR_NUMBER in repository $REPO is passing all checks and ready to merge!"
+          done
+
+          # Comprehensive failure report
+          FAILURE=false
+
+          if [ ${#FAILED_PRS[@]} -gt 0 ]; then
+            echo "The following PRs have failed checks:"
+            for PR in "${FAILED_PRS[@]}"; do
+              IFS=':' read -r PR_REPO PR_NUM PR_REASON <<< "$PR"
+              echo "  - $PR_REPO PR #$PR_NUM: $PR_REASON"
+            done
+            FAILURE=true
+          fi
+
+          if [ ${#INCOMPLETE_CHECKS_PRS[@]} -gt 0 ]; then
+            echo "The following PRs have incomplete checks:"
+            for PR in "${INCOMPLETE_CHECKS_PRS[@]}"; do
+              IFS=':' read -r PR_REPO PR_NUM PR_REASON <<< "$PR"
+              echo "  - $PR_REPO PR #$PR_NUM: $PR_REASON"
+            done
+            FAILURE=true
+          fi
+
+          if [ ${#UNMERGEABLE_PRS[@]} -gt 0 ]; then
+            echo "The following PRs are not mergeable:"
+            for PR in "${UNMERGEABLE_PRS[@]}"; do
+              IFS=':' read -r PR_REPO PR_NUM PR_REASON <<< "$PR"
+              echo "  - $PR_REPO PR #$PR_NUM: $PR_REASON"
+            done
+            FAILURE=true
+          fi
+
+          if [ "$FAILURE" = "true" ]; then
+            echo "::error::Some downstream pull requests have issues. See details above."
+            exit 1
+          else
+            echo "✅ All downstream pull requests are passing and mergeable!"
+          fi

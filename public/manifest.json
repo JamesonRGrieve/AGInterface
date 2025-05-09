@@ -8,40 +8,6 @@
   "orientation": "portrait-primary",
   "background_color": "#0c0910",
   "theme_color": "#0c0910",
-  "icons": [
-    {
-      "src": "/XTIcon_128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "/XTIcon_180.png",
-      "sizes": "180x180",
-      "type": "image/png"
-    },
-    {
-      "src": "/XTIcon_192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/XTIcon_256.png",
-      "sizes": "256x256",
-      "type": "image/png"
-    },
-    {
-      "src": "/XTIcon_512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/XTIcon_1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png"
-    }
-  ],
   "serviceworker": {
     "src": "/sw.js",
     "scope": "/",
