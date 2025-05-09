@@ -1,17 +1,17 @@
 'use client';
 
-import { SidebarContent } from '@/appwrapper/SidebarContentManager';
-import IconButton from '@/components/theme/IconButton';
-import { Input } from '@/components/ui/input';
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { usePrompt } from '@/interface/hooks/usePrompt';
-import PromptSelector from '@/interface/Selectors/PromptSelector';
 import { ArrowBigLeft, Check, Download, Pencil, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AutoResizeTextarea } from '../training';
 import NewPromptDialog from './PromptDialog';
 import PromptTest from './PromptTest';
+import { SidebarContent } from '@/appwrapper/SidebarContentManager';
+import IconButton from '@/components/theme/IconButton';
+import { Input } from '@/components/ui/input';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { usePrompt } from '@/interface/hooks/usePrompt';
+import PromptSelector from '@/interface/Selectors/PromptSelector';
 
 export default function PromptPanel() {
   const searchParams = useSearchParams();

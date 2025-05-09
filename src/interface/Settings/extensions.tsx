@@ -1,5 +1,10 @@
 'use client';
 
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import Extension from './extension';
 import { ConnectedServices } from '@/auth/management/ConnectedServices';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { useAgent } from '@/interface/hooks/useAgent';
 import { useProviders } from '@/interface/hooks/useProvider';
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import Extension from './extension';
 
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Input } from '@/components/ui/input';

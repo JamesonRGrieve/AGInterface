@@ -1,8 +1,8 @@
-import log from '@/next-log/log';
 import useSWR, { SWRResponse } from 'swr';
 import { z } from 'zod';
 import { createGraphQLClient } from '../../interactive/src/hooks/lib';
 import { Chain, ChainSchema, ChainsSchema } from './z';
+import log from '@/next-log/log';
 
 // ============================================================================
 // Chain Related Hooks
