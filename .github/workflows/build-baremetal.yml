@@ -14,18 +14,18 @@ jobs:
         run: |
           pwd
           ls -a
-          cd src/interactive/src
+          cd interactive/src
           pwd
           ls -a
           git remote -v
           git status 
-          cd ../../..
-          cd src/iteration/src
+          cd ../..
+          cd iteration/src
           pwd
           ls -a
           git remote -v
           git status 
-          cd ../../..
+          cd ../..
           cd components
           cd appwrapper/src
           pwd
