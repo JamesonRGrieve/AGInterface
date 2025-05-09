@@ -70,7 +70,6 @@
     "security/detect-object-injection": "warn", // Warn on potential object injection vulnerabilities.
     "sonarjs/no-duplicated-branches": "warn", // Warn on code duplication in different branches of a conditional.
     "unused-imports/no-unused-vars": "off", // Off in favor of @typescript-eslint/no-unused-vars.
-    "@typescript-eslint/ban-types": "warn", // Bans specific types from being used.
     "@typescript-eslint/explicit-function-return-type": "warn", // Require explicit return type on functions.
     "@typescript-eslint/explicit-module-boundary-types": "warn", // Require explicit boundary types on exported modules.
     "@typescript-eslint/no-empty-function": "warn", // Disallow empty functions.
