@@ -1,14 +1,25 @@
-name: Build and Test
+name: Compare Pytest Results Between Branches
+
 on:
   workflow_call:
+  pull_request:
+    branches:
+      - dev
 jobs:
+  lint:
+    uses: ./.github/workflows/test-lint.yml
+    permissions:
+      contents: write
+
   test:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4.2.2
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

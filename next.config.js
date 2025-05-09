@@ -198,6 +198,9 @@ const configs = [
 const nextConfig = configs.reduce((accumulator, config) => mergeConfigs(accumulator, config()), {
   output: 'standalone',
   env: {},
+  devIndicators: {
+    buildActivityPosition: 'bottom-right',
+  },
   experimental: {
     serverActions: {
       optimizeCss: true,
