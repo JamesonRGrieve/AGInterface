@@ -1,10 +1,7 @@
 name: Lint
 on:
   workflow_call:
-  push:
-    branches-ignore:
-      - main
-      - dev
+
 jobs:
   lint:
     runs-on: ubuntu-22.04
