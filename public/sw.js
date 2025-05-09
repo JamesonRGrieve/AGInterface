@@ -1,10 +1,5 @@
 const CACHE_NAME = 'my-pwa-cache-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/manifest.json',
-  '/favicon.ico',
-  '/safari-pinned-tab.svg',
-];
+const ASSETS_TO_CACHE = ['/', '/manifest.json', '/favicon.ico', '/safari-pinned-tab.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

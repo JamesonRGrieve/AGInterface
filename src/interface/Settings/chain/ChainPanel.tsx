@@ -1,13 +1,13 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { ArrowBigLeft, Check, Download, Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ChainSelector } from '../../Selectors/ChainSelector';
 import { useChain } from '../../hooks/useChain';
+import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Input } from '@/components/ui/input';
 
 export default function ChainPanel({
   showCreateDialog,

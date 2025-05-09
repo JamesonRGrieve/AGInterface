@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { PlusCircle as LuPlusCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useChain } from '../../hooks/useChain';
 import ChainStep from './ChainStep';
+import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function ChainSteps() {
   const searchParams = useSearchParams();

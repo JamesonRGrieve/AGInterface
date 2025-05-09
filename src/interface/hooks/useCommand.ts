@@ -1,7 +1,7 @@
-import log from '@/next-log/log';
 import useSWR, { SWRResponse } from 'swr';
 import { createGraphQLClient } from '../../interactive/src/hooks/lib';
 import { CommandArgs, CommandArgSchema } from './z';
+import log from '@/next-log/log';
 
 // ============================================================================
 // Command Related Hooks

@@ -1,10 +1,10 @@
-import { useToast } from '@/hooks/useToast';
-import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import log from '@/next-log/log';
 import { useRouter } from 'next/navigation';
 import useSWR, { SWRResponse } from 'swr';
 import { createGraphQLClient } from '../../interactive/src/hooks/lib';
 import { Prompt, PromptSchema } from './z';
+import log from '@/next-log/log';
+import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import { useToast } from '@/hooks/useToast';
 
 /**
  * Hook to fetch and manage all prompts and categories

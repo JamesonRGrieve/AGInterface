@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import React, { Children, PropsWithChildren } from 'react';
 import { LuX } from 'react-icons/lu';
 import { DropZoneProvider, useDropZone } from './DropZoneContext';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface DropZoneProps {
   onUpload: (files: File[]) => void;

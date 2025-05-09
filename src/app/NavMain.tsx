@@ -54,7 +54,7 @@ export function NavMain() {
       if (!open) toggleSidebar();
     }
     if (item.url) router.push(item.url);
-  }
+  };
 
   // Add logic to determine if team management should be shown
   return (

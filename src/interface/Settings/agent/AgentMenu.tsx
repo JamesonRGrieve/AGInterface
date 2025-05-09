@@ -1,11 +1,11 @@
 'use client';
 
+import { mutate } from 'swr';
+import { useAgent } from '../../hooks/useAgent';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import { mutate } from 'swr';
-import { useAgent } from '../../hooks/useAgent';
 
 export default function AgentMenu() {
   const context = useInteractiveConfig();

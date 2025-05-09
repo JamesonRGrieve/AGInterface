@@ -1,5 +1,11 @@
 'use client';
 
+import axios from 'axios';
+import { getCookie, setCookie } from 'cookies-next';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { LuDownload, LuPencil, LuPlus, LuTrash2 } from 'react-icons/lu';
+import { useAgent } from '../../hooks/useAgent';
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,12 +19,6 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import axios from 'axios';
-import { getCookie, setCookie } from 'cookies-next';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { LuCheck, LuDownload, LuPencil, LuPlus, LuTrash2 } from 'react-icons/lu';
-import { useAgent } from '../../hooks/useAgent';
 import { useToast } from '@/hooks/useToast';
 
 export default function AgentPanel() {
