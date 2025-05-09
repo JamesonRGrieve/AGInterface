@@ -51,11 +51,12 @@ const useCookiesConfig = () => ({
 const useAuthConfig = () => ({
   env: {
     PRIVATE_ROUTES: process.env.PRIVATE_ROUTES || '/chat,/team,/settings/',
-    AUTH_URI: (AUTH_URI = process.env.AUTH_URI || `${APP_URI}/user`),
-    NEXT_PUBLIC_AUTH_URI: AUTH_URI,
     API_URI: (API_URI = process.env.API_URI || 'https://api.ai.zephyrex.dev'),
     NEXT_PUBLIC_API_URI: API_URI,
+    AUTH_URI: (AUTH_URI = process.env.AUTH_URI || `${APP_URI}/user`),
+    NEXT_PUBLIC_AUTH_URI: AUTH_URI,
     NEXT_PUBLIC_ALLOW_EMAIL_SIGN_IN: process.env.ALLOW_EMAIL_SIGN_IN || 'true',
+    SERVERSIDE_API_URI: process.env.SERVERSIDE_API_URI || 'http://aginfrastructure',
   },
 });
 
@@ -144,11 +145,14 @@ const useAGInteractiveConfig = () => ({
     NEXT_PUBLIC_INTERACTIVE_UI: process.env.INTERACTIVE_UI || 'chat',
     NEXT_PUBLIC_AGINTERACTIVE_SHOW_APP_BAR: process.env.AGINTERACTIVE_SHOW_APP_BAR || 'true',
     NEXT_PUBLIC_AGINTERACTIVE_SHOW_SELECTION:
-      process.env.AGINTERACTIVE_SHOW_SELECTION || (process.env.AGINTERACTIVE_CONVERSATION_MODE === 'select' ? 'conversation' : ''), // csv of: 'agent', 'conversation' and/or 'prompt'
+      process.env.AGINTERACTIVE_SHOW_SELECTION ||
+      (process.env.AGINTERACTIVE_CONVERSATION_MODE === 'select' ? 'conversation' : ''), // csv of: 'agent', 'conversation' and/or 'prompt'
     NEXT_PUBLIC_AGINTERACTIVE_FOOTER_MESSAGE: process.env.AGINTERACTIVE_FOOTER_MESSAGE || 'Powered by AGInteractive',
     NEXT_PUBLIC_AGINTERACTIVE_RLHF: process.env.AGINTERACTIVE_RLHF || 'true',
     NEXT_PUBLIC_AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES:
-      process.env.AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES || process.env.AGINTERACTIVE_SHOW_APP_BAR === 'false' ? 'true' : 'false',
+      process.env.AGINTERACTIVE_SHOW_CHAT_THEME_TOGGLES || process.env.AGINTERACTIVE_SHOW_APP_BAR === 'false'
+        ? 'true'
+        : 'false',
     NEXT_PUBLIC_AGINTERACTIVE_FILE_UPLOAD_ENABLED: process.env.AGINTERACTIVE_FILE_UPLOAD_ENABLED || 'true',
     NEXT_PUBLIC_AGINTERACTIVE_VOICE_INPUT_ENABLED: process.env.AGINTERACTIVE_VOICE_INPUT_ENABLED || 'true',
     NEXT_PUBLIC_AGINTERACTIVE_ALLOW_MESSAGE_EDITING: process.env.AGINTERACTIVE_ALLOW_MESSAGE_EDITING || 'true',
@@ -194,6 +198,9 @@ const configs = [
 const nextConfig = configs.reduce((accumulator, config) => mergeConfigs(accumulator, config()), {
   output: 'standalone',
   env: {},
+  devIndicators: {
+    buildActivityPosition: 'bottom-right',
+  },
   experimental: {
     serverActions: {
       optimizeCss: true,

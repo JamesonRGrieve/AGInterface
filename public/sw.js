@@ -1,19 +1,5 @@
 const CACHE_NAME = 'my-pwa-cache-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/manifest.json',
-  '/favicon.ico',
-  '/XTIcon_128.png',
-  '/XTIcon_180.png',
-  '/XTIcon_192.png',
-  '/XTIcon_256.png',
-  '/XTIcon_512.png',
-  '/XTIcon_1024.png',
-  '/apple-touch-icon.png',
-  '/favicon-16x16.png',
-  '/favicon-32x32.png',
-  '/safari-pinned-tab.svg',
-];
+const ASSETS_TO_CACHE = ['/', '/manifest.json', '/favicon.ico', '/safari-pinned-tab.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

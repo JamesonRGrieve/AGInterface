@@ -14,6 +14,7 @@ We will attempt to acknowledge receipt of your vulnerability report within 72 ho
 ## Security Response Timeline
 
 We aim to adhere to the following response timeline:
+
 - **72 hours**: Initial acknowledgment of your report.
 - **7 days**: Preliminary assessment completed.
 - **30 days**: Remediation plan communicated.
