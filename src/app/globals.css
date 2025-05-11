@@ -335,6 +335,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
   }
   .mobile-sidebar {
     padding-bottom: env(safe-area-inset-bottom);
@@ -342,13 +344,32 @@
   }
 }
 
-@layer utilities {
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+.only-after-scroll {
+    @apply opacity-0;
+}
 
-  .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
+html.scrolled .only-after-scroll {
+    @apply opacity-100;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: hsl(var(--muted));
+    position: absolute;
+    z-index: 9999;
+}
+::-webkit-scrollbar-thumb {
+    @apply rounded-full transition-opacity duration-1000;
+    background: hsl(var(--muted-foreground));
+    opacity: 0;
+}
+
+html.scrolling ::-webkit-scrollbar-thumb {
+    opacity: 1;
+}
+
+/* Hide scrollbar by default, show on scroll */
+body {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
 }
