@@ -33,13 +33,48 @@ jobs:
 
   run-tests:
     needs: check-pr-source
+    if: needs.check-pr-source.outputs.is_from_dev == 'true'
     uses: ./.github/workflows/test-pytest.yml
     permissions:
       contents: write
 
+  sync-linting-files:
+    needs: run-tests
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: '.prettierrc.json,.eslintrc.json,.eslintignore,tsconfig.json'
+      commit_message: 'sync: update linting and TypeScript configuration files'
+    permissions:
+      contents: write
+
+  sync-styling-files:
+    needs: run-tests
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: 'tailwind.config.js,postcss.config.js,components.json'
+      ignore_submodules: 'zod2gql,next-log'
+      commit_message: 'sync: update UI styling and component configuration files'
+    permissions:
+      contents: write
+
+  sync-build-nextjs-files:
+    needs: run-tests
+    uses: ./.github/workflows/submodules.yml
+    with:
+      file_paths: 'next.config.js,server-wrapper.js,.dockerignore,Dockerfile,env.sh'
+      ignore_submodules: 'zod2gql,next-log,dynamic-form,appwrapper,auth'
+      commit_message: 'sync: update Next.js and deployment configuration files'
+    permissions:
+      contents: write
+
+  lint-again:
+    uses: ./.github/workflows/test-lint.yml
+    needs: [sync-linting-files, sync-styling-files, sync-build-nextjs-files]
+
+    permissions:
+      contents: write
   stage-downstream:
-    needs: [check-pr-source, run-tests]
-    if: needs.check-pr-source.outputs.is_from_dev == 'true'
+    needs: [lint-again]
     runs-on: ubuntu-latest
     permissions:
       contents: write

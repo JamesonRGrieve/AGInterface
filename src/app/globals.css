@@ -325,7 +325,6 @@
     --ring: 0 0% 57.8%;
   }
 }
-
 @layer base {
   * {
     @apply border-border;

@@ -1,9 +1,9 @@
-import { InteractiveConfig, InteractiveConfigContext } from '@/interactive/InteractiveConfigContext';
 import { Meta, StoryContext, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from '@storybook/test';
 import { http, HttpResponse } from 'msw';
 import * as usePromptHooks from '../hooks/usePrompt';
 import PromptSelector from './PromptSelector';
+import { InteractiveConfig, InteractiveConfigContext } from '@/interactive/InteractiveConfigContext';
 
 // Create mock data for prompts that match your real data structure
 const mockPrompts = [

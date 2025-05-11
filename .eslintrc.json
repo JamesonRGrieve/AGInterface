@@ -13,20 +13,17 @@
     "plugin:import/typescript",
     "plugin:import/warnings",
     "plugin:jsx-a11y/recommended",
-    "plugin:no-use-extend-native/recommended",
     "plugin:optimize-regex/recommended",
     "plugin:prettier/recommended",
     "plugin:promise/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:react/recommended",
-    "plugin:sonarjs/recommended"
+    "plugin:react/recommended"
   ],
   "plugins": [
     "@typescript-eslint",
     "eslint-comments",
     "import",
     "jsx-a11y",
-    "no-use-extend-native",
     "optimize-regex",
     "prettier",
     "promise",
@@ -73,7 +70,6 @@
     "security/detect-object-injection": "warn", // Warn on potential object injection vulnerabilities.
     "sonarjs/no-duplicated-branches": "warn", // Warn on code duplication in different branches of a conditional.
     "unused-imports/no-unused-vars": "off", // Off in favor of @typescript-eslint/no-unused-vars.
-    "@typescript-eslint/ban-types": "warn", // Bans specific types from being used.
     "@typescript-eslint/explicit-function-return-type": "warn", // Require explicit return type on functions.
     "@typescript-eslint/explicit-module-boundary-types": "warn", // Require explicit boundary types on exported modules.
     "@typescript-eslint/no-empty-function": "warn", // Disallow empty functions.
@@ -208,7 +204,6 @@
     "jsx-a11y/media-has-caption": "warn", // Enforces captions on <audio> and <video> elements.
     "jsx-a11y/mouse-events-have-key-events": "warn", // Enforce that mouse event handlers are accompanied by corresponding keyboard event handlers.
     "jsx-a11y/no-static-element-interactions": "warn", // Enforce interactive elements are not assigned non-interactive roles.
-    "no-use-extend-native/no-use-extend-native": "warn", // Prevent extending native objects.
     "react/no-danger": "warn", // Disallow use of the dangerous property.
     "unused-imports/no-unused-imports": "warn", // Warn on unused imports.
     "import/no-unassigned-import": "warn", // Warns about importing modules without using them.

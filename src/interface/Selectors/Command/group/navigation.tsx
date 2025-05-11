@@ -1,10 +1,10 @@
-import { navItems } from '@/app/NavMain';
-import { CommandGroup, CommandSeparator } from '@/components/ui/command';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { useCommandMenu } from '../command-menu-context';
 import { CommandItemComponent, CommandMenuGroup } from '../index';
+import { CommandGroup, CommandSeparator } from '@/components/ui/command';
+import { navItems } from '@/app/NavMain';
 
 export function NavigationGroup() {
   const router = useRouter();
