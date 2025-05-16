@@ -335,7 +335,7 @@
     display: flex;
     flex-direction: column;
     scrollbar-width: thin;
-    scrollbar-color: rgba(80, 80, 120, 0.5) transparent;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
   }
   .mobile-sidebar {
     padding-bottom: env(safe-area-inset-bottom);
@@ -344,43 +344,31 @@
 }
 
 .only-after-scroll {
-  @apply opacity-0;
+    @apply opacity-0;
 }
 
 html.scrolled .only-after-scroll {
-  @apply opacity-100;
+    @apply opacity-100;
 }
 
-/* macOS-like overlay scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  background: transparent;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  transition: opacity 0.9s;
-  opacity: 0;
-  pointer-events: none;
+    width: 8px;
+    background: hsl(var(--muted));
+    position: absolute;
+    z-index: 9999;
 }
-
-/* Show scrollbar on hover or scroll */
-body:hover ::-webkit-scrollbar,
-body:active ::-webkit-scrollbar,
-body:focus ::-webkit-scrollbar,
-body.scrolling ::-webkit-scrollbar {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(80, 80, 120, 0.5);
-  border-radius: 6px;
-  transition: background 0.3s;
+    @apply rounded-full transition-opacity duration-1000;
+    background: hsl(var(--muted-foreground));
+    opacity: 0;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(80, 80, 120, 0.7);
+
+html.scrolling ::-webkit-scrollbar-thumb {
+    opacity: 1;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+/* Hide scrollbar by default, show on scroll */
+body {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--muted));
 }
