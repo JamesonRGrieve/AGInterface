@@ -42,8 +42,8 @@ jobs:
           fi
 
           echo "build_type=$BUILD_TYPE_OUTPUT" >> $GITHUB_OUTPUT
-          echo "app_uri=$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
-          echo "api_uri=api-$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
+          echo "app_uri=https://$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
+          echo "api_uri=https://api-$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
 
   call-reusable-publish:
     name: Call Reusable Publish Workflow
