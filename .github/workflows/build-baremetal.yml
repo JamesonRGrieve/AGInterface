@@ -1,74 +1,17 @@
-name: Build and Test
+name: Trigger Build and Test Next.js
+
 on:
   push:
     branches-ignore:
       - main
       - dev
-jobs:
-  lint:
-    uses: ./.github/workflows/test-lint.yml
-    permissions:
-      contents: write
 
-  build-baremetal:
-    runs-on: ubuntu-latest
-    name: Build / Baremetal
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4.2.2
-        with:
-          submodules: 'recursive'
-          fetch-depth: 1
-      - name: Check Submodules
-        run: |
-          pwd
-          ls -a
-          cd interactive/src
-          pwd
-          ls -a
-          git remote -v
-          git status 
-          cd ../..
-          cd iteration/src
-          pwd
-          ls -a
-          git remote -v
-          git status 
-          cd ../..
-          cd components
-          cd appwrapper/src
-          pwd
-          ls -a
-          git remote -v
-          git status
-          cd ../..
-          cd auth/src
-          pwd
-          ls -a
-          git remote -v
-          git status
-          cd ../..
-          cd dynamic-form/src
-          pwd
-          ls -a
-          git remote -v
-          git status
-          cd ../..
-          cd ../lib
-          cd next-log/src
-          pwd
-          ls -a
-          git remote -v
-          git status
-          cd ../..
-          cd zod2gql/src
-          pwd
-          ls -a
-          git remote -v
-          git status
-          cd ../..
-      - name: Install Packages and Build
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 20
-      - run: npm i lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu sass-embedded-linux-x64 && npm install && npm run build
+jobs:
+  call-reusable-build:
+    name: Call Reusable Build and Test Next.js
+    uses: ZephyrexTechnologies/Workflows/.github/workflows/build-next.yml@main # Path to the reusable workflow
+    with:
+      node-version: '20' # Optional: specify Node.js version, or omit to use default from reusable workflow
+    permissions:
+      contents: write # Required because the reusable workflow (specifically its lint job) needs it
+    secrets: inherit # If the reusable workflow needed secrets, they would be passed like this
