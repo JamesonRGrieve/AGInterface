@@ -9,7 +9,7 @@ on:
 jobs:
   call-reusable-build:
     name: Call Reusable Build and Test Next.js
-    uses: ZephyrexTechnologies/Workflows/.github/workflows/build-next.yml@main # Path to the reusable workflow
+    uses: JamesonRGrieve/Workflows/.github/workflows/build-next.yml@main # Path to the reusable workflow
     with:
       node-version: '20' # Optional: specify Node.js version, or omit to use default from reusable workflow
     permissions:

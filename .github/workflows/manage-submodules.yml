@@ -11,7 +11,7 @@ jobs:
     name: Call Reusable Submodule Management
     # Make sure the reusable workflow is in the same repository at this path
     # or use <owner>/<repo>/.github/workflows/manage-submodules.yml@<ref> if it's in a central repo.
-    uses: ZephyrexTechnologies/Workflows/.github/workflows/manage-submodules.yml@main
+    uses: JamesonRGrieve/Workflows/.github/workflows/manage-submodules.yml@main
     with:
       # REQUIRED: Customize this list of comma-separated file paths
       # These are the files that will be synced from the main repository to the submodules
