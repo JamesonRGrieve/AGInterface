@@ -1,5 +1,12 @@
 'use client';
 
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { Plus, Wrench } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { LuUnlink as Unlink } from 'react-icons/lu';
+import { useAgent } from '../hooks/useAgent';
+import { useProviders } from '../hooks/useProvider';
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -16,13 +23,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { Plus, Wrench } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { LuUnlink as Unlink } from 'react-icons/lu';
-import { useAgent } from '../hooks/useAgent';
-import { useProviders } from '../hooks/useProvider';
 
 // Types remain the same
 type Command = {

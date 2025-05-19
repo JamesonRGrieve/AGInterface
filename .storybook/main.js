@@ -1,8 +1,14 @@
-const path = require('path');
+import path from 'path';
 
 const config = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)'],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials', '@storybook/addon-interactions', '@storybook/addon-docs', 'msw-storybook-addon',],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    '@storybook/addon-docs',
+    'msw-storybook-addon',
+  ],
   framework: {
     name: '@storybook/nextjs',
     options: {},
@@ -14,7 +20,7 @@ const config = {
   staticDirs: ['../public'],
   webpackFinal: async (config, { configType }) => {
     if (config.resolve) {
-      const rootDir = path.resolve(__dirname, '../src');
+      const rootDir = path.resolve('../src');
       config.resolve.alias = {
         ...config.resolve.alias,
         '@': rootDir,

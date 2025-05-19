@@ -1,9 +1,9 @@
-import { useTheme } from '@/components/theme/useTheme';
-import { CommandGroup, CommandSeparator } from '@/components/ui/command';
 import { Eye, Monitor, Moon, Palette, Sun } from 'lucide-react';
 import { useCallback } from 'react';
 import { CommandItemComponent, CommandMenuGroup } from '..';
 import { useCommandMenu } from '../command-menu-context';
+import { CommandGroup, CommandSeparator } from '@/components/ui/command';
+import { useTheme } from '@/components/theme/useTheme';
 
 export function ThemeGroup() {
   const { currentSubPage, setOpen } = useCommandMenu();

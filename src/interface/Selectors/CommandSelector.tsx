@@ -1,11 +1,11 @@
 'use client';
 
-import usePathname from '@/auth/hooks/usePathname';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useAgent } from '../hooks/useAgent';
+import usePathname from '@/auth/hooks/usePathname';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function CommandSelector({
   value,

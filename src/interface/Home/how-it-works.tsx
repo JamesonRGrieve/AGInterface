@@ -1,6 +1,4 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -9,6 +7,8 @@ import {
   LuMessageSquare as MessageSquare,
   LuSend as Send,
 } from 'react-icons/lu';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export function HowItWorks() {
   return (

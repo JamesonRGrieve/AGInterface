@@ -1,9 +1,9 @@
 'use client';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Extensions } from '@/interface/Settings/extensions';
 import Training from '@/interface/Settings/training';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const sections = [
   {

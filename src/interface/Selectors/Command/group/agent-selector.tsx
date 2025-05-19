@@ -1,12 +1,12 @@
 'use client';
 
-import { useTeam } from '@/auth/hooks/useTeam';
-import { CommandGroup, CommandItem } from '@/components/ui/command';
-import { useAgent, useAgents } from '@/interface/hooks/useAgent';
 import { setCookie } from 'cookies-next';
 import { Bot, Check } from 'lucide-react';
 import { useCallback } from 'react';
 import { useCommandMenu } from '../command-menu-context';
+import { useAgent, useAgents } from '@/interface/hooks/useAgent';
+import { CommandGroup, CommandItem } from '@/components/ui/command';
+import { useTeam } from '@/auth/hooks/useTeam';
 
 export function AgentSelectorGroup() {
   const { currentSubPage, setOpen } = useCommandMenu();

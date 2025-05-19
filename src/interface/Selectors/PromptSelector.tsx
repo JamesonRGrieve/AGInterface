@@ -1,12 +1,12 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useContext } from 'react';
+import { usePrompts } from '../hooks/usePrompt';
 import usePathname from '@/auth/hooks/usePathname';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { InteractiveConfigContext } from '@/interactive/InteractiveConfigContext';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useContext } from 'react';
-import { usePrompts } from '../hooks/usePrompt';
 
 export type PromptSelectorProps = {
   category?: string;
