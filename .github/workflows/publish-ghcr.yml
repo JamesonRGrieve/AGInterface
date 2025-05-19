@@ -8,6 +8,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  packages: write
+  contents: read
+
 jobs:
   determine-build-vars:
     name: Determine Build Variables
@@ -48,14 +52,14 @@ jobs:
   call-reusable-publish:
     name: Call Reusable Publish Workflow
     needs: determine-build-vars
-    uses: JamesonRGrieve/Workflows/.github/workflows/publish-ghcr.yml@main # Assumes publish-ghcr.yml is in the same repository
+    uses: JamesonRGrieve/Workflows/.github/workflows/publish-ghcr.yml@main
     with:
       build_type: ${{ needs.determine-build-vars.outputs.build_type }}
-      git_ref: ${{ github.ref }} # Passes the full ref (e.g., refs/heads/main or refs/tags/v1.0.0)
-      add_sha_tag: true # Explicitly true, though it's the default in the reusable workflow
+      git_ref: ${{ github.ref }}
+      add_sha_tag: true
       build_args: |
         APP_NAME=${{ needs.determine-build-vars.outputs.app_name }}
         APP_URI=${{ needs.determine-build-vars.outputs.app_uri }}
         SERVERSIDE_API_URI=http://framework
         API_URI=${{ needs.determine-build-vars.outputs.api_uri }}
-    secrets: inherit # Ensures GITHUB_TOKEN is available to the reusable workflow
+    secrets: inherit
