@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { useAuth, useJWTQueryParam, useOAuth2 } from '@/auth/auth.middleware';
 import { MiddlewareHook } from '@/auth/types/MiddlewareHook';
 import { getRequestedURI } from '@/auth/utils';
 import log from '@/next-log/log';
-
+import { NextRequest, NextResponse } from 'next/server';
 //import assert from 'assert';
 
 export const mergeConfigs = (obj1: any, obj2: any): any =>

@@ -9,11 +9,20 @@ const mergeConfigs = (obj1, obj2) =>
     }),
     { ...obj1 },
   );
-
+const getRuntimeConfig = () => {
+  if (typeof global.__NEXT_RUNTIME_CONFIG__ !== 'undefined') {
+    return global.__NEXT_RUNTIME_CONFIG__;
+  }
+  return {
+    serverRuntimeConfig: {},
+    publicRuntimeConfig: {}
+  };
+};
 let APP_URI,
   AUTH_URI,
   API_URI,
   ENV = (process.env.ENV || process.env.NODE_ENV || 'development').toLowerCase();
+
 
 const useBasicConfig = () => ({
   env: {
@@ -209,6 +218,7 @@ const nextConfig = configs.reduce((accumulator, config) => mergeConfigs(accumula
       retryOnError: false, // or a number to set max retries
     },
   },
+  ...getRuntimeConfig(),
   // Add PWA headers configuration
   async headers() {
     return [
