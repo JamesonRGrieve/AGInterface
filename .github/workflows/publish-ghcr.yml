@@ -21,6 +21,7 @@ jobs:
       app_name: ${{ steps.vars.outputs.app_name }}
       app_uri: ${{ steps.vars.outputs.app_uri }}
       api_uri: ${{ steps.vars.outputs.api_uri }}
+      serverside_api_uri: ${{ steps.vars.outputs.serverside_api_uri }}
     steps:
       - name: Determine variables based on event
         id: vars
@@ -48,6 +49,7 @@ jobs:
           echo "build_type=$BUILD_TYPE_OUTPUT" >> $GITHUB_OUTPUT
           echo "app_uri=https://$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
           echo "api_uri=https://api-$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
+          echo "serverside_api_uri=http://sf-$ENV_PREFIX" >> $GITHUB_OUTPUT
 
   call-reusable-publish:
     name: Call Reusable Publish Workflow
@@ -60,6 +62,6 @@ jobs:
       build_args: |
         APP_NAME=${{ needs.determine-build-vars.outputs.app_name }}
         APP_URI=${{ needs.determine-build-vars.outputs.app_uri }}
-        SERVERSIDE_API_URI=http://framework
+        SERVERSIDE_API_URI=${{ needs.determine-build-vars.outputs.serverside_api_uri }}
         API_URI=${{ needs.determine-build-vars.outputs.api_uri }}
     secrets: inherit
