@@ -64,4 +64,5 @@ jobs:
         APP_URI=${{ needs.determine-build-vars.outputs.app_uri }}
         SERVERSIDE_API_URI=${{ needs.determine-build-vars.outputs.serverside_api_uri }}
         API_URI=${{ needs.determine-build-vars.outputs.api_uri }}
+        ${{ needs.determine-build-vars.outputs.build_type == 'dev' && 'LANDING_ONLY=true' || '' }}
     secrets: inherit
