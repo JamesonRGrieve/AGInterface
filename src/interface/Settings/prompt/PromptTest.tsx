@@ -1,12 +1,12 @@
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { Loader2, Repeat, Send } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import MarkdownBlock from '@/components/markdown/MarkdownBlock';
 import IconButton from '@/components/theme/IconButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/useToast';
-import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { Loader2, Repeat, Send } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function PromptTest({
   promptName,
