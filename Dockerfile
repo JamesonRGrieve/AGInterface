@@ -1,5 +1,5 @@
 FROM node:23-alpine AS builder
-WORKDIR /aginterface-build
+WORKDIR /client-build
 RUN apk add --no-cache python3 make g++ eudev-dev libusb-dev linux-headers eudev-libs
 COPY package*.json ./
 RUN npm install -g npm@latest 
@@ -29,16 +29,16 @@ RUN chmod +x ./env.sh && ./env.sh
 RUN npm run build
 
 FROM node:23-alpine AS runner
-WORKDIR /aginterface
+WORKDIR /client
 ENV NODE_ENV=production
 RUN apk add --no-cache python3 libusb eudev make g++ linux-headers eudev-libs
 COPY package*.json ./
 RUN npm install -g npm@latest && npm ci --omit=dev
 
-COPY --from=builder /aginterface-build/server-wrapper.js /aginterface/
-COPY --from=builder /aginterface-build/public /aginterface/public
-COPY --from=builder /aginterface-build/.next/standalone /aginterface/
-COPY --from=builder /aginterface-build/.next/static /aginterface/.next/static
+COPY --from=builder /client-build/server-wrapper.js /client/
+COPY --from=builder /client-build/public /client/public
+COPY --from=builder /client-build/.next/standalone /client/
+COPY --from=builder /client-build/.next/static /client/.next/static
 
 EXPOSE 1109
 ENV PORT=1109

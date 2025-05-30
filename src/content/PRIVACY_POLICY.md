@@ -26,7 +26,7 @@ This Privacy Policy describes how Zephyrex Technologies ("we," "our," or "us") c
 
 We use your information for the following purposes:
 
-- Providing and maintaining the AGInfrastructure and related services
+- Providing and maintaining related services
 - Authentication and account management
 - Improving and optimizing our services
 - Communicating with you about service updates and changes

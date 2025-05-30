@@ -9,10 +9,10 @@ import { LuBook, LuCommand, LuGraduationCap, LuMic, LuPaperclip, LuThumbsDown, L
 export default function GettingStartedPage() {
   const [hasStarted, setHasStarted] = useState(false);
   useEffect(() => {
-    if (getCookie('aginteractive-has-started') === 'true') {
+    if (getCookie('client-has-started') === 'true') {
       setHasStarted(true);
     }
-  }, [getCookie('aginteractive-has-started')]);
+  }, [getCookie('client-has-started')]);
 
   return (
     <SidebarPage title='Getting Started'>
@@ -23,7 +23,7 @@ export default function GettingStartedPage() {
               <Button
                 size='lg'
                 onClick={() => {
-                  setCookie('aginteractive-has-started', 'true', {
+                  setCookie('client-has-started', 'true', {
                     domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
                     expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
                   });
