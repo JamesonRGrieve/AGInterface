@@ -4,8 +4,6 @@ import { SidebarContext } from '@/appwrapper/SidebarContext';
 import { SidebarMain } from '@/appwrapper/SidebarMain';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
-import InteractiveConfigContextWrapper from '@/interactive/ContextWrapper';
-import { CommandMenuProvider } from '@/interface/Selectors/Command/command-menu-context';
 import { cn } from '@/lib/utils';
 import '@/zod2gql';
 import { cookies } from 'next/headers';
@@ -33,19 +31,15 @@ export default async function RootLayout({ children }: { children: ReactNode }):
     <html lang='en'>
       <Head />
       <body className={cn(/*inter.className,*/ theme, appearance)}>
-        <InteractiveConfigContextWrapper>
-          <CommandMenuProvider>
-            <SidebarContentProvider>
-              <SidebarProvider className='flex-1'>
-                <SidebarMain side='left' />
-                {children}
-                <Toaster />
-                {/* <ThemeSetter /> */}
-                <SidebarContext side='right' />
-              </SidebarProvider>
-            </SidebarContentProvider>
-          </CommandMenuProvider>
-        </InteractiveConfigContextWrapper>
+        <SidebarContentProvider>
+          <SidebarProvider className='flex-1'>
+            <SidebarMain side='left' />
+            {children}
+            <Toaster />
+            {/* <ThemeSetter /> */}
+            <SidebarContext side='right' />
+          </SidebarProvider>
+        </SidebarContentProvider>
       </body>
     </html>
   );

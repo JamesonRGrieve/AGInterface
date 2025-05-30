@@ -1,5 +1,5 @@
 import { SidebarPage } from '@/appwrapper/SidebarPage';
-import { Extensions } from '@/interface/Settings/extensions';
+import { Extensions } from '@/components/settings/extensions';
 
 export default function ExtensionsPage() {
   return (
