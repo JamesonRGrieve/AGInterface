@@ -1,15 +1,20 @@
 [submodule "src/lib/next-log"]
 path = src/lib/next-log
 url = https://github.com/JamesonRGrieve/next-log.git
+	branch = main
 [submodule "src/components/auth"]
 path = src/components/auth
 url = https://github.com/JamesonRGrieve/auth.git
+	branch = main
 [submodule "src/components/appwrapper"]
 path = src/components/appwrapper
 url = https://github.com/JamesonRGrieve/appwrapper.git
+	branch = main
 [submodule "src/components/dynamic-form"]
 path = src/components/dynamic-form
 url = https://github.com/JamesonRGrieve/dynamic-form.git
+	branch = main
 [submodule "src/lib/zod2gql"]
 path = src/lib/zod2gql
 url = https://github.com/JamesonRGrieve/zod2gql.git
+	branch = main
