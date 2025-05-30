@@ -1,0 +1,68 @@
+name: Trigger GHCR Publish
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  release:
+    types: [published]
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  determine-build-vars:
+    name: Determine Build Variables
+    runs-on: ubuntu-latest
+    outputs:
+      build_type: ${{ steps.vars.outputs.build_type }}
+      app_name: ${{ steps.vars.outputs.app_name }}
+      app_uri: ${{ steps.vars.outputs.app_uri }}
+      api_uri: ${{ steps.vars.outputs.api_uri }}
+      serverside_api_uri: ${{ steps.vars.outputs.serverside_api_uri }}
+    steps:
+      - name: Determine variables based on event
+        id: vars
+        run: |
+          APP_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+
+          ENV_PREFIX=""
+          BUILD_TYPE_OUTPUT=""
+
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref_name }}" == "dev" ]]; then
+            ENV_PREFIX="dev"
+            BUILD_TYPE_OUTPUT="dev"
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref_name }}" == "main" ]]; then
+            ENV_PREFIX="stg"
+            BUILD_TYPE_OUTPUT="main" # Reusable workflow maps 'main' input to 'stg' tag
+          elif [[ "${{ github.event_name }}" == "release" ]]; then
+            ENV_PREFIX="prod"
+            BUILD_TYPE_OUTPUT="release" # Reusable workflow maps 'release' input to 'prod' tag
+          else
+            echo "::error::Unsupported event (${{ github.event_name }}) or branch (${{ github.ref_name }}) for publishing."
+            exit 1
+          fi
+
+          echo "build_type=$BUILD_TYPE_OUTPUT" >> $GITHUB_OUTPUT
+          echo "app_uri=https://$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
+          echo "api_uri=https://api-$ENV_PREFIX.zephyrex.dev" >> $GITHUB_OUTPUT
+          echo "serverside_api_uri=http://sf-$ENV_PREFIX" >> $GITHUB_OUTPUT
+
+  call-reusable-publish:
+    name: Call Reusable Publish Workflow
+    needs: determine-build-vars
+    uses: JamesonRGrieve/Workflows/.github/workflows/publish-ghcr.yml@main
+    with:
+      build_type: ${{ needs.determine-build-vars.outputs.build_type }}
+      git_ref: ${{ github.ref }}
+      add_sha_tag: true
+      build_args: |
+        APP_NAME=${{ needs.determine-build-vars.outputs.app_name }}
+        APP_URI=${{ needs.determine-build-vars.outputs.app_uri }}
+        SERVERSIDE_API_URI=${{ needs.determine-build-vars.outputs.serverside_api_uri }}
+        API_URI=${{ needs.determine-build-vars.outputs.api_uri }}
+        ${{ needs.determine-build-vars.outputs.build_type == 'dev' && 'LANDING_ONLY=true' || '' }}
+    secrets: inherit

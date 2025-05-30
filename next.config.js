@@ -51,7 +51,7 @@ const useCookiesConfig = () => ({
 const useAuthConfig = () => ({
   env: {
     PRIVATE_ROUTES: process.env.PRIVATE_ROUTES || '/chat,/team,/settings/',
-    API_URI: (API_URI = process.env.API_URI || 'https://api.ai.zephyrex.dev'),
+    API_URI: (API_URI = process.env.API_URI || 'http://localhost'),
     NEXT_PUBLIC_API_URI: API_URI,
     AUTH_URI: (AUTH_URI = process.env.AUTH_URI || `${APP_URI}/user`),
     NEXT_PUBLIC_AUTH_URI: AUTH_URI,
