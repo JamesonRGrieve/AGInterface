@@ -1,6 +1,6 @@
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { Button } from '@/components/ui/button';
-import InteractiveHome from '@/interface/Home';
+
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -30,9 +30,7 @@ export default function Home() {
           </Link>
         </div>
       </header>
-      <main>
-        <InteractiveHome />
-      </main>
+      <main></main>
     </div>
   );
 }

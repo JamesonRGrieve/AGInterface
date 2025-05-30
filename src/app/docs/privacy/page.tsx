@@ -1,5 +1,5 @@
 import { SidebarPage } from '@/appwrapper/SidebarPage';
-import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
+import MarkdownBlock from '@/components/markdown/MarkdownBlock';
 import fs from 'fs';
 import path from 'path';
 
