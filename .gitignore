@@ -5,6 +5,8 @@ dist
 /node_modules
 /.pnp
 .pnp.js
+.idea
+.env
 *.log
 tests/test_screenshots
 # testing

@@ -50,10 +50,22 @@ const useProductionSkipLintingConfig = () => ({
 });
 const useCookiesConfig = () => ({
   env: {
-    NEXT_PUBLIC_COOKIE_DOMAIN: (() => {
+    NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || (() => {
       const domain = ((APP_URI ?? '').split('://')[1] ?? '').split(':')[0];
       const ipPattern = /^(?:\d{1,3}\.){3}\d{1,3}$/;
-      return ipPattern.test(domain) ? domain : domain.split('.').reverse().slice(0, 2).reverse().join('.');
+      
+      // Handle localhost specifically
+      if (domain === 'localhost' || domain === '127.0.0.1') {
+        return 'localhost';
+      }
+      
+      // Handle IP addresses
+      if (ipPattern.test(domain)) {
+        return domain;
+      }
+      
+      // Handle regular domains (extract root domain)
+      return domain.split('.').reverse().slice(0, 2).reverse().join('.');
     })(),
   },
 });

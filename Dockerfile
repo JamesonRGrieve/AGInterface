@@ -25,21 +25,22 @@ ARG API_URI
 ARG SERVERSIDE_API_URI
 ARG APP_NAME
 ARG APP_URI
-RUN chmod +x ./env.sh && ./env.sh
-RUN npm run build
+ENTRYPOINT ["/bin/sh"]
+# RUN chmod +x ./env.sh && ./env.sh
+# RUN npm run build
 
-FROM node:23-alpine AS runner
-WORKDIR /aginterface
-ENV NODE_ENV=production
-RUN apk add --no-cache python3 libusb eudev make g++ linux-headers eudev-libs
-COPY package*.json ./
-RUN npm install -g npm@latest && npm ci --omit=dev
+# FROM node:23-alpine AS runner
+# WORKDIR /aginterface
+# ENV NODE_ENV=production
+# RUN apk add --no-cache python3 libusb eudev make g++ linux-headers eudev-libs
+# COPY package*.json ./
+# RUN npm install -g npm@latest && npm ci --omit=dev
 
-COPY --from=builder /aginterface-build/server-wrapper.js /aginterface/
-COPY --from=builder /aginterface-build/public /aginterface/public
-COPY --from=builder /aginterface-build/.next/standalone /aginterface/
-COPY --from=builder /aginterface-build/.next/static /aginterface/.next/static
+# COPY --from=builder /aginterface-build/start-server.js /aginterface/
+# COPY --from=builder /aginterface-build/public /aginterface/public
+# COPY --from=builder /aginterface-build/.next/standalone /aginterface/
+# COPY --from=builder /aginterface-build/.next/static /aginterface/.next/static
 
-EXPOSE 1109
-ENV PORT=1109
-ENTRYPOINT ["node", "server-wrapper.js"]
+# EXPOSE 1109
+# ENV PORT=1109
+# ENTRYPOINT ["node", "start-server.js"]
