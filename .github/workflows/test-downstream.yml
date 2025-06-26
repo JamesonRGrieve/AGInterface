@@ -30,7 +30,7 @@ jobs:
     name: Run Pytest Comparison
     # No explicit check_pr_source dependency, tests should run for any PR to main.
     # If tests pass and PR is from dev, then downstream will run.
-    uses: JamesonRGrieve/Workflows/.github/workflows/test-pytest.yml@main
+    uses: JamesonRGrieve/Workflows/.github/workflows/test-storybook.yml@main 
     with:
       # PR is to main, so compare PR branch against main.
       target_branch_to_compare: ${{ github.base_ref }} # This will be 'main'
