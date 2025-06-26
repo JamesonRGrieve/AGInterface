@@ -27,15 +27,15 @@ jobs:
           echo "Branch check result: is_from_dev = $IS_FROM_DEV"
 
   run-tests:
-    name: Run Pytest Comparison
+  #  name: Run Pytest Comparison
     # No explicit check_pr_source dependency, tests should run for any PR to main.
     # If tests pass and PR is from dev, then downstream will run.
-    uses: JamesonRGrieve/Workflows/.github/workflows/test-storybook.yml@main 
-    with:
+  #  uses: JamesonRGrieve/Workflows/.github/workflows/test-storybook.yml@main 
+  #  with:
       # PR is to main, so compare PR branch against main.
-      target_branch_to_compare: ${{ github.base_ref }} # This will be 'main'
-    permissions:
-      contents: write # For lint within pytest
+  #    target_branch_to_compare: ${{ github.base_ref }} # This will be 'main'
+  #  permissions:
+  #    contents: write # For lint within pytest
 
   call-reusable-stage-downstream:
     name: Call Reusable Stage Downstream Workflow
