@@ -1,0 +1,11 @@
+name: "Auto Manage Issue Blockers"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  
+jobs:
+  call-issue-blocker:
+    uses: JamesonRGrieve/Workflows/.github/workflows/issue-blocker-reusuable.yml@main
