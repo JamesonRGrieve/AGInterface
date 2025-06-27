@@ -5,7 +5,7 @@ import { getCookie, setCookie } from 'cookies-next';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LuDownload, LuPencil, LuPlus, LuTrash2 } from 'react-icons/lu';
-import { useAgent } from '../../hooks/useAgent';
+import { useAgent, useAgents } from '../../hooks/useAgent';
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,7 @@ export default function AgentPanel() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const { data: agentData, mutate: mutateAgent } = useAgent();
+  const { data: agents } = useAgents();
   const { data: companyData, mutate: mutateCompany } = useTeam();
   const context = useInteractiveConfig();
   const router = useRouter();
@@ -130,7 +131,7 @@ export default function AgentPanel() {
     <SidebarContent title='Agent Management'>
       {agentData && (
         <SidebarGroup>
-          <SidebarGroupLabel>{agentData.agent.name}</SidebarGroupLabel>
+          <SidebarGroupLabel>{agentData.agent?.name || agentData.name}</SidebarGroupLabel>
           <div className='space-y-2 px-2'>
             <div className='text-sm text-muted-foreground'>
               <span className='font-medium'>Company:</span> {companyData?.name}
@@ -144,10 +145,11 @@ export default function AgentPanel() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
-                setNewName(agentData?.agent?.name || '');
+                setNewName(agentData?.agent?.name || agentData?.name || '');
                 setIsRenameDialogOpen(true);
               }}
               tooltip='Rename Agent'
+              disabled={!agents || agents.length === 0}
             >
               <LuPencil className='w-4 h-4' />
               <span>Rename Agent</span>
@@ -168,14 +170,18 @@ export default function AgentPanel() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration'>
+            <SidebarMenuButton
+              onClick={handleExport}
+              tooltip='Export Configuration'
+              disabled={!agents || agents.length === 0}
+            >
               <LuDownload className='w-4 h-4' />
               <span>Export Configuration</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleDelete} tooltip='Delete Agent'>
+            <SidebarMenuButton onClick={handleDelete} tooltip='Delete Agent' disabled={!agents || agents.length === 0}>
               <LuTrash2 className='w-4 h-4' />
               <span>Delete Agent</span>
             </SidebarMenuButton>
