@@ -22,68 +22,13 @@ import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { useToast } from '@/hooks/useToast';
 
 export function AgentFunctions() {
-  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [newName, setNewName] = useState('');
   const { data: agentData, mutate: mutateAgent } = useAgent();
   const { data: agents } = useAgents();
-  const { data: companyData, mutate: mutateCompany } = useTeam();
+  const { mutate: mutateCompany } = useTeam();
   const context = useInteractiveConfig();
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-
-  const handleConfirmRename = async () => {
-    try {
-      await context.sdk.renameAgent(agentData.agent.name, newName);
-      setCookie('aginterface-agent', newName, {
-        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
-      });
-      mutateAgent();
-      setIsRenameDialogOpen(false);
-      toast({
-        title: 'Success',
-        description: 'Agent renamed successfully!',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.detail || 'Failed to rename agent',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleConfirmCreate = async () => {
-    try {
-      const newResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URI}/api/agent`,
-        { agent_name: newName, settings: { company_id: companyData.id } },
-        {
-          headers: {
-            Authorization: getCookie('jwt'),
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      setCookie('aginterface-agent', newName, {
-        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
-      });
-      mutateCompany();
-      mutateAgent();
-      setIsCreateDialogOpen(false);
-      toast({
-        title: 'Success',
-        description: 'Agent created successfully!',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.detail || 'Failed to create agent',
-        variant: 'destructive',
-      });
-    }
-  };
 
   const handleDelete = async () => {
     try {
@@ -128,57 +73,74 @@ export function AgentFunctions() {
   };
 
   return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
+      <SidebarMenu>
+        <AgentRename />
+        <AgentCreate />
+
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration' disabled={!agents || agents.length === 0}>
+            <LuDownload className='w-4 h-4' />
+            <span>Export Configuration</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={handleDelete} tooltip='Delete Agent' disabled={!agents || agents.length === 0}>
+            <LuTrash2 className='w-4 h-4' />
+            <span>Delete Agent</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
+
+export function AgentRename() {
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const { data: agentData, mutate: mutateAgent } = useAgent();
+  const { data: agents } = useAgents();
+  const context = useInteractiveConfig();
+  const { toast } = useToast();
+
+  const handleConfirmRename = async () => {
+    try {
+      await context.sdk.renameAgent(agentData.agent.name, newName);
+      setCookie('aginterface-agent', newName, {
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+      });
+      mutateAgent();
+      setIsRenameDialogOpen(false);
+      toast({
+        title: 'Success',
+        description: 'Agent renamed successfully!',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.response?.data?.detail || 'Failed to rename agent',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
     <>
-      <SidebarGroup>
-        <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => {
-                setNewName(agentData?.agent?.name || agentData?.name || '');
-                setIsRenameDialogOpen(true);
-              }}
-              tooltip='Rename Agent'
-              disabled={!agents || agents.length === 0}
-            >
-              <LuPencil className='w-4 h-4' />
-              <span>Rename Agent</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => {
-                setNewName('');
-                setIsCreateDialogOpen(true);
-              }}
-              tooltip='Create Agent'
-            >
-              <LuPlus className='w-4 h-4' />
-              <span>Create Agent</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={handleExport}
-              tooltip='Export Configuration'
-              disabled={!agents || agents.length === 0}
-            >
-              <LuDownload className='w-4 h-4' />
-              <span>Export Configuration</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleDelete} tooltip='Delete Agent' disabled={!agents || agents.length === 0}>
-              <LuTrash2 className='w-4 h-4' />
-              <span>Delete Agent</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={() => {
+            setNewName(agentData?.agent?.name || agentData?.name || '');
+            setIsRenameDialogOpen(true);
+          }}
+          tooltip='Rename Agent'
+          disabled={!agents || agents.length === 0}
+        >
+          <LuPencil className='w-4 h-4' />
+          <span>Rename Agent</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -195,6 +157,62 @@ export function AgentFunctions() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+export function AgentCreate() {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const { mutate: mutateAgent } = useAgent();
+  const { data: companyData, mutate: mutateCompany } = useTeam();
+  const { toast } = useToast();
+
+  const handleConfirmCreate = async () => {
+    try {
+      const newResponse = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URI}/api/agent`,
+        { agent_name: newName, settings: { company_id: companyData.id } },
+        {
+          headers: {
+            Authorization: getCookie('jwt'),
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      setCookie('aginterface-agent', newName, {
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+      });
+      mutateCompany();
+      mutateAgent();
+      setIsCreateDialogOpen(false);
+      toast({
+        title: 'Success',
+        description: 'Agent created successfully!',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.response?.data?.detail || 'Failed to create agent',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={() => {
+            setNewName('');
+            setIsCreateDialogOpen(true);
+          }}
+          tooltip='Create Agent'
+        >
+          <LuPlus className='w-4 h-4' />
+          <span>Create Agent</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
 
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent>
