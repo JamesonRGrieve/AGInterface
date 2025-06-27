@@ -10,60 +10,18 @@ import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { useToast } from '@/hooks/useToast';
 
 export function AgentFunctions() {
-  const { data: agentData } = useAgent();
-  const { data: agents } = useAgents();
-  const context = useInteractiveConfig();
-  const { toast } = useToast();
-
-  const handleExport = async () => {
-    try {
-      const agentConfig = await context.sdk.getAgentConfig(agentData.agent.name);
-      const element = document.createElement('a');
-      const file = new Blob([JSON.stringify(agentConfig)], { type: 'application/json' });
-      element.href = URL.createObjectURL(file);
-      element.download = `${agentData.agent.name}.json`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      toast({
-        title: 'Success',
-        description: 'Agent configuration exported successfully!',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.detail || 'Failed to export agent configuration',
-        variant: 'destructive',
-      });
-    }
-  };
-
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
       <SidebarMenu>
         <AgentRename />
         <AgentCreate />
-
-        <SidebarMenuItem>
-          <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration' disabled={!agents || agents.length === 0}>
-            <LuDownload className='w-4 h-4' />
-            <span>Export Configuration</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-
+        <AgentExport />
         <AgentDelete />
       </SidebarMenu>
     </SidebarGroup>
@@ -264,5 +222,44 @@ export function AgentDelete() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+export function AgentExport() {
+  const { data: agentData } = useAgent();
+  const { data: agents } = useAgents();
+  const context = useInteractiveConfig();
+  const { toast } = useToast();
+
+  const handleExport = async () => {
+    try {
+      const agentConfig = await context.sdk.getAgentConfig(agentData.agent.name);
+      const element = document.createElement('a');
+      const file = new Blob([JSON.stringify(agentConfig)], { type: 'application/json' });
+      element.href = URL.createObjectURL(file);
+      element.download = `${agentData.agent.name}.json`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      toast({
+        title: 'Success',
+        description: 'Agent configuration exported successfully!',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.response?.data?.detail || 'Failed to export agent configuration',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration' disabled={!agents || agents.length === 0}>
+        <LuDownload className='w-4 h-4' />
+        <span>Export Configuration</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
