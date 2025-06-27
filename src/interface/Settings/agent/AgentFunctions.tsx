@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getCookie, setCookie } from 'cookies-next';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LuDownload, LuPencil, LuPlus, LuTrash2 } from 'react-icons/lu';
+import { LuCopy, LuDownload, LuPencil, LuPlus, LuTrash2, LuUpload } from 'react-icons/lu';
 import { useAgent, useAgents } from '../../hooks/useAgent';
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,10 @@ export function AgentFunctions() {
     <SidebarGroup>
       <SidebarGroupLabel>Agent Functions</SidebarGroupLabel>
       <SidebarMenu>
-        <AgentRename />
         <AgentCreate />
+        <AgentRename />
+        <AgentClone />
+        <AgentImport />
         <AgentExport />
         <AgentDelete />
       </SidebarMenu>
@@ -259,6 +261,34 @@ export function AgentExport() {
       <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration' disabled={!agents || agents.length === 0}>
         <LuDownload className='w-4 h-4' />
         <span>Export Configuration</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
+export function AgentImport() {
+  // TODO: Implement Agent Import
+  const handleImport = async () => {};
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={handleImport} tooltip='Import Configuration' disabled={true}>
+        <LuUpload className='w-4 h-4' />
+        <span>Import Configuration</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
+export function AgentClone() {
+  // TODO: Implement Agent Clone
+  const handleClone = async () => {};
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={handleClone} tooltip='Clone Agent' disabled={true}>
+        <LuCopy className='w-4 h-4' />
+        <span>Clone Agent</span>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
