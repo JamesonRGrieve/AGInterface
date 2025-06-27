@@ -9,7 +9,7 @@ import { useAgent, useAgents } from '../../hooks/useAgent';
 import { useTeam } from '@/auth/hooks/useTeam';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   SidebarContent,
   SidebarGroup,
@@ -22,32 +22,10 @@ import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { useToast } from '@/hooks/useToast';
 
 export function AgentFunctions() {
-  const { data: agentData, mutate: mutateAgent } = useAgent();
+  const { data: agentData } = useAgent();
   const { data: agents } = useAgents();
-  const { mutate: mutateCompany } = useTeam();
   const context = useInteractiveConfig();
-  const router = useRouter();
-  const pathname = usePathname();
   const { toast } = useToast();
-
-  const handleDelete = async () => {
-    try {
-      await context.sdk.deleteAgent(agentData.agent.name);
-      mutateCompany();
-      mutateAgent();
-      router.push(pathname);
-      toast({
-        title: 'Success',
-        description: 'Agent deleted successfully!',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.detail || 'Failed to delete agent',
-        variant: 'destructive',
-      });
-    }
-  };
 
   const handleExport = async () => {
     try {
@@ -86,12 +64,7 @@ export function AgentFunctions() {
           </SidebarMenuButton>
         </SidebarMenuItem>
 
-        <SidebarMenuItem>
-          <SidebarMenuButton onClick={handleDelete} tooltip='Delete Agent' disabled={!agents || agents.length === 0}>
-            <LuTrash2 className='w-4 h-4' />
-            <span>Delete Agent</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        <AgentDelete />
       </SidebarMenu>
     </SidebarGroup>
   );
@@ -227,6 +200,66 @@ export function AgentCreate() {
               Cancel
             </Button>
             <Button onClick={handleConfirmCreate}>Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+export function AgentDelete() {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { data: agentData, mutate: mutateAgent } = useAgent();
+  const { data: agents } = useAgents();
+  const { mutate: mutateCompany } = useTeam();
+  const context = useInteractiveConfig();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { toast } = useToast();
+
+  const handleDelete = async () => {
+    try {
+      await context.sdk.deleteAgent(agentData.agent.name);
+      mutateCompany();
+      mutateAgent();
+      router.push(pathname);
+      toast({
+        title: 'Success',
+        description: 'Agent deleted successfully!',
+      });
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: (error as any).response?.data?.detail || 'Failed to delete agent',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={() => setIsDeleteDialogOpen(true)}
+          tooltip='Delete Agent'
+          disabled={!agents || agents.length === 0}
+        >
+          <LuTrash2 className='w-4 h-4' />
+          <span>Delete Agent</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Agent</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>Are you sure you want to delete this agent? This action cannot be undone.</DialogDescription>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
