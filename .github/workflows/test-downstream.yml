@@ -26,7 +26,7 @@ jobs:
           echo "is_from_dev=$IS_FROM_DEV" >> $GITHUB_OUTPUT
           echo "Branch check result: is_from_dev = $IS_FROM_DEV"
 
-  run-tests:
+  #run-tests:
   #  name: Run Pytest Comparison
     # No explicit check_pr_source dependency, tests should run for any PR to main.
     # If tests pass and PR is from dev, then downstream will run.
