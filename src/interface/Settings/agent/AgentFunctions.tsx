@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { useToast } from '@/hooks/useToast';
+import { Label } from '@/components/ui/label';
 
 export function AgentFunctions() {
   return (
@@ -267,16 +268,61 @@ export function AgentExport() {
 }
 
 export function AgentImport() {
-  // TODO: Implement Agent Import
-  const handleImport = async () => {};
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [newAgentName, setNewAgentName] = useState('');
+  const context = useInteractiveConfig();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleAgentImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    try {
+      for (const file of files) {
+        const fileContent = await file.text();
+        if (newAgentName === '') {
+          const fileName = file.name.replace('.json', '');
+          setNewAgentName(fileName);
+        }
+        const settings = JSON.parse(fileContent);
+        await context.sdk.addAgent(newAgentName, settings);
+        router.push(`/agent?agent=${newAgentName}`);
+      }
+      toast({
+        title: 'Success',
+        description: 'Agent imported successfully!',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: (error as any).response?.data?.detail || 'Failed to import agent',
+        variant: 'destructive',
+      });
+    }
+    setIsImportDialogOpen(false);
+  };
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton onClick={handleImport} tooltip='Import Configuration' disabled={true}>
-        <LuUpload className='w-4 h-4' />
-        <span>Import Configuration</span>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton onClick={() => setIsImportDialogOpen(true)} tooltip='Import Configuration'>
+          <LuUpload className='w-4 h-4' />
+          <span>Import Configuration</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import Configuration</DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col gap-4 py-4'>
+            <Label htmlFor='import-agent' className='sr-only'>
+              Import Agent File
+            </Label>
+            <Input id='import-agent' type='file' onChange={handleAgentImport} className='col-span-3' />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
