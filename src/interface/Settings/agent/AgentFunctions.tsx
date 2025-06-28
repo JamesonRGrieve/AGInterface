@@ -259,9 +259,9 @@ export function AgentExport() {
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton onClick={handleExport} tooltip='Export Configuration' disabled={!agents || agents.length === 0}>
+      <SidebarMenuButton onClick={handleExport} tooltip='Export Agent' disabled={!agents || agents.length === 0}>
         <LuDownload className='w-4 h-4' />
-        <span>Export Configuration</span>
+        <span>Export Agent</span>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
@@ -304,15 +304,15 @@ export function AgentImport() {
   return (
     <>
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={() => setIsImportDialogOpen(true)} tooltip='Import Configuration'>
+        <SidebarMenuButton onClick={() => setIsImportDialogOpen(true)} tooltip='Import Agent'>
           <LuUpload className='w-4 h-4' />
-          <span>Import Configuration</span>
+          <span>Import Agent</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Import Configuration</DialogTitle>
+            <DialogTitle>Import Agent Configuration</DialogTitle>
           </DialogHeader>
           <div className='flex flex-col gap-4 py-4'>
             <Label htmlFor='import-agent' className='sr-only'>
