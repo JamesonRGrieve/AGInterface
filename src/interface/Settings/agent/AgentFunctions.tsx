@@ -40,8 +40,16 @@ export function AgentRename() {
   const { toast } = useToast();
 
   const handleConfirmRename = async () => {
+    if (!agentData) {
+      toast({
+        title: 'Error',
+        description: 'No agent selected to rename.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
-      await context.sdk.renameAgent(agentData.agent.name, newName);
+      await context.sdk.renameAgent(agentData.name, newName);
       setCookie('aginterface-agent', newName, {
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
       });
@@ -51,10 +59,10 @@ export function AgentRename() {
         title: 'Success',
         description: 'Agent renamed successfully!',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.detail || 'Failed to rename agent',
+        description: error?.response?.data?.detail || error?.message || 'Failed to rename agent',
         variant: 'destructive',
       });
     }
@@ -65,7 +73,7 @@ export function AgentRename() {
       <SidebarMenuItem>
         <SidebarMenuButton
           onClick={() => {
-            setNewName(agentData?.agent?.name || agentData?.name || '');
+            setNewName(agentData?.name || '');
             setIsRenameDialogOpen(true);
           }}
           tooltip='Rename Agent'
@@ -103,13 +111,21 @@ export function AgentCreate() {
   const { toast } = useToast();
 
   const handleConfirmCreate = async () => {
+    if (!companyData) {
+      toast({
+        title: 'Error',
+        description: 'No company/team data found.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
       const newResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URI}/api/agent`,
         { agent_name: newName, settings: { company_id: companyData.id } },
         {
           headers: {
-            Authorization: getCookie('jwt'),
+            Authorization: getCookie('jwt') as string,
             'Content-Type': 'application/json',
           },
         },
@@ -124,10 +140,10 @@ export function AgentCreate() {
         title: 'Success',
         description: 'Agent created successfully!',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.detail || 'Failed to create agent',
+        description: error?.response?.data?.detail || error?.message || 'Failed to create agent',
         variant: 'destructive',
       });
     }
@@ -179,8 +195,16 @@ export function AgentDelete() {
   const { toast } = useToast();
 
   const handleDelete = async () => {
+    if (!agentData) {
+      toast({
+        title: 'Error',
+        description: 'No agent selected to delete.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
-      await context.sdk.deleteAgent(agentData.agent.name);
+      await context.sdk.deleteAgent(agentData.name);
       mutateCompany();
       mutateAgent();
       router.push(pathname);
@@ -189,10 +213,10 @@ export function AgentDelete() {
         description: 'Agent deleted successfully!',
       });
       setIsDeleteDialogOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: (error as any).response?.data?.detail || 'Failed to delete agent',
+        description: error?.response?.data?.detail || error?.message || 'Failed to delete agent',
         variant: 'destructive',
       });
     }
@@ -235,12 +259,20 @@ export function AgentExport() {
   const { toast } = useToast();
 
   const handleExport = async () => {
+    if (!agentData) {
+      toast({
+        title: 'Error',
+        description: 'No agent selected to export.',
+        variant: 'destructive',
+      });
+      return;
+    }
     try {
-      const agentConfig = await context.sdk.getAgentConfig(agentData.agent.name);
+      const agentConfig = await context.sdk.getAgentConfig(agentData.name);
       const element = document.createElement('a');
       const file = new Blob([JSON.stringify(agentConfig)], { type: 'application/json' });
       element.href = URL.createObjectURL(file);
-      element.download = `${agentData.agent.name}.json`;
+      element.download = `${agentData.name}.json`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
@@ -248,10 +280,10 @@ export function AgentExport() {
         title: 'Success',
         description: 'Agent configuration exported successfully!',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.detail || 'Failed to export agent configuration',
+        description: error?.response?.data?.detail || error?.message || 'Failed to export agent configuration',
         variant: 'destructive',
       });
     }
@@ -279,22 +311,24 @@ export function AgentImport() {
     try {
       for (const file of files) {
         const fileContent = await file.text();
-        if (newAgentName === '') {
+        let agentName = newAgentName;
+        if (!agentName) {
           const fileName = file.name.replace('.json', '');
+          agentName = fileName;
           setNewAgentName(fileName);
         }
         const settings = JSON.parse(fileContent);
-        await context.sdk.addAgent(newAgentName, settings);
-        router.push(`/agent?agent=${newAgentName}`);
+        await context.sdk.addAgent(agentName, settings);
+        router.push(`/agent?agent=${agentName}`);
       }
       toast({
         title: 'Success',
         description: 'Agent imported successfully!',
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: (error as any).response?.data?.detail || 'Failed to import agent',
+        description: error?.response?.data?.detail || error?.message || 'Failed to import agent',
         variant: 'destructive',
       });
     }
