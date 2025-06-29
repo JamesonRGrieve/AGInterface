@@ -5,6 +5,7 @@ import { useTeam } from '@/auth/hooks/useTeam';
 import { SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { AgentFunctions } from './AgentFunctions';
 import { AgentTeamSelection } from './AgentSelection';
+import { ProviderRotation } from './ProviderRotation';
 
 export default function AgentPanel() {
   const { data: agentData, mutate: mutateAgent } = useAgent();
@@ -23,6 +24,7 @@ export default function AgentPanel() {
         </SidebarGroup>
       )}
       <AgentTeamSelection />
+      <ProviderRotation />
       <AgentFunctions />
     </>
   );
