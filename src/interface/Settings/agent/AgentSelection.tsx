@@ -13,7 +13,7 @@ export function AgentTeamSelection() {
   const [selectedAgentId, setSelectedAgentId] = useState<string | undefined>(undefined);
 
   return (
-    <>
+    <SidebarGroup className='space-y-2'>
       <TeamSelection
         selectedTeamId={selectedTeamId}
         setSelectedTeamId={setSelectedTeamId}
@@ -24,7 +24,7 @@ export function AgentTeamSelection() {
         selectedAgentId={selectedAgentId}
         setSelectedAgentId={setSelectedAgentId}
       />
-    </>
+    </SidebarGroup>
   );
 }
 
@@ -52,8 +52,8 @@ export function TeamSelection({
   };
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Teams</SidebarGroupLabel>
+    <div>
+      <SidebarGroupLabel>Select Team</SidebarGroupLabel>
       <Select value={selectedTeamId} onValueChange={handleTeamChange} disabled={teamsLoading}>
         <SelectTrigger>
           <SelectValue placeholder='- Personal Agents -' />
@@ -68,7 +68,7 @@ export function TeamSelection({
           </SelectGroup>
         </SelectContent>
       </Select>
-    </SidebarGroup>
+    </div>
   );
 }
 
@@ -97,11 +97,15 @@ export function AgentSelection({
   };
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Agents</SidebarGroupLabel>
-      <Select value={selectedAgentId} onValueChange={handleAgentChange} disabled={agentsLoading || !selectedTeamId}>
+    <div>
+      <SidebarGroupLabel>Select Agent</SidebarGroupLabel>
+      <Select
+        value={selectedAgentId}
+        onValueChange={handleAgentChange}
+        disabled={agentsLoading || !selectedTeamId || filteredAgents.length === 0}
+      >
         <SelectTrigger>
-          <SelectValue placeholder='Select an Agent' />
+          <SelectValue placeholder={filteredAgents.length === 0 ? 'No agents available' : 'Select an Agent'} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -119,6 +123,6 @@ export function AgentSelection({
           </SelectGroup>
         </SelectContent>
       </Select>
-    </SidebarGroup>
+    </div>
   );
 }
