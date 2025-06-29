@@ -8,24 +8,30 @@ import { AgentTeamSelection } from './AgentSelection';
 import { ProviderRotation } from './ProviderRotation';
 
 export default function AgentPanel() {
-  const { data: agentData, mutate: mutateAgent } = useAgent();
-  const { data: companyData } = useTeam();
-
   return (
     <>
-      {agentData && (
-        <SidebarGroup>
-          <SidebarGroupLabel>{agentData.agent?.name || agentData.name}</SidebarGroupLabel>
-          <div className='space-y-2 px-2'>
-            <div className='text-sm text-muted-foreground'>
-              <span className='font-medium'>Company:</span> {companyData?.name}
-            </div>
-          </div>
-        </SidebarGroup>
-      )}
+      <AgentInfo />
       <AgentTeamSelection />
       <ProviderRotation />
       <AgentFunctions />
     </>
+  );
+}
+
+export function AgentInfo() {
+  const { data: agentData } = useAgent();
+  const { data: companyData } = useTeam();
+
+  return (
+    agentData && (
+      <SidebarGroup>
+        <SidebarGroupLabel>{agentData.name}</SidebarGroupLabel>
+        <div className='space-y-2 px-2'>
+          <div className='text-sm text-muted-foreground'>
+            <span className='font-medium'>Company:</span> {companyData?.name}
+          </div>
+        </div>
+      </SidebarGroup>
+    )
   );
 }
