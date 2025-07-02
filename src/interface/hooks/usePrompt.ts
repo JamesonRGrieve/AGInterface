@@ -10,24 +10,30 @@ import { useToast } from '@/hooks/useToast';
  * Hook to fetch and manage all prompts and categories
  * @returns SWR response containing prompts array and categories array with management functions
  */
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+// ...existing imports...
+
 export function usePrompts(): SWRResponse<Prompt[]> & {
   create: (name: string, content: string) => Promise<void>;
   import: (name: string, file: File) => Promise<void>;
 } {
-  const client = createGraphQLClient();
   const { toast } = useToast();
-  const { sdk: sdk } = useInteractiveConfig();
+  const { sdk } = useInteractiveConfig();
   const router = useRouter();
 
   const swrHook = useSWR<Prompt[]>(
-    '/prompts',
+    '/v1/prompt',
     async (): Promise<Prompt[]> => {
       try {
-        const query = PromptSchema.toGQL('query', 'GetPrompts');
-        const response = await client.request(query);
-        return response.prompts || [];
+        const response = await axios.get(`${process.env.API_URI}/v1/prompt`, {
+          headers: {
+            Authorization: `Bearer ${getCookie('jwt')}`,
+          },
+        });
+        return response.data?.prompts || [];
       } catch (error) {
-        log(['GQL usePrompts() Error', error], {
+        log(['REST usePrompts() Error', error], {
           client: 1,
         });
         return [];
@@ -71,8 +77,8 @@ export function usePrompts(): SWRResponse<Prompt[]> & {
  * @returns SWR response containing prompt data if found
  */
 export function usePrompt(name: string): SWRResponse<Prompt | null> & {
-  delete: () => Promise<void>;
-  rename: (newName: string) => Promise<void>;
+  delete: (id: string) => Promise<void>;
+  rename: (data: Prompt, newName: string) => Promise<void>;
   update: (content: string) => Promise<void>;
   export: () => Promise<void>;
 } {
@@ -91,11 +97,17 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
   return Object.assign(
     { ...swrHook, isLoading, error },
     {
-      delete: async () => {
+      delete: async (id: string) => {
         try {
-          await sdk.deletePrompt(name);
+          if (!id) return;
+          await sdk.deletePrompt(id);
           promptsMutate();
-          router.push(`/settings/prompts?prompt=${(prompts && prompts.filter((p) => p.name !== name)[0]?.name) || ''}`);
+          if (prompts?.length === 1) {
+            router.push(`/settings/prompts`);
+          }
+          else {
+            router.push(`/settings/prompts?prompt=${(prompts && prompts.filter((p) => p.id !== id)[0]?.name) || ''}`);
+          }
           toast({
             title: 'Success',
             description: 'Prompt Deleted',
@@ -111,9 +123,9 @@ export function usePrompt(name: string): SWRResponse<Prompt | null> & {
           throw error;
         }
       },
-      rename: async (newName: string) => {
+      rename: async (data: Prompt, newName: string) => {
         try {
-          await sdk.renamePrompt(name, newName);
+          await sdk.renamePrompt(data, newName);
           swrHook.mutate();
           promptsMutate();
           toast({
