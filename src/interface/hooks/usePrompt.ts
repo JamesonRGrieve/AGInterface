@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/useToast';
  */
 import axios from 'axios';
 import { getCookie } from 'cookies-next';
-// ...existing imports...
 
 export function usePrompts(): SWRResponse<Prompt[]> & {
   create: (name: string, content: string) => Promise<void>;
