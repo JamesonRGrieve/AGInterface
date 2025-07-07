@@ -10,6 +10,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { LuDownload } from 'react-icons/lu';
 
 export default function ChainPanel({
   showCreateDialog,
@@ -108,10 +109,38 @@ export default function ChainPanel({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          <ChainExport />
           <ChainDelete />
         </SidebarMenu>
       </SidebarGroup>
     </div>
+  );
+}
+
+export function ChainExport() {
+  const context = useInteractiveConfig();
+  const searchParams = useSearchParams();
+
+  const { data: chainData } = useChain(searchParams.get('chain') ?? undefined);
+
+  const handleExportChain = async () => {
+    const chainData = await context.sdk.getChain(searchParams.get('chain') ?? '');
+    const element = document.createElement('a');
+    const file = new Blob([JSON.stringify(chainData.steps)], { type: 'application/json' });
+    element.href = URL.createObjectURL(file);
+    element.download = `${searchParams.get('chain') ?? ''}.json`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton side='left' tooltip='Export Chain' onClick={handleExportChain} disabled={!chainData}>
+        <LuDownload className='size-4' />
+        <span>Export Chain</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
 
