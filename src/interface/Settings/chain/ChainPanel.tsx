@@ -8,6 +8,8 @@ import { useChain } from '../../hooks/useChain';
 import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export default function ChainPanel({
   showCreateDialog,
@@ -106,8 +108,54 @@ export default function ChainPanel({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          <ChainDelete />
         </SidebarMenu>
       </SidebarGroup>
     </div>
+  );
+}
+
+export function ChainDelete() {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const context = useInteractiveConfig();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { data: chainData } = useChain(searchParams.get('chain') ?? undefined);
+
+  const handleDelete = async () => {
+    await context.sdk.deleteChain(searchParams.get('chain') ?? '');
+    router.push(pathname);
+    setIsDeleteDialogOpen(false);
+  };
+
+  return (
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          side='left'
+          tooltip='Delete Chain'
+          onClick={() => setIsDeleteDialogOpen(true)}
+          disabled={!chainData}
+        >
+          <Trash2 />
+          <span>Delete Chain</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Chain</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>Are you sure you want to delete this chain? This action cannot be undone.</DialogDescription>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
