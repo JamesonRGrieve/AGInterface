@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { LuDownload } from 'react-icons/lu';
+import { Label } from '@/components/ui/label';
 
 export default function ChainPanel({
   showCreateDialog,
@@ -109,12 +110,85 @@ export default function ChainPanel({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+          <ChainCreate />
           <ChainRename />
           <ChainExport />
           <ChainDelete />
         </SidebarMenu>
       </SidebarGroup>
     </div>
+  );
+}
+
+export function ChainCreate() {
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const context = useInteractiveConfig();
+  const router = useRouter();
+  const [newChainName, setNewChainName] = useState('');
+
+  const handleNewChain = async () => {
+    await context.sdk.addChain(newChainName);
+    router.push(`/settings/chains?chain=${newChainName}`);
+    setShowCreateDialog(false);
+  };
+
+  const handleChainImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    for (const file of files) {
+      const fileContent = await file.text();
+      if (newChainName === '') {
+        const filename = file.name.replace('.json', '');
+        setNewChainName(filename);
+      }
+      const steps = JSON.parse(fileContent);
+      await context.sdk.addChain(newChainName);
+      await context.sdk.importChain(newChainName, steps);
+      router.push(`/chains?chain=${newChainName}`);
+    }
+    setShowCreateDialog(false);
+  };
+
+  return (
+    <>
+      <SidebarMenuItem>
+        <SidebarMenuButton side='left' tooltip='Create Chain' onClick={() => setShowCreateDialog(true)}>
+          <Plus />
+          <span>Create Chain</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Chain</DialogTitle>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='chain-name' className='text-right'>
+                Chain Name
+              </Label>
+              <Input
+                id='chain-name'
+                value={newChainName}
+                onChange={(e) => setNewChainName(e.target.value)}
+                className='col-span-3'
+              />
+            </div>
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='import-chain' className='text-right'>
+                Import Chain
+              </Label>
+              <Input id='import-chain' type='file' onChange={handleChainImport} className='col-span-3' />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setShowCreateDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleNewChain}>Create Chain</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
