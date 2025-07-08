@@ -1,0 +1,11 @@
+name: "Auto Manage Tracking Date"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  
+jobs:
+  call-tracking-date:
+    uses: JamesonRGrieve/Workflows/.github/workflows/tracking-date-reusuable.yml@main
