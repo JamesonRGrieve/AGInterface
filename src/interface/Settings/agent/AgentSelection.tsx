@@ -52,7 +52,7 @@ export function TeamSelection({
   };
 
   return (
-    <div>
+    <div className='w-full group-data-[collapsible=icon]:hidden'>
       <SidebarGroupLabel>Select Team</SidebarGroupLabel>
       <Select value={selectedTeamId} onValueChange={handleTeamChange} disabled={teamsLoading}>
         <SelectTrigger>
@@ -97,7 +97,7 @@ export function AgentSelection({
   };
 
   return (
-    <div>
+    <div className='w-full group-data-[collapsible=icon]:hidden'>
       <SidebarGroupLabel>Select Agent</SidebarGroupLabel>
       <Select
         value={selectedAgentId}

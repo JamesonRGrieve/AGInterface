@@ -41,7 +41,7 @@ export function ProviderRotation() {
   };
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className='w-full group-data-[collapsible=icon]:hidden'>
       <SidebarGroupLabel>Provider Rotation</SidebarGroupLabel>
       <Select value={selectedRotationId} onValueChange={handleRotationChange} disabled={providersLoading || !agentData}>
         <SelectTrigger>
