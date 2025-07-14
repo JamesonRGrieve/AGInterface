@@ -12,6 +12,7 @@ import { cookies } from 'next/headers';
 import { ReactNode } from 'react';
 import './globals.css';
 import { metadata, viewport } from './metadata';
+import { ChatHistory } from '@/interactive/components/Layout/chat-history';
 
 // const inter = Inter({ subsets: ['latin'] });
 
@@ -37,7 +38,9 @@ export default async function RootLayout({ children }: { children: ReactNode }):
           <CommandMenuProvider>
             <SidebarContentProvider>
               <SidebarProvider className='flex-1'>
-                <SidebarMain side='left' />
+                <SidebarMain side='left'>
+                  <ChatHistory />
+                </SidebarMain>
                 {children}
                 <Toaster />
                 {/* <ThemeSetter /> */}
