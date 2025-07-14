@@ -10,15 +10,13 @@ import ChainSteps from '@/interface/Settings/chain/ChainSteps';
 import { SidebarContent } from '@/components/appwrapper/src/SidebarContentManager';
 
 export default function ChainPage() {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const searchParams = useSearchParams();
   const { data: chainData, error } = useChain(searchParams.get('chain') ?? undefined);
 
   return (
     <SidebarPage title='Chains'>
       <SidebarContent title='Chains'>
-        <ChainPanel showCreateDialog={showCreateDialog} setShowCreateDialog={setShowCreateDialog} />
-        <ChainDialog open={showCreateDialog} setOpen={setShowCreateDialog} />
+        <ChainPanel />
       </SidebarContent>
       {chainData && (
         <div className='mt-4'>
