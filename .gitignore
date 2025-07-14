@@ -39,3 +39,4 @@ next-env.d.ts
 test.ipynb
 
 __pycache__
+yarn.lock
