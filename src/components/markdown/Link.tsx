@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 // import Plyr from 'plyr-react';
 // import 'plyr-react/plyr.css';
 
@@ -29,7 +29,7 @@ export default function MarkdownLink({ children, href, className, ...props }: Ma
   const isExternal = href && !href.startsWith('#');
   const youtubeId = href ? getYoutubeId(href) : null;
   const isVideo = href?.match(/\.(mp4|webm|ogg)$/i);
-
+  const targetRef = useRef<HTMLAnchorElement>(null);
   if (youtubeId) {
     return (
       <div className='w-96'>
