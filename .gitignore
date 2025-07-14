@@ -6,6 +6,7 @@ dist
 /.pnp
 .pnp.js
 *.log
+.idea
 tests/test_screenshots
 # testing
 /coverage

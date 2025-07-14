@@ -1,23 +1,21 @@
 'use client';
 
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import Extension from './extension';
 import { ConnectedServices } from '@/auth/management/ConnectedServices';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
-import { useAgent } from '@/interface/hooks/useAgent';
-import { useProviders } from '@/interface/hooks/useProvider';
+import { useProviders } from '@/hooks/useProvider';
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import Extension from './extension';
 
 import { useTeam } from '@/auth/hooks/useTeam';
+import MarkdownBlock from '@/components/markdown/MarkdownBlock';
 import { Input } from '@/components/ui/input';
-import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
 
 // Types remain the same
 type Command = {
@@ -47,9 +45,8 @@ interface ExtensionSettings {
 }
 
 export function Extensions() {
-  const { agent } = useInteractiveConfig();
   const pathname = usePathname();
-  const { data: agentData, mutate: mutateAgent } = useAgent();
+  const { data: agentData, mutate: mutateAgent } = null;
   const [searchText, setSearchText] = useState('');
   const router = useRouter();
   const [settings, setSettings] = useState<Record<string, string>>({});

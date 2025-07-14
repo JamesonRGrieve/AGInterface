@@ -138,7 +138,7 @@ interface SubmissionData {
 }
 
 function sendAsEmail(submissionData: SubmissionData) {
-  const tld = process.env.NEXT_PUBLIC_AGINTERACTIVE_SERVER?.split('.').slice(-2).join('.') || 'example.com';
+  const tld = process.env.NEXT_PUBLIC_API_URI?.split('.').slice(-2).join('.') || 'example.com';
   const emailAddress = `support@${tld}`;
 
   // Format the email body

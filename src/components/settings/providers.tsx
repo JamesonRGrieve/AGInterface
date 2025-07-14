@@ -1,13 +1,7 @@
 'use client';
 
-import axios from 'axios';
-import { getCookie } from 'cookies-next';
-import { Plus, Wrench } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { LuUnlink as Unlink } from 'react-icons/lu';
-import { useAgent } from '../hooks/useAgent';
-import { useProviders } from '../hooks/useProvider';
 import { useTeam } from '@/auth/hooks/useTeam';
+import MarkdownBlock from '@/components/markdown/MarkdownBlock';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,8 +15,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import MarkdownBlock from '@/interactive/components/Chat/Message/MarkdownBlock';
-import { useInteractiveConfig } from '@/interactive/InteractiveConfigContext';
+import { useProviders } from '@/hooks/useProvider';
+import axios from 'axios';
+import { getCookie } from 'cookies-next';
+import { Plus, Wrench } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { LuUnlink as Unlink } from 'react-icons/lu';
 
 // Types remain the same
 type Command = {
@@ -52,8 +50,6 @@ interface ExtensionSettings {
 }
 
 export function Providers() {
-  const { agent } = useInteractiveConfig();
-  const { data: agentData, mutate } = useAgent(true);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [error, setError] = useState<ErrorState>(null);
   const agent_name = (getCookie('aginterface-agent') || process.env.NEXT_PUBLIC_AGINTERACTIVE_AGENT) ?? agent;
@@ -63,40 +59,12 @@ export function Providers() {
   // Filter connected providers
   const providers = useMemo(() => {
     // Return empty arrays if no data
-    if (!agentData?.settings || !providerData?.length) {
-      return {
-        connected: [],
-        available: [],
-      };
-    }
-
-    const connected = providerData.filter((provider) => {
-      // Skip providers without settings
-      if (!provider.settings?.length) return false;
-
-      // Find sensitive settings that exist in both provider and agent settings
-      const relevantSettings = provider.settings.filter((setting) => {
-        const isSensitive = ['KEY', 'SECRET', 'PASSWORD'].some((keyword) => setting.name.includes(keyword));
-
-        // Only include if it exists in agent settings
-        return isSensitive && agentData.settings.some((s) => s.name === setting.name);
-      });
-
-      // If no relevant settings found, provider is not connected
-      if (relevantSettings.length === 0) return false;
-
-      // Check if ALL relevant settings are HIDDEN
-      return relevantSettings.every((setting) => {
-        const agentSetting = agentData.settings.find((s) => s.name === setting.name);
-        return agentSetting && agentSetting.value === 'HIDDEN';
-      });
-    });
 
     return {
-      connected,
-      available: providerData.filter((provider) => !connected.includes(provider)),
+      connected: [],
+      available: [],
     };
-  }, [agentData, providerData]);
+  }, [providerData]);
 
   const handleSaveSettings = async (extensionName: string, settings: Record<string, string>) => {
     try {
@@ -128,7 +96,6 @@ export function Providers() {
         message: error.response?.data?.detail || error.message || 'Failed to connect extension',
       });
     }
-    mutate();
   };
 
   const handleDisconnect = async (name: string) => {
