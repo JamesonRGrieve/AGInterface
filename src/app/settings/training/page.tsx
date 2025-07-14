@@ -12,7 +12,7 @@ export default function TrainingPage() {
   const isAdmin = !isLoading && userRoleId && userRoleId < 3;
 
   return (
-    <SidebarPage title='Training'>
+    <SidebarPage title='Training' className='p-4'>
       <Training />
     </SidebarPage>
   );

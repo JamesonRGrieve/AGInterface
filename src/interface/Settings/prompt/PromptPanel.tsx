@@ -67,9 +67,9 @@ export default function PromptPanel() {
                 icon: renaming ? Check : Pencil,
                 func: renaming
                   ? () => {
-                      prompt.rename(newName);
-                      setRenaming(false);
-                    }
+                    prompt.rename(prompt?.data, newName);
+                    setRenaming(false);
+                  }
                   : () => setRenaming(true),
                 disabled: false,
               },
@@ -94,7 +94,7 @@ export default function PromptPanel() {
                 title: 'Delete Prompt',
                 icon: Trash2,
                 func: () => {
-                  prompt.delete();
+                  prompt.delete(prompt?.data?.id!);
                 },
                 disabled: renaming,
               },
@@ -113,7 +113,7 @@ export default function PromptPanel() {
         </SidebarGroup>
       </SidebarContent>
 
-      {promptBody && (
+      {promptBody && prompt?.data?.id && (
         <>
           <div className='space-y-2'>
             <AutoResizeTextarea

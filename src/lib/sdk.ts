@@ -1,3 +1,4 @@
+import { Prompt } from '@/interface/hooks/z';
 import axios, { AxiosRequestConfig } from 'axios';
 
 type Conversation = {
@@ -335,9 +336,12 @@ export default class AGInterfaceSDK {
 
   // Prompt Methods
   async addPrompt(promptName: string, prompt: string, promptCategory = 'Default') {
-    return this.request<{ message: string }>('post', `/api/prompt/${promptCategory}`, {
-      prompt_name: promptName,
-      prompt,
+    return this.request<{ message: string }>('post', `/v1/prompt`, {
+      prompt: {
+        name: promptName,
+        description: '',
+        content: prompt,
+      }
     }).then((r) => r.message);
   }
 
@@ -365,8 +369,8 @@ export default class AGInterfaceSDK {
     );
   }
 
-  async deletePrompt(promptName: string, promptCategory = 'Default') {
-    return this.request<{ message: string }>('delete', `/api/prompt/${promptCategory}/${promptName}`).then((r) => r.message);
+  async deletePrompt(id: string, promptCategory = 'Default') {
+    return this.request<{ message: string }>('delete', `/v1/prompt/${id}`).then((r) => r.message);
   }
 
   async updatePrompt(promptName: string, prompt: string, promptCategory = 'Default') {
@@ -377,9 +381,12 @@ export default class AGInterfaceSDK {
     }).then((r) => r.message);
   }
 
-  async renamePrompt(promptName: string, newName: string, promptCategory = 'Default') {
-    return this.request<{ message: string }>('patch', `/api/prompt/${promptCategory}/${promptName}`, {
-      prompt_name: newName,
+  async renamePrompt(data: Prompt, newName: string, promptCategory = 'Default') {
+    return this.request<{ message: string }>('put', `/v1/prompt/${data?.id}`, {
+      prompt: {
+        name: newName,
+        description: data?.description || '',
+      }
     }).then((r) => r.message);
   }
 
