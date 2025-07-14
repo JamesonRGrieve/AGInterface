@@ -1,15 +1,11 @@
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { Button } from '@/components/ui/button';
-import InteractiveHome from '@/interface/Home';
+
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-export default function Home() {
-  if (cookies().has('jwt')) {
-    redirect('/chat');
-  }
-
+export default async function Home() {
   return (
     <div style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} className='w-full'>
       <header
@@ -22,7 +18,7 @@ export default function Home() {
           </Link>
         </div>
         <div className='flex items-center gap-2'>
-          <ThemeToggle initialTheme={cookies().get('theme')?.value} />
+          <ThemeToggle initialTheme={(await cookies()).get('theme')?.value} />
           <Link href={process.env.NEXT_PUBLIC_AUTH_URI || '/user'}>
             <Button size='lg' className='px-4 rounded-full'>
               Login or Register
@@ -30,9 +26,7 @@ export default function Home() {
           </Link>
         </div>
       </header>
-      <main>
-        <InteractiveHome />
-      </main>
+      <main></main>
     </div>
   );
 }
