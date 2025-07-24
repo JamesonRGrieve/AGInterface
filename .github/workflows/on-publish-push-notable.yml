@@ -1,4 +1,4 @@
-name: Trigger GHCR Publish
+name: On Push or Publish Notable Branches
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   determine-build-vars:
     name: Determine Build Variables
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       build_type: ${{ steps.vars.outputs.build_type }}
       app_name: ${{ steps.vars.outputs.app_name }}

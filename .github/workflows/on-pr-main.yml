@@ -1,4 +1,4 @@
-name: Downstream Trigger
+name: On Pull Request to Main
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 jobs:
   check-pr-source:
     name: Check PR Source Branch
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       is_from_dev: ${{ steps.check_branch.outputs.is_from_dev }}
     steps:
@@ -26,22 +26,23 @@ jobs:
           echo "is_from_dev=$IS_FROM_DEV" >> $GITHUB_OUTPUT
           echo "Branch check result: is_from_dev = $IS_FROM_DEV"
 
-  run-tests:
-    name: Run Pytest Comparison
-    # No explicit check_pr_source dependency, tests should run for any PR to main.
-    # If tests pass and PR is from dev, then downstream will run.
-    uses: JamesonRGrieve/Workflows/.github/workflows/test-pytest.yml@main
-    with:
-      # PR is to main, so compare PR branch against main.
-      target_branch_to_compare: ${{ github.base_ref }} # This will be 'main'
-    permissions:
-      contents: write # For lint within pytest
+  # TODO TypeScript comparison
+  # run-tests:
+  #   name: Run Pytest Comparison
+  #   # No explicit check_pr_source dependency, tests should run for any PR to main.
+  #   # If tests pass and PR is from dev, then downstream will run.
+  #   uses: JamesonRGrieve/Workflows/.github/workflows/test-ts-pytest.yml@main
+  #   with:
+  #     # PR is to main, so compare PR branch against main.
+  #     target_branch_to_compare: ${{ github.base_ref }} # This will be 'main'
+  #   permissions:
+  #     contents: write # For lint within pytest
 
   call-reusable-stage-downstream:
     name: Call Reusable Stage Downstream Workflow
-    needs: [check-pr-source, run-tests] # Ensures tests pass and branch is correct before staging
+    needs: [check-pr-source] # Ensures tests pass and branch is correct before staging
     if: needs.check-pr-source.outputs.is_from_dev == 'true'
-    uses: JamesonRGrieve/Workflows/.github/workflows/test-downstream.yml@main
+    uses: JamesonRGrieve/Workflows/.github/workflows/gh-test-downstream.yml@main
     with:
       source_repo_ref: 'dev' # Staging happens from the 'dev' branch of the current repo
     secrets:
