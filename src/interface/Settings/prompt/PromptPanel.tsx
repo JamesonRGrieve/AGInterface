@@ -22,6 +22,7 @@ export default function PromptPanel() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [importMode, setImportMode] = useState(false);
+
   useEffect(() => {
     if (prompt.data?.content) {
       setPromptBody(prompt.data.content);
@@ -36,7 +37,7 @@ export default function PromptPanel() {
   }, [renaming, searchParams.get('prompt')]);
 
   return (
-    <div className='space-y-4'>
+    <div>
       <SidebarContent title='Prompt Management'>
         <SidebarGroup>
           <SidebarGroupLabel>Select Prompt</SidebarGroupLabel>
@@ -50,6 +51,8 @@ export default function PromptPanel() {
               <PromptSelector />
             )}
           </div>
+        </SidebarGroup>
+        <SidebarGroup>
           <SidebarGroupLabel>Prompt Functions</SidebarGroupLabel>
           <SidebarMenu>
             {[
@@ -67,9 +70,9 @@ export default function PromptPanel() {
                 icon: renaming ? Check : Pencil,
                 func: renaming
                   ? () => {
-                    prompt.rename(prompt?.data, newName);
-                    setRenaming(false);
-                  }
+                      prompt.rename(prompt?.data, newName);
+                      setRenaming(false);
+                    }
                   : () => setRenaming(true),
                 disabled: false,
               },
