@@ -42,7 +42,7 @@ export function NavMain() {
   const pathname = usePathname();
   const queryParams = useSearchParams();
   const { data: company } = useTeam();
-  const { toggleSidebar, open } = useSidebar('left');
+  const { toggleSidebar, open, isMobile } = useSidebar('left');
 
   const itemsWithActiveState = items.map((item) => ({
     ...item,
@@ -90,6 +90,10 @@ export function NavMain() {
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton asChild>
                               <Link
+                                onClick={(e) => {
+                                  if (isMobile && open) toggleSidebar();
+                                  e.stopPropagation();
+                                }}
                                 href={
                                   subItem.queryParams
                                     ? Object.entries(subItem.queryParams).reduce(
