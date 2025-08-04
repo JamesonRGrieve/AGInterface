@@ -29,7 +29,6 @@ import { useUser } from '@/components/auth/src/hooks/useUser';
 import { useProviderInstance, useProviderInstances } from './useProviders';
 import { ArrowBigLeft } from 'lucide-react';
 
-
 interface ProviderInstance {
   provider_id: string;
   team_id: string;
@@ -56,8 +55,6 @@ interface Provider {
   agent_settings_json: string;
 }
 
-
-
 export const ProviderSidebar = () => {
   const [selectedInstance, setSelectedInstance] = useState<ProviderInstance | null>(null);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
@@ -70,40 +67,36 @@ export const ProviderSidebar = () => {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
-  const {data:user} = useUser()
-  const {data:providerInstances,mutate:mutateProviderInstances} = useProviderInstances()
-  const {mutate:mutateInstance} = useProviderInstance(selectedInstance?.id);
-  
+  const { data: user } = useUser();
+  const { data: providerInstances, mutate: mutateProviderInstances } = useProviderInstances();
+  const { mutate: mutateInstance } = useProviderInstance(selectedInstance?.id);
+
   // Provider select state
   const [providers, setProviders] = useState<Provider[]>([]);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
 
-  
-  useEffect(()=>{
+  useEffect(() => {
     if (providerInstances) {
       if (id) {
         const foundInstance = providerInstances.find((p) => p.id === id);
         setSelectedInstance(foundInstance || null);
       }
     }
-  },[providerInstances,id])
+  }, [providerInstances, id]);
 
   // Fetch providers for select list
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URI}/v1/provider`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${getCookie('jwt')}`,
-            },
-          }
-        );
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URI}/v1/provider`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getCookie('jwt')}`,
+          },
+        });
 
         const data = response.data.providers as Provider[];
-        
+
         setProviders(data || []);
         // Do not select any provider by default
         setSelectedProviderId(null);
@@ -116,9 +109,7 @@ export const ProviderSidebar = () => {
 
   function handleProviderChange(providerId: string | null) {
     setSelectedProviderId(providerId);
-    const filtered =providerInstances!.filter(
-      (instance:ProviderInstance) => instance.provider_id === providerId
-    )
+    const filtered = providerInstances!.filter((instance: ProviderInstance) => instance.provider_id === providerId);
     if (filtered.length > 0) {
       setSelectedInstance(filtered[0]);
       router.push(`/provider/${filtered[0].id}`);
@@ -131,10 +122,10 @@ export const ProviderSidebar = () => {
   // Handlers
   const handleSelectInstance = (id: string) => {
     const found = providerInstances!.find((p) => p.id === id);
-    if (found){
+    if (found) {
       setSelectedInstance(found);
       router.push(`/provider/${found.id}`);
-    };
+    }
   };
 
   const handleConfirmRename = async () => {
@@ -153,7 +144,7 @@ export const ProviderSidebar = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${getCookie('jwt')}`,
           },
-        }
+        },
       );
       // Use mutate to refresh provider instances from the API
       await mutateProviderInstances();
@@ -196,12 +187,12 @@ export const ProviderSidebar = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${getCookie('jwt')}`,
           },
-        }
+        },
       );
       setIsCreateDialogOpen(false);
       // Use mutate to refresh provider instances from the API
       await mutateProviderInstances();
-      
+
       const createdInstance = response.data.provider_instance;
       setSelectedInstance(createdInstance || null);
       setNewName('');
@@ -227,30 +218,28 @@ export const ProviderSidebar = () => {
   const handleDeleteInstance = async () => {
     if (!selectedInstance) return;
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URI}/v1/provider/instance/${selectedInstance.id}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getCookie('jwt')}`,
-          },
-        }
-      );
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URI}/v1/provider/instance/${selectedInstance.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getCookie('jwt')}`,
+        },
+      });
       setIsDeleteDialogOpen(false);
       // Use mutate to refresh provider instances from the API
       await mutateProviderInstances();
-      
-      const list = providerInstances!.filter((instance: ProviderInstance) => instance.provider_id === selectedProviderId && instance.id !== selectedInstance.id);
-      if(list.length > 0) {
+
+      const list = providerInstances!.filter(
+        (instance: ProviderInstance) => instance.provider_id === selectedProviderId && instance.id !== selectedInstance.id,
+      );
+      if (list.length > 0) {
         setSelectedInstance(list[0]);
         router.push(`/provider/${list[0].id}`);
-      }
-      else{
+      } else {
         setSelectedInstance(null);
         //setSelectedProviderId(null);
         router.push(`/provider`);
       }
-      
+
       toast({
         title: 'Success',
         description: 'Provider instance deleted successfully!',
@@ -265,15 +254,13 @@ export const ProviderSidebar = () => {
     }
   };
 
-  function handleCreateDialog(value:boolean){
+  function handleCreateDialog(value: boolean) {
     if (!selectedProviderId) {
       toast({
         title: 'Provider Required',
         description: 'Please select a provider to create an instance',
       });
-    }
-    else
-    setIsCreateDialogOpen(value);
+    } else setIsCreateDialogOpen(value);
   }
 
   return (
@@ -328,9 +315,10 @@ export const ProviderSidebar = () => {
             value={selectedInstance?.id}
             onValueChange={handleSelectInstance}
             disabled={
-              (selectedProviderId
-                ? providerInstances!.filter((instance: ProviderInstance) => instance.provider_id === selectedProviderId).length === 0
-                : providerInstances!.length === 0)
+              selectedProviderId
+                ? providerInstances!.filter((instance: ProviderInstance) => instance.provider_id === selectedProviderId)
+                    .length === 0
+                : providerInstances!.length === 0
             }
           >
             <SelectTrigger>
@@ -338,17 +326,21 @@ export const ProviderSidebar = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {(selectedProviderId ? providerInstances!
-                  .filter((instance: ProviderInstance) => instance.provider_id === selectedProviderId)
-                : providerInstances!).map((instance: ProviderInstance) => (
-                    <SelectItem key={instance.id} value={instance.id}>
-                      {instance.name}
-                    </SelectItem>
-                  ))}
+                {(selectedProviderId
+                  ? providerInstances!.filter((instance: ProviderInstance) => instance.provider_id === selectedProviderId)
+                  : providerInstances!
+                ).map((instance: ProviderInstance) => (
+                  <SelectItem key={instance.id} value={instance.id}>
+                    {instance.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
+      </SidebarGroup>
+
+      <SidebarGroup>
         <SidebarGroupLabel>Instance Actions</SidebarGroupLabel>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -378,7 +370,10 @@ export const ProviderSidebar = () => {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={selectedInstance ? () => setIsDeleteDialogOpen(true) : undefined} tooltip='Delete Instance'>
+            <SidebarMenuButton
+              onClick={selectedInstance ? () => setIsDeleteDialogOpen(true) : undefined}
+              tooltip='Delete Instance'
+            >
               <LuTrash2 className='w-4 h-4 text-red-500' />
               <span className='text-red-500'>Delete Instance</span>
             </SidebarMenuButton>
