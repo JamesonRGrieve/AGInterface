@@ -70,7 +70,7 @@ export default function AcceptInvitationLayout({ params }: { params: { id: strin
         try {
             await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URI}/v1/invitation/${invitation.id}`,
-                { invitation: { invitation_code: params.id } },
+                { invitation: { invitation_code: params.id , action: "accept" } },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -99,8 +99,9 @@ export default function AcceptInvitationLayout({ params }: { params: { id: strin
     const handleDecline = async () => {
         setLoading(true);
         try {
-            await axios.delete(
-                `${process.env.NEXT_PUBLIC_API_URI}/v1/invitation/${params.id}`,
+            await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URI}/v1/invitation/${invitation.id}`,
+                { invitation: { invitation_code: params.id , action: "decline" } },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,6 +114,9 @@ export default function AcceptInvitationLayout({ params }: { params: { id: strin
                 description: `You have declined the invitation to join ${invitation?.team?.name || 'the team'}.`,
                 variant: 'destructive',
             });
+            setTimeout(()=>{
+                router.push(`/team`);
+            },2000);
         } catch (e: any) {
             toast({
                 title: 'Error declining invitation',
