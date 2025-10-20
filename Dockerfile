@@ -1,4 +1,4 @@
-FROM node:23-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /client-build
 RUN apk add --no-cache python3 make g++ eudev-dev libusb-dev linux-headers eudev-libs
 COPY package*.json ./
@@ -28,7 +28,7 @@ ARG APP_URI
 RUN chmod +x ./env.sh && ./env.sh
 RUN npm run build
 
-FROM node:23-alpine AS runner
+FROM node:25-alpine AS runner
 WORKDIR /client
 ENV NODE_ENV=production
 RUN apk add --no-cache python3 libusb eudev make g++ linux-headers eudev-libs
